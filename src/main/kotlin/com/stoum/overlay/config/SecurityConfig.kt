@@ -17,11 +17,9 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
-            authorizeHttpRequests {
-                authorize(anyRequest, authenticated)
+            httpBasic {
+                disable()
             }
-            formLogin { }
-            httpBasic { }
         }
 
         return http.build()
