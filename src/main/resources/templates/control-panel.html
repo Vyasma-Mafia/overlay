@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <title>Панель </title>
+    <link rel="stylesheet" href="css\style-panel.css">
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<body>
+<header>
+    <table style="width: 100%;">
+        <tr>
+            <td>
+                Показывать панель игроков
+            </td>
+            <td style="width: 80px">
+                <div class="button r button-1" id="button-panel">
+                    <input type="checkbox" class="checkbox" checked>
+                    <div class="knobs"></div>
+                    <div class="layer"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Показывать игровые роли
+            </td>
+            <td>
+                <div class="button r button-1" id="button-roles">
+                    <input type="checkbox" class="checkbox">
+                    <div class="knobs"></div>
+                    <div class="layer"></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</header>
+<div class="main">
+    <table class="player-table">
+        <tr style="background-color: rgb(31,30,31);">
+            <td>
+                №
+            </td>
+            <td>
+                Никнейм
+            </td>
+            <td colspan="3">
+                Статус
+            </td>
+            <td></td>
+            <td colspan="3">
+                Роль
+            </td>
+            <td style="max-width: 5px;"></td>
+            <td></td>
+        </tr>
+
+        <tr class="player" id="player_1">
+            <td class="number">
+                <p>1</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_2">
+            <td class="number">
+                <p>2</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_3">
+            <td class="number">
+                <p>3</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_4">
+            <td class="number">
+                <p>4</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_5">
+            <td class="number">
+                <p>5</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_6">
+            <td class="number">
+                <p>6</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_7">
+            <td class="number">
+                <p>7</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_8">
+            <td class="number">
+                <p>8</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_9">
+            <td class="number">
+                <p>9</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+        <tr class="player" id="player_10">
+            <td class="number">
+                <p>10</p>
+            </td>
+            <td class="players">
+                <select class="player-list"></select>
+            </td>
+            <td class="s-button killed-button">
+                <div onclick="changeStatus(this,'killed')"></div>
+            </td>
+            <td class="s-button voted-button">
+                <div onclick="changeStatus(this,'voted')"></div>
+            </td>
+            <td class="s-button deleted-button">
+                <div onclick="changeStatus(this,'deleted')"></div>
+            </td>
+            <td></td>
+            <td class="s-button don-button">
+                <div onclick="changeRole(this, 'don')"></div>
+            </td>
+            <td class="s-button mafia-button">
+                <div onclick="changeRole(this, 'mafia')"></div>
+            </td>
+            <td class="s-button sheriff-button">
+                <div onclick="changeRole(this, 'sheriff')"></div>
+            </td>
+            <td></td>
+            <td class="s-button speaker-button">
+                <div onclick="changeSpeaker(this)"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td class="players">
+                <button onclick="sendAllData()">Отправить</button>
+            </td>
+            <td colspan="3">
+                <button onclick="clearStatus()">Сбросить</button>
+            </td>
+            <td></td>
+            <td colspan="3">
+                <button onclick="clearRole()">Сбросить</button>
+            </td>
+            <td></td>
+            <td class="binding">
+                <button></button>
+            </td>
+        </tr>
+    </table>
+</div>
+<footer>
+
+</footer>
+<script>
+    function addPlayers(players) {
+        let player_list = players.toString().split(" ")
+        document.querySelectorAll('.player-list').forEach((element, index, array) => {
+            element.innerHTML = ''
+            player_list.forEach(player => {
+                element.add(new Option(player, player));
+            });
+        });
+    }
+
+    function setTable(playersOrdered) {
+        let player_list = playersOrdered.split(' ');
+        document.querySelectorAll('.player-list').forEach((element, index, array) => {
+            element.querySelectorAll(`option`).forEach(element => {
+                element.removeAttribute("selected")
+            })
+            element.querySelector(`[value="${player_list[index]}"]`).setAttribute("selected", "selected")
+        });
+        //sendAllData()
+    }
+
+    function setRoles(roles) {
+        let rolesList = roles.split(" ")
+        sheriffDivElement = document.querySelector(`.player#player_${rolesList[0]} td.sheriff-button div`)
+        changeRole(sheriffDivElement, 'sheriff', false)
+        rolesList.slice(1).forEach(slot => {
+            if (slot.toString().startsWith("*")) {
+                donDivElement = document.querySelector(`.player#player_${slot.toString().slice(1)} td.don-button div`)
+                changeRole(donDivElement, 'don', false)
+            } else {
+                mafiaDivElement = document.querySelector(`.player#player_${slot.toString()} td.mafia-button div`)
+                changeRole(mafiaDivElement, 'mafia', false)
+            }
+        })
+    }
+
+    const storage = window.localStorage
+    const socket = new WebSocket('ws://localhost:8080/gameinfo');
+    socket.addEventListener('open', function (event) {
+        socket.send('register control-panel');
+        console.log("Connected to gameinfo WS")
+    });
+    socket.addEventListener("message", function (event) {
+        console.log('Message from server ', event.data);
+        if (event.data.toString().startsWith("!")) {
+            let split = event.data.toString().split(" ")
+            switch (split[0]) {
+                case "!addplayers": {
+                    let players = event.data.split(' ').slice(1).join(' ');
+                    addPlayers(players)
+                    break
+                }
+                case "!settable": {
+                    let playersOrdered = event.data.split(' ').slice(1).join(' ');
+                    setTable(playersOrdered)
+                    break
+                }
+                case "!setroles": {
+                    clearRole()
+                    let roles = event.data.split(' ').slice(1).join(" ");
+                    setRoles(roles)
+                }
+            }
+        }
+    });
+
+    const panelStatusChannel = new BroadcastChannel('panel_status');
+    const playerRoleChannel = new BroadcastChannel('player_list');
+    const playerStatusChannel = new BroadcastChannel('class_list');
+
+    $(document).ready(function () {
+
+    });
+
+    function changeStatus(object, status) {
+        element = object.parentElement.parentElement;
+        if (element.classList.contains(status)) {
+            element.classList.remove(status);
+            element.classList.remove('dead');
+        } else {
+            if (element.classList.contains('dead')) {
+                element.classList.remove('killed');
+                element.classList.remove('voted');
+                element.classList.remove('deleted');
+            } else {
+                element.classList.add('dead')
+            }
+            element.classList.add(status);
+        }
+        classes = element.id + '|' + element.classList.value;
+        playerStatusChannel.postMessage(classes);
+    }
+
+    function changeRole(object, role, forward = true) {
+        element = object.parentElement.parentElement;
+        if (element.classList.contains(role)) {
+            element.classList.remove(role);
+            playerNickname = element.querySelector("select option[selected]").text
+            if (forward) {
+                let roleForBot = "мир"
+                socket.send(`!setrole ${playerNickname} ${roleForBot}`)
+            }
+        } else {
+            element.classList.remove('don');
+            element.classList.remove('mafia');
+            element.classList.remove('sheriff');
+            element.classList.add(role);
+            playerNickname = element.querySelector("select option[selected]").text
+            /*let roles = JSON.parse(storage.getItem("rolesByNickname"))
+            roles[playerNickname] = role
+            storage.setItem("rolesByNickname", JSON.stringify(roles))*/
+            if (forward) {
+                let roleForBot
+                switch (role) {
+                    case "don":
+                        roleForBot = 'дон';
+                        break;
+                    case "mafia":
+                        roleForBot = 'маф';
+                        break;
+                    case "sheriff":
+                        roleForBot = 'шер';
+                        break;
+                }
+                socket.send(`!setrole ${playerNickname} ${roleForBot}`)
+            }
+        }
+        classes = element.id + '|' + element.classList.value;
+        playerStatusChannel.postMessage(classes);
+    }
+
+    function changeSpeaker(object) {
+        element = object.parentElement.parentElement;
+        if (element.classList.contains('speaker')) {
+            element.classList.remove('speaker');
+        } else {
+            document.querySelectorAll('.player').forEach((item, index, array) => {
+                if (item.classList.contains('speaker')) {
+                    item.classList.remove('speaker');
+                    playerStatusChannel.postMessage(item.id + '|' + item.classList.value);
+                }
+            });
+            element.classList.add('speaker')
+        }
+        classes = element.id + '|' + element.classList.value;
+        playerStatusChannel.postMessage(classes);
+    }
+
+    function clearStatus() {
+        document.querySelectorAll('.killed').forEach((item, index, array) => {
+            item.classList.remove('killed');
+        });
+        document.querySelectorAll('.voted').forEach((item, index, array) => {
+            item.classList.remove('voted');
+        });
+        document.querySelectorAll('.deleted').forEach((item, index, array) => {
+            item.classList.remove('deleted');
+        });
+        document.querySelectorAll('.dead').forEach((item, index, array) => {
+            item.classList.remove('dead');
+        });
+        document.querySelectorAll('.player').forEach((element, index, array) => {
+            player = element.id + '|' + element.classList.value;
+            playerStatusChannel.postMessage(player);
+        });
+    }
+
+    function clearRole() {
+        document.querySelectorAll('.don').forEach((item, index, array) => {
+            item.classList.remove('don');
+        });
+        document.querySelectorAll('.mafia').forEach((item, index, array) => {
+            item.classList.remove('mafia');
+        });
+        document.querySelectorAll('.sher').forEach((item, index, array) => {
+            item.classList.remove('sheriff');
+        });
+        document.querySelectorAll('.player').forEach((element, index, array) => {
+            player = element.id + '|' + element.classList.value;
+            //playerStatusChannel.postMessage(player);
+        });
+
+        socket.send("!setrole reset")
+    }
+
+    $('#button-panel').click(function () {
+        if ($('#button-panel').find('.checkbox')[0].checked) {
+            //panelStatusChannel.postMessage('body|visible');
+        } else {
+            //panelStatusChannel.postMessage('body|');
+        }
+
+    });
+
+
+    $('#button-roles').click(function () {
+        if ($('#button-roles').find('.checkbox')[0].checked) {
+            //panelStatusChannel.postMessage('footer|show-roles');
+        } else {
+            //panelStatusChannel.postMessage('footer|');
+        }
+
+    });
+
+    $('select').on('change', function () {
+        player = $(this).parents('.player')[0].id + '|' + $(this).find(":selected").val();
+        playerRoleChannel.postMessage(player);
+    });
+
+    $('.binding').bind('keypress', function (e) {
+        console.log(e.keyCode);
+        if (e.keyCode == 48) {
+            document.getElementById('player_10').getElementsByClassName('speaker-button')[0].getElementsByTagName('div')[0].click();
+        }
+        let i = 1;
+        while (i < 10) {
+            if (e.keyCode == 48 + i) {
+                document.getElementById('player_' + i).getElementsByClassName('speaker-button')[0].getElementsByTagName('div')[0].click();
+            }
+            i++;
+        }
+
+    });
+
+    function sendAllData() {
+        document.querySelectorAll('.player').forEach((element, index, array) => {
+            item = element.querySelectorAll('.player-list')[0];
+            player = element.id + '|' + $(item[item.selectedIndex]).text();
+
+            playerRoleChannel.postMessage(player);
+        });
+    }
+</script>
+</body>
+
+</html>

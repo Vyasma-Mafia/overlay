@@ -1,0 +1,111 @@
+<html lang="ru">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="css\style-table.css">
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <title>Результат игры</title>
+</head>
+
+<body>
+
+<div class="table_name">Результаты</div>
+<div class="game_number" id="game_number"></div>
+<div class="table_num" id="table_num"></div>
+<div class="left">
+    <div class="player" id="player_1">
+        <div class="number">1</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_2">
+        <div class="number">2</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_3">
+        <div class="number">3</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_4">
+        <div class="number">4</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_5">
+        <div class="number">5</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+</div>
+<div class="right">
+    <div class="player" id="player_6">
+        <div class="number">6</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_7">
+        <div class="number">7</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_8">
+        <div class="number">8</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_9">
+        <div class="number">9</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+    <div class="player" id="player_10">
+        <div class="number">10</div>
+        <div class="white-space"></div>
+        <div class="nick"></div>
+        <div class="white-space"></div>
+        <div class="result"></div>
+    </div>
+</div>
+</body>
+<script>
+    const bc = new BroadcastChannel('table-results');
+    const ad = new BroadcastChannel('additional-data');
+
+    bc.onmessage = (event) => {
+        i = 1;
+        player_list = JSON.parse(event.data);
+        player_list.forEach(element => {
+            document.getElementById('player_' + i).querySelectorAll('.nick')[0].innerHTML = element['nick'];
+            document.getElementById('player_' + i).querySelectorAll('.result')[0].innerHTML = element['sum'];
+            i += 1;
+        });
+    }
+
+    ad.onmessage = (event) => {
+        gameData = event.data.split('|');
+        document.getElementById('game_number').innerHTML = gameData[0];
+        document.getElementById('table_num').innerHTML = gameData[1];
+    }
+</script>
+
+</html>

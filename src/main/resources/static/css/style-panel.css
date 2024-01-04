@@ -1,0 +1,228 @@
+body {
+    background-color: rgb(58, 57, 58);
+    margin: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Andale Mono, monospace;
+    font-size: 14px;
+    color: rgb(213, 213, 213);
+}
+
+.player-table {
+    width: 100%;
+    border-spacing: 0;
+    text-align: center;
+    font-size: 14px;
+}
+
+.number {
+    width: 28px;
+}
+
+.number p {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    background-color: rgb(76, 76, 76);
+    border-radius: 50%;
+    line-height: 24px;
+}
+
+.players {
+    width: 100%;
+    padding: 2px;
+}
+
+.player-list {
+    padding: 0 5px;
+    height: 27px;
+    width: 100%;
+    background: #4c4c4c;
+    font-family: Andale Mono, monospace;
+    font-size: 14px;
+    color: rgb(213, 213, 213);
+}
+
+.s-button {
+    background-color: rgb(76, 76, 76);
+    width: 24px;
+    height: 24px;
+    padding: 0 5px;
+    border-bottom: 2px rgb(58, 57, 58) solid;
+    border-top: 2px rgb(58, 57, 58) solid;
+}
+
+.s-button div {
+    height: 24px;
+    width: 24px;
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover;
+    border-radius: 50%;
+    background-color: rgba(213, 213, 213, 0.9);
+    cursor: pointer;
+}
+
+.s-button.killed-button div {
+    background-image: url("../content/icon/killed.png");
+}
+
+.s-button.voted-button div {
+    background-image: url("../content/icon/voted.png");
+}
+
+.s-button.deleted-button div {
+    background-image: url("../content/icon/deleted.png");
+}
+
+.s-button.don-button div {
+    background-image: url("../content/icon/don.png");
+}
+
+.s-button.mafia-button div {
+    background-image: url("../content/icon/mafia.png");
+}
+
+.s-button.sheriff-button div {
+    background-image: url("../content/icon/sheriff.png");
+}
+
+.s-button.speaker-button div {
+    background-image: url("../content/icon/speaker.png");
+}
+
+.killed .s-button.killed-button div,
+.voted .s-button.voted-button div,
+.deleted .s-button.deleted-button div,
+.don .s-button.don-button div,
+.mafia .s-button.mafia-button div,
+.sher .s-button.sheriff-button div {
+    background-color: rgba(250, 170, 0, 1);
+}
+
+.speaker .s-button.speaker-button div {
+    background-color: rgba(85, 153, 255, 0.9);
+}
+
+button {
+    margin: 5px 0;
+    height: 24px;
+    width: 100%;
+    cursor: pointer;
+    font-family: Andale Mono, monospace;
+    font-size: 14px;
+    color: rgb(213, 213, 213);
+    background-color: rgb(31, 30, 31);
+    white-space: nowrap;
+}
+
+button,
+button:active,
+button:focus {
+    outline: none;
+}
+
+.binding button:active,
+.binding button:focus {
+    background-color: rgba(250, 170, 0, 1);
+}
+
+input[type="number"],
+textarea {
+    border: none;
+    outline: none;
+    background: #4c4c4c;
+    font-family: Andale Mono, monospace;
+    font-size: 14px;
+    color: rgb(213, 213, 213);
+    text-align: center;
+    width: 70px;
+    height: 24px;
+    padding: 0;
+}
+
+.knobs,
+.layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.button {
+    position: relative;
+    top: 50%;
+    width: 70px;
+    height: 24px;
+    overflow: hidden;
+    padding: 3px 0;
+}
+
+.button.r,
+.button.r .layer {
+    border-radius: 24px;
+}
+
+.button.b2 {
+    border-radius: 2px;
+}
+
+.checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.knobs {
+    z-index: 2;
+}
+
+.layer {
+    width: 100%;
+    background: #4c4c4c;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+.button-1 .knobs:before {
+    content: 'Нет';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 14px;
+    font-family: Andale Mono, monospace;
+    font-size: 11px;
+    color: rgb(213, 213, 213);
+    text-align: center;
+    padding: 5px 0;
+    background-color: rgb(31, 30, 31);
+    border-radius: 50%;
+    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+.button-1 .checkbox:checked + .knobs:before {
+    content: 'Да';
+    left: 43px;
+    background-color: rgba(250, 170, 0, 1);
+    color: rgb(31, 30, 31);
+}
+
+.button-1 .checkbox:checked ~ .layer {
+    background-color: #fcfceb;
+}
+
+.button-1 .knobs,
+.button-1 .knobs:before,
+.button-1 .layer {
+    transition: 0.3s ease all;
+}
