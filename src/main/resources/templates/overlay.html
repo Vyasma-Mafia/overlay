@@ -939,7 +939,7 @@
         const cl = new BroadcastChannel('class_list');
     */
 
-    const socket = new WebSocket('ws://localhost:8080/gameinfo');
+    const socket = new WebSocket('ws://overlay-stoum.amvera.io:8080/gameinfo');
 
     socket.addEventListener('open', function (event) {
         socket.send('register overlay');
