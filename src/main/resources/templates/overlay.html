@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Игра</title>
-    <link rel="stylesheet" href="css\style-source.css">
+    <link rel="stylesheet" href="\css\style-source.css">
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 </head>
 
@@ -939,24 +939,29 @@
         const cl = new BroadcastChannel('class_list');
     */
 
-    const socket = new WebSocket('ws://overlay-stoum.amvera.io:8080/gameinfo');
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
 
-    socket.addEventListener('open', function (event) {
+    let id = "[[${id}]]"
+
+    const socket = new EventSource(`/${id}/gameinfo`);
+
+/*    socket.addEventListener('open', function (event) {
         socket.send('register overlay');
         console.log("Connected to gameinfo WS")
-    });
+    });*/
 
-    socket.addEventListener("message", function (event) {
-        console.log('Message from server ', event.data);
-        if (event.data.toString().startsWith("!")) {
+    socket.onmessage =  function (event) {
+        console.log(JSON.stringify(event.data));
+/*        if (event.data.toString().startsWith("!")) {
             let split = event.data.toString().split(" ")
             switch (split[0]) {
                 case "!gameinfo": {
                     parseGameInfo(split[1])
                 }
             }
-        }
-    });
+        }*/
+    };
 
     function checkImage(url) {
         var request = new XMLHttpRequest();
