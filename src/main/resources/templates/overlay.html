@@ -953,14 +953,14 @@
 
     socket.onmessage =  function (event) {
         console.log(JSON.stringify(event.data));
-/*        if (event.data.toString().startsWith("!")) {
+        if (event.data.toString().startsWith("!")) {
             let split = event.data.toString().split(" ")
             switch (split[0]) {
                 case "!gameinfo": {
                     parseGameInfo(split[1])
                 }
             }
-        }*/
+        }
     };
 
     function checkImage(url) {
@@ -988,21 +988,12 @@
             playerElement = document.getElementById(`player_${index + 1}`);
             playerElement.querySelector('.nick').innerHTML = playerInfo.nickname;
             playerElement.querySelectorAll('.photo, .flip-photo').forEach((el) => {
-                    let imageUrl = `/content/photo/${playerInfo.nickname}.png`
-                    if (checkImage(imageUrl)) {
-                        el.style.backgroundImage = `url("${imageUrl}")`
-                    } else {
-                        imageUrl = `/content/photo/${playerInfo.nickname}.jpg`
-                        if (checkImage(imageUrl)) {
-                            el.style.backgroundImage = `url("${imageUrl}")`
-                        } else {
-                            el.style.backgroundImage = `url("content/photo/placeholder.png")`
-                        }
-                    }
+                    let imageUrl = playerInfo.photoUrl//`/content/photo/${playerInfo.nickname}.png`
+                    el.style.backgroundImage = `url("${imageUrl}")`
                 }
             );
             //todo set status
-            if (playerInfo.status) {
+            /*if (playerInfo.status) {
                 playerElement.classList.add('dead', playerInfo.status.first)
                 playerElement.querySelector('.status-text').innerHTML = playerInfo.status.second
             } else {
@@ -1045,7 +1036,7 @@
                 //playerElement.querySelector(".don-row-current").innerHTML = playerInfo.stat.don.second
                 playerElement.querySelector(".sher-row-mwt").innerHTML = playerInfo.stat.sher.first
                 //=playerElement.querySelector(".sher-row-current").innerHTML = playerInfo.stat.sher.second
-            }
+            }*/
         })
     }
 

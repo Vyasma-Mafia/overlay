@@ -15,4 +15,10 @@ class OverlayController {
         model.addAttribute("id", id)
         return "overlay"
     }
+
+    @RequestMapping("/{id}/control")
+    fun control(@PathVariable id: String, model: Model): String? {
+        model.addAttribute("id", id)
+        return "control-panel"
+    }
 }
