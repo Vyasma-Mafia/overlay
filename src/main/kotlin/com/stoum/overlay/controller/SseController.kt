@@ -1,5 +1,6 @@
 package com.stoum.overlay.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
 import com.stoum.overlay.model.GameInfo
 import com.stoum.overlay.repository.GameRepository
@@ -21,6 +22,8 @@ class SseController(
         val emitterService: EmitterService,
         val gameRepository: GameRepository
 ) {
+    val objectMapper = ObjectMapper()
+
     @GetMapping("/{id}/gameinfo")
     fun gameinfo(@PathVariable id: String?): SseEmitter? {
         Logger.getAnonymousLogger().info("got overlay request for sse")
@@ -40,7 +43,8 @@ class SseController(
                     launch {
                         delay(1000L)
                         game.ifPresent {
-                            emitterService.sendTo(id, "!gameinfo ${Gson().toJson(GameInfo(it))}")
+                            it.playersOrdered = it.players.sortedBy { p -> p.place }.map { p -> p.nickname }
+                            emitterService.sendTo(id, "!gameinfo ${objectMapper.writeValueAsString(it)}")
                         }
                     }
                 }
@@ -67,7 +71,13 @@ class SseController(
                     launch {
                         delay(1000L)
                         game.ifPresent {
-                            emitterService.sendTo(id, "!gameinfo ${Gson().toJson(GameInfo(it))}")
+                            it.playersOrdered = it.players.sortedBy { p -> p.place }.map { p -> p.nickname }
+                            emitter.send(
+                                event()
+                                    .name("message")
+                                    .reconnectTime(5000L)
+                                    .data("!gameinfo ${objectMapper.writeValueAsString(it)}")
+                            )
                         }
                     }
                 }

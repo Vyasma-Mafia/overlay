@@ -392,22 +392,20 @@
 </footer>
 <script>
     function addPlayers(players) {
-        let player_list = players.toString().split(" ")
         document.querySelectorAll('.player-list').forEach((element, index, array) => {
             element.innerHTML = ''
-            player_list.forEach(player => {
+            players.forEach(player => {
                 element.add(new Option(player, player));
             });
         });
     }
 
     function setTable(playersOrdered) {
-        let player_list = playersOrdered.split(' ');
         document.querySelectorAll('.player-list').forEach((element, index, array) => {
             element.querySelectorAll(`option`).forEach(element => {
                 element.removeAttribute("selected")
             })
-            element.querySelector(`[value="${player_list[index]}"]`).setAttribute("selected", "selected")
+            element.querySelector(`[value="${playersOrdered[index]}"]`).setAttribute("selected", "selected")
         });
         //sendAllData()
     }
@@ -430,7 +428,8 @@
 
     let id = "[[${id}]]"
 
-    const socket = new EventSource(`/${id}/gameinfo`);
+    const socket = new EventSource(`/${id}/controlinfo`);
+
 
 /*    socket.addEventListener('open', function (event) {
         socket.send('register control-panel');
@@ -441,6 +440,13 @@
         if (event.data.toString().startsWith("!")) {
             let split = event.data.toString().split(" ")
             switch (split[0]) {
+                case "!gameinfo": {
+                    let playersOrdered = JSON.parse(split[1]).playersOrdered
+                    addPlayers(playersOrdered)
+                    setTable(playersOrdered)
+                    socket.close()
+                    break
+                }
                 case "!addplayers": {
                     let players = event.data.split(' ').slice(1).join(' ');
                     addPlayers(players)
