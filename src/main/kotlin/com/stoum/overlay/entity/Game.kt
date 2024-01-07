@@ -10,6 +10,7 @@ class Game (
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
     var type: GameType,
-    @OneToMany(targetEntity = Player::class, fetch = FetchType.EAGER)
-    var players: List<Player>? = mutableListOf(),
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    var players: MutableList<Player> = mutableListOf(),
 )

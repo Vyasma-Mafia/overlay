@@ -9,21 +9,25 @@ class GameInfo() {
         val photoUrl: String,
         var role: String? = null,
         var status: Pair<String, String>? = null,
-        var checks: MutableList<Pair<String, String>>? = mutableListOf(),
-        var stat: MutableMap<String, Pair<String, String>>? = mutableMapOf()
+        var checks: MutableList<Map<String, String>>? = mutableListOf(),
+        var stat: Map<String, Map<String, String>>? = mutableMapOf()
     ) {
         constructor(player: Player) : this(
             player.nickname,
             player.photoUrl!!,
-            player.role
+            player.role,
+            player.status,
+            player.checks,
+            player.stat
         )
     }
 
     var players: MutableList<PlayerInfo> = mutableListOf()
 
     constructor(game: Game) : this() {
-        game.players?.forEach { p ->
+        game.players.forEach { p ->
             players.add(PlayerInfo(p))
         }
+        game.players.sortBy { p -> p.place }
     }
 }
