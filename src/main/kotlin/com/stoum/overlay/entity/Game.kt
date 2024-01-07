@@ -11,5 +11,5 @@ class Game (
     var id: UUID? = null,
     var type: GameType,
     @OneToMany(targetEntity = Player::class, fetch = FetchType.EAGER)
-    var players: List<Player>? = null,
+    var players: List<Player>? = mutableListOf(),
 )

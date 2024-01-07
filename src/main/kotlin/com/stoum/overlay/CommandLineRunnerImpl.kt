@@ -56,15 +56,18 @@ class CommandLineRunnerImpl(
 
         val game = Game(type = GameType.CUSTOM)
         gameRepository.save(game)
-        val player = Player(
-            nickname = "Stoum",
-            photoUrl = "https://s3.vk-admin.com/gomafia/user/avatar/1685/ava_1660844652.jpg",
-            role = "black",
-            gameId = game.id!!
-        )
-        playerRepository.save(player)
+        repeat(10) {
+            val player = Player(
+                nickname = "Stoum$it",
+                photoUrl = "https://s3.vk-admin.com/gomafia/user/avatar/1685/ava_1660844652.jpg",
+                role = "black",
+                gameId = game.id!!
+            )
+            playerRepository.save(player)
 
-        game.players = listOf(player)
+            game.players?.plus(player)
+        }
+
 
         gameRepository.save(game)
 

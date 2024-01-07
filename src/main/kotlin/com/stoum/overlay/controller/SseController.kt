@@ -22,8 +22,8 @@ class SseController(
         val gameRepository: GameRepository
 ) {
     @GetMapping("/{id}/gameinfo")
-    fun streamEvents(@PathVariable id: String?): SseEmitter? {
-        Logger.getAnonymousLogger().info("got request for sse")
+    fun gameinfo(@PathVariable id: String?): SseEmitter? {
+        Logger.getAnonymousLogger().info("got overlay request for sse")
         if (id != null) {
             val emitter = SseEmitter()
             emitterService.registerEmitter(id, emitter)
@@ -33,6 +33,34 @@ class SseController(
                     .name("message")
                     .reconnectTime(5000L)
                     .data("Registered with id $id")
+            )
+            val game = gameRepository.findById(UUID.fromString(id))
+            return emitter.also {
+                runBlocking {
+                    launch {
+                        delay(1000L)
+                        game.ifPresent {
+                            emitterService.sendTo(id, "!gameinfo ${Gson().toJson(GameInfo(it))}")
+                        }
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    @GetMapping("/{id}/control")
+    fun control(@PathVariable id: String?): SseEmitter? {
+        Logger.getAnonymousLogger().info("got control request for sse")
+        if (id != null) {
+            val emitter = SseEmitter()
+
+
+            emitter.send(
+                event()
+                    .name("message")
+                    .reconnectTime(5000L)
+                    .data("Registered control")
             )
             val game = gameRepository.findById(UUID.fromString(id))
             return emitter.also {
