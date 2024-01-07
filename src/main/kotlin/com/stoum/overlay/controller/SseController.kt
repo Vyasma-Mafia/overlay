@@ -49,12 +49,11 @@ class SseController(
         return null
     }
 
-    @GetMapping("/{id}/control")
+    @GetMapping("/{id}/controlinfo")
     fun control(@PathVariable id: String?): SseEmitter? {
         Logger.getAnonymousLogger().info("got control request for sse")
         if (id != null) {
             val emitter = SseEmitter()
-
 
             emitter.send(
                 event()
