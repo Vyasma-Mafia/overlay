@@ -92,11 +92,11 @@ footer {
 }
 
 .check.black {
-    background-image: url("../content/icon/mafia.png");
+    background-image: url("/icon/mafia.png");
 }
 
 .check.red {
-    background-image: url("../content/icon/red.png");
+    background-image: url("/icon/red.png");
 }
 
 .check-1 {
@@ -146,15 +146,15 @@ footer {
 }
 
 .killed .status {
-    background-image: url("../content/icon/killed.png");
+    background-image: url("/icon/killed.png");
 }
 
 .voted .status {
-    background-image: url("../content/icon/voted.png");
+    background-image: url("/icon/voted.png");
 }
 
 .deleted .status {
-    background-image: url("../content/icon/deleted.png");
+    background-image: url("/icon/deleted.png");
 }
 
 .role {
@@ -176,21 +176,21 @@ footer {
     visibility: visible;
     opacity: 1;
     background-color: rgba(250, 170, 0, 0.8);
-    background-image: url("../content/icon/loupe.png");
+    background-image: url("/icon/loupe.png");
 }
 
 .don .role {
     visibility: visible;
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.8);
-    background-image: url("../content/icon/hat.png");
+    background-image: url("/icon/hat.png");
 }
 
 .black .role {
     visibility: visible;
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.8);
-    background-image: url("../content/icon/gun.png");
+    background-image: url("/icon/gun.png");
 }
 
 .number {

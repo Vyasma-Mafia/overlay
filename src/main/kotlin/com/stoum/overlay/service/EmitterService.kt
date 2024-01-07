@@ -1,13 +1,22 @@
 package com.stoum.overlay.service
 
+import com.google.gson.Gson
+import com.stoum.overlay.model.GameInfo
+import com.stoum.overlay.repository.GameRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class EmitterService {
+class EmitterService(
+    val gameRepository: GameRepository
+) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     private val emitters = ConcurrentHashMap<String, SseEmitter>()

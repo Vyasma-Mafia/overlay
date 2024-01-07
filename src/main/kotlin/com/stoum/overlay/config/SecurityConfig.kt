@@ -20,6 +20,8 @@ class SecurityConfig {
             httpBasic {
                 disable()
             }
+            cors { disable() }
+            csrf { disable() }
         }
 
         return http.build()

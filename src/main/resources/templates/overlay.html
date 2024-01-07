@@ -993,7 +993,7 @@
                 }
             );
             //todo set status
-            /*if (playerInfo.status) {
+            if (playerInfo.status) {
                 playerElement.classList.add('dead', playerInfo.status.first)
                 playerElement.querySelector('.status-text').innerHTML = playerInfo.status.second
             } else {
@@ -1027,7 +1027,7 @@
                 );
             }
             //todo add stats
-            if (playerInfo.stat) {
+            if (playerInfo.stat && playerInfo.stat.size === 4) {
                 playerElement.querySelector(".civ-row-mwt").innerHTML = playerInfo.stat.red.first
                 //playerElement.querySelector(".civ-row-current").innerHTML = playerInfo.stat.red.second
                 playerElement.querySelector(".maf-row-mwt").innerHTML = playerInfo.stat.black.first
@@ -1036,7 +1036,7 @@
                 //playerElement.querySelector(".don-row-current").innerHTML = playerInfo.stat.don.second
                 playerElement.querySelector(".sher-row-mwt").innerHTML = playerInfo.stat.sher.first
                 //=playerElement.querySelector(".sher-row-current").innerHTML = playerInfo.stat.sher.second
-            }*/
+            }
         })
     }
 
