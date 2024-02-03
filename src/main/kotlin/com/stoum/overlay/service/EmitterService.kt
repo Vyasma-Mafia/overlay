@@ -1,11 +1,7 @@
 package com.stoum.overlay.service
 
-import com.google.gson.Gson
-import com.stoum.overlay.model.GameInfo
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.stoum.overlay.repository.GameRepository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -19,7 +15,17 @@ class EmitterService(
 ) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
+    val objectMapper = ObjectMapper()
+
     private val emitters = ConcurrentHashMap<String, SseEmitter>()
+
+    fun emitGame(gameId: String) {
+        val game = gameRepository.findById(UUID.fromString(gameId))
+        game.ifPresent {
+            it.playersOrdered = it.players.sortedBy { p -> p.place }.map { p -> p.nickname }
+            sendTo(gameId, "!gameinfo ${objectMapper.writeValueAsString(it)}")
+        }
+    }
 
     fun registerEmitter(id: String, emitter: SseEmitter): SseEmitter {
         emitters[id] = emitter

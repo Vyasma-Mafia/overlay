@@ -60,9 +60,9 @@ class CommandLineRunnerImpl(
             val player = Player(
                 nickname = "Stoum$it",
                 photoUrl = "https://s3.vk-admin.com/gomafia/user/avatar/1685/ava_1660844652.jpg",
-                role = "black",
+                role = "red",
                 place = it,
-                status = "killed" to "$it",
+                //status = "killed" to "$it",
                 checks = mutableListOf(mapOf("first" to "red", "second" to "$it")),
                 stat = mutableMapOf(
                     "red" to mapOf("first" to "${it * 10}", "second" to "${it * 10 - 5}"),

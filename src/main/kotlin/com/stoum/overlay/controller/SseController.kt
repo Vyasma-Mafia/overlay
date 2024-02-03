@@ -1,8 +1,6 @@
 package com.stoum.overlay.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.Gson
-import com.stoum.overlay.model.GameInfo
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import kotlinx.coroutines.delay
@@ -37,15 +35,11 @@ class SseController(
                     .reconnectTime(5000L)
                     .data("Registered with id $id")
             )
-            val game = gameRepository.findById(UUID.fromString(id))
             return emitter.also {
                 runBlocking {
                     launch {
                         delay(1000L)
-                        game.ifPresent {
-                            it.playersOrdered = it.players.sortedBy { p -> p.place }.map { p -> p.nickname }
-                            emitterService.sendTo(id, "!gameinfo ${objectMapper.writeValueAsString(it)}")
-                        }
+                        emitterService.emitGame(id)
                     }
                 }
             }

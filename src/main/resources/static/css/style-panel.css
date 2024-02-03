@@ -82,12 +82,12 @@ body {
     background-image: url("/icon/don.png");
 }
 
-.s-button.mafia-button div {
-    background-image: url("/icon/mafia.png");
+.s-button.black-button div {
+    background-image: url("/icon/black.png");
 }
 
-.s-button.sheriff-button div {
-    background-image: url("/icon/sheriff.png");
+.s-button.sher-button div {
+    background-image: url("/icon/sher.png");
 }
 
 .s-button.speaker-button div {
@@ -98,8 +98,8 @@ body {
 .voted .s-button.voted-button div,
 .deleted .s-button.deleted-button div,
 .don .s-button.don-button div,
-.mafia .s-button.mafia-button div,
-.sher .s-button.sheriff-button div {
+.black .s-button.black-button div,
+.sher .s-button.sher-button div {
     background-color: rgba(250, 170, 0, 1);
 }
 
