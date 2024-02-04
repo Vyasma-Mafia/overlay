@@ -7,4 +7,5 @@ import org.springframework.stereotype.Component
 import java.util.UUID
 
 interface GameRepository : CrudRepository<Game, UUID> {
+    fun findGameByTournamentIdAndGameNumAndTableNum(tournamentId: Int, gameNum: Int, tableNum: Int): Game?
 }

@@ -122,8 +122,8 @@ class GomafiaRestClient {
         val winrate = mapper.convertValue((data["stats"] as Map<String, Any>)["win_rate"]!!, StatsDto.WinRate::class.java )
         winrate.totalGames = statsMap.gm("win_rate").gm("total_games") as Int
         winrate.totalWins = StatsDto.TotalWins(
+                statsMap.gm("win_rate").gm("total_wins").gm("value") as Int,
                 statsMap.gm("win_rate").gm("total_wins").gm("percent") as Int,
-                statsMap.gm("win_rate").gm("total_wins").gm("value") as Int
         )
         val gamesStats = StatsDto.GamesStats(
                 statsMap.gm("games_stats").gm("average_points") as Double,

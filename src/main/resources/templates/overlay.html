@@ -28,8 +28,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -120,8 +120,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -212,8 +212,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -304,8 +304,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -396,8 +396,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -488,8 +488,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -580,8 +580,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -672,8 +672,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -764,8 +764,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -856,8 +856,8 @@
                     <thead>
                     <tr>
                         <th>&nbsp;</th>
-                        <th class="mwt-header">MWT</th>
-                        <!--<th class="tournament-header">NC22</th>-->
+                        <th class="total-winrate"></th>
+                        <th class="points-per-10-games"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -1043,6 +1043,10 @@
                 if(playerInfo.stat.sher) {
                     playerElement.querySelector(".sher-row-mwt").innerHTML = playerInfo.stat.sher.first
                     playerElement.querySelector(".sher-row-current").innerHTML = playerInfo.stat.sher.second
+                }
+                if(playerInfo.stat.header) {
+                    playerElement.querySelector(".total-winrate").innerHTML = playerInfo.stat.header.first
+                    playerElement.querySelector(".points-per-10-games").innerHTML = playerInfo.stat.header.second
                 }
             }
         })

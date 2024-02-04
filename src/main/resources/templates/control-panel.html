@@ -438,7 +438,7 @@
     socket.addEventListener("message", function (event) {
         console.log('Message from server ', event.data);
         if (event.data.toString().startsWith("!")) {
-            let split = event.data.toString().split(" ")
+            let split = event.data.toString().split(/ (.*)/s)
             switch (split[0]) {
                 case "!gameinfo": {
                     let playersOrdered = JSON.parse(split[1]).playersOrdered

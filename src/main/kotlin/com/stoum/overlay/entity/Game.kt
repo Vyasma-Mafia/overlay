@@ -12,6 +12,9 @@ class Game (
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
     var type: GameType,
+    var tournamentId: Int? = null,
+    var gameNum: Int? = null,
+    var tableNum: Int? = null,
     @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinColumn(name = "game_id")
     var players: MutableList<Player> = mutableListOf(),
