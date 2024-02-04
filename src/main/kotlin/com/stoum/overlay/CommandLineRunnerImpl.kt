@@ -21,7 +21,8 @@ import org.springframework.stereotype.Component
 class CommandLineRunnerImpl(
         val emitterService: EmitterService,
     val gameRepository: GameRepository,
-    val playerRepository: PlayerRepository
+    val playerRepository: PlayerRepository,
+        val gomafiaRestClient: GomafiaRestClient
 ) : CommandLineRunner {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
@@ -54,7 +55,7 @@ class CommandLineRunnerImpl(
 
         println(Gson().toJson(gameInfo))*/
 
-        val game = Game(type = GameType.CUSTOM)
+/*        val game = Game(type = GameType.CUSTOM)
         gameRepository.save(game)
         repeat(10) {
             val player = Player(
@@ -80,6 +81,10 @@ class CommandLineRunnerImpl(
 
         gameRepository.save(game)
 
-        println(game.id)
+        println(game.id)*/
+
+       /* val userWithStats = gomafiaRestClient.getUserWithStats(575)
+
+        println(userWithStats)*/
     }
 }
