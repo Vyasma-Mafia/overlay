@@ -2,7 +2,7 @@ package com.stoum.overlay.controller
 
 import com.google.gson.Gson
 import com.stoum.overlay.entity.Game
-import com.stoum.overlay.entity.Player
+import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.model.GameInfo
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
@@ -54,11 +54,11 @@ class GameController(
         emitterService.emitGame(id)
     }
 
-    fun Game.getPlayerByPlace(place: Int): Player {
+    fun Game.getPlayerByPlace(place: Int): GamePlayer {
         return this.players.find { p -> p.place == place - 1 }!!
     }
 
-    fun Game.getPlayerByNickname(name: String): Player {
+    fun Game.getPlayerByNickname(name: String): GamePlayer {
         return this.players.find { p -> p.nickname == name }!!
     }
 }

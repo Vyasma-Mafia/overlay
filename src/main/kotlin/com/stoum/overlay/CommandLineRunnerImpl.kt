@@ -1,17 +1,8 @@
 package com.stoum.overlay
 
-import com.google.gson.Gson
-import com.stoum.overlay.entity.Game
-import com.stoum.overlay.entity.GameType
-import com.stoum.overlay.entity.Player
-import com.stoum.overlay.model.GameInfo
-import com.stoum.overlay.model.GameInfo.PlayerInfo
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.repository.PlayerRepository
 import com.stoum.overlay.service.EmitterService
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import org.apache.logging.log4j.LogBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner

@@ -1,7 +1,7 @@
 package com.stoum.overlay.model
 
 import com.stoum.overlay.entity.Game
-import com.stoum.overlay.entity.Player
+import com.stoum.overlay.entity.overlay.GamePlayer
 
 class GameInfo() {
     class PlayerInfo(
@@ -12,7 +12,7 @@ class GameInfo() {
         var checks: MutableList<Map<String, String>>? = mutableListOf(),
         var stat: Map<String, Map<String, String>>? = mutableMapOf()
     ) {
-        constructor(player: Player) : this(
+        constructor(player: GamePlayer) : this(
             player.nickname,
             player.photoUrl!!,
             player.role,

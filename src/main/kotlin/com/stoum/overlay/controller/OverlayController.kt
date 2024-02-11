@@ -2,8 +2,8 @@ package com.stoum.overlay.controller
 
 import com.stoum.overlay.GomafiaRestClient
 import com.stoum.overlay.entity.Game
-import com.stoum.overlay.entity.GameType
-import com.stoum.overlay.entity.Player
+import com.stoum.overlay.entity.enums.GameType
+import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.model.gomafia.GameDto
 import com.stoum.overlay.model.gomafia.UserWithStats
 import com.stoum.overlay.repository.GameRepository
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import java.util.*
 import java.util.logging.Logger
 
 
@@ -65,8 +64,8 @@ class OverlayController(
         return "control-panel"
     }
 
-    private fun userWithStatsToPlayer(us: UserWithStats, game: GameDto): Player {
-        val player = Player(
+    private fun userWithStatsToPlayer(us: UserWithStats, game: GameDto): GamePlayer {
+        val gamePlayer = GamePlayer(
                 nickname = us.user.login!!,
                 photoUrl = us.user.avatar_link,
                 role = "red",
@@ -83,7 +82,7 @@ class OverlayController(
                 //gameId = game.id!!
         )
 
-        return player
+        return gamePlayer
     }
 
     private fun getOrCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int): Game {
