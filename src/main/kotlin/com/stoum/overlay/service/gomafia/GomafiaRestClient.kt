@@ -1,9 +1,8 @@
-package com.stoum.overlay
+package com.stoum.overlay.service.gomafia
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stoum.overlay.model.gomafia.*
-import org.apache.catalina.User
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient

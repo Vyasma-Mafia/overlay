@@ -1,6 +1,5 @@
 package com.stoum.overlay.service.gomafia
 
-import com.stoum.overlay.GomafiaRestClient
 import com.stoum.overlay.entity.gomafia.*
 import com.stoum.overlay.model.gomafia.GomafiaRegion
 import com.stoum.overlay.model.gomafia.UserDto

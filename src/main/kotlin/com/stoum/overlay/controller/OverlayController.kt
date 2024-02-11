@@ -1,6 +1,6 @@
 package com.stoum.overlay.controller
 
-import com.stoum.overlay.GomafiaRestClient
+import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
@@ -8,6 +8,7 @@ import com.stoum.overlay.model.gomafia.GameDto
 import com.stoum.overlay.model.gomafia.UserWithStats
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
+import com.stoum.overlay.service.gomafia.GomafiaService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,7 +20,8 @@ import java.util.logging.Logger
 class OverlayController(
         val emitterService: EmitterService,
         val gameRepository: GameRepository,
-        val gomafiaRestClient: GomafiaRestClient
+        val gomafiaRestClient: GomafiaRestClient,
+        val gomafiaService: GomafiaService,
 ) {
     @RequestMapping("/{id}/overlay")
     fun overlay(@PathVariable id: String, model: Model): String? {
@@ -86,19 +88,7 @@ class OverlayController(
     }
 
     private fun getOrCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int): Game {
-        var game = gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum, tableNum)
-        if (game == null) {
-            val tournament = gomafiaRestClient.getTournament(tournamentId)
-            val gameDto = tournament.games.first { g -> g.gameNum == gameNum && g.tableNum == tableNum }
-            val users = gameDto.table.map { tp -> gomafiaRestClient.getUserWithStats(tp.id!!) }
-            game = Game(type = GameType.FSM, tournamentId = tournamentId, gameNum = gameNum, tableNum = tableNum)
-
-            game.players.addAll(users.map { u -> userWithStatsToPlayer(u, gameDto) })
-
-            game = gameRepository.save(game)
-        }
-
-        return game
+        return gomafiaService.getGame(tournamentId, gameNum, tableNum)!!
     }
 
 }

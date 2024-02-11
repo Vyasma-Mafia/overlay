@@ -3,6 +3,7 @@ package com.stoum.overlay
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.repository.PlayerRepository
 import com.stoum.overlay.service.EmitterService
+import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner

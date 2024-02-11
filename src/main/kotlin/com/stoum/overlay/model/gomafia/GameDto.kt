@@ -28,4 +28,7 @@ data class GameDto(
     )
 */
 
+    override fun toString(): String {
+        return "GameDto(tableNum=$tableNum, table=$table, win=$win, referee=$referee, refereeIsPaid=$refereeIsPaid, refereeIconType=$refereeIconType, refereeIcon=$refereeIcon, gameNum=$gameNum)"
+    }
 }
