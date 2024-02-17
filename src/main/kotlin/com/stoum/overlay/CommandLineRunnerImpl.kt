@@ -1,7 +1,7 @@
 package com.stoum.overlay
 
 import com.stoum.overlay.repository.GameRepository
-import com.stoum.overlay.repository.PlayerRepository
+import com.stoum.overlay.repository.GamePlayerRepository
 import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import org.slf4j.Logger
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component
 @Component
 class CommandLineRunnerImpl(
         val emitterService: EmitterService,
-    val gameRepository: GameRepository,
-    val playerRepository: PlayerRepository,
+        val gameRepository: GameRepository,
+        val gamePlayerRepository: GamePlayerRepository,
         val gomafiaRestClient: GomafiaRestClient
 ) : CommandLineRunner {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

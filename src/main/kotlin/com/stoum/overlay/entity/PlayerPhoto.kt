@@ -10,7 +10,7 @@ class PlayerPhoto (
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         var id: UUID? = null,
-        var url: String,
+        var url: String?,
         var description: String,
         @Enumerated(EnumType.STRING)
         var type: PhotoType,

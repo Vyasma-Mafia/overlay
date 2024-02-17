@@ -1,19 +1,24 @@
 package com.stoum.overlay.service.gomafia
 
 import com.stoum.overlay.entity.Game
+import com.stoum.overlay.entity.Player
+import com.stoum.overlay.entity.PlayerPhoto
 import com.stoum.overlay.entity.enums.GameType
+import com.stoum.overlay.entity.enums.PhotoType
 import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.model.gomafia.GameDto
 import com.stoum.overlay.model.gomafia.UserWithStats
 import com.stoum.overlay.repository.GameRepository
+import com.stoum.overlay.repository.PlayerRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
 class GomafiaService(
         val gameRepository: GameRepository,
-        val gomafiaRestClient: GomafiaRestClient
+        val gomafiaRestClient: GomafiaRestClient,
+        val playerRepository: PlayerRepository,
 ) {
     val log = this.getLogger()
 
@@ -22,11 +27,28 @@ class GomafiaService(
         val tournament = gomafiaRestClient.getTournament(tournamentId)
         tournament.games.filter { g -> g.gameNum!! >= startWithGameNum }.forEach { gameDto ->
             log.info("processing $gameDto")
-            //todo save stats once for tournament
-            val users = gameDto.table.map { tp -> gomafiaRestClient.getUserWithStats(tp.id!!) }
             val game = Game(type = GameType.FSM, tournamentId = tournamentId, gameNum = gameDto.gameNum, tableNum = gameDto.tableNum)
-
-            game.players.addAll(users.map { u -> userWithStatsToPlayer(u, gameDto) })
+            gameDto.table.forEach { playerDto ->
+                var player = playerRepository.findPlayerByNickname(playerDto.login)
+                if (player == null) {
+                    val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
+                    player = Player(
+                            nickname = u.user.login!!,
+                            stat = extractStat(u),
+                            playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
+                    )
+                    playerRepository.save(player)
+                }
+                game.players.add(GamePlayer(
+                        nickname = playerDto.login!!,
+                        photoUrl = player.playerPhotos.first().url,
+                        role = "red",
+                        place = playerDto.place!!,
+                        //status = "killed" to "$it",
+                        checks = mutableListOf(),
+                        stat = player.stat
+                ))
+            }
 
             gameRepository.save(game)
         }
@@ -42,7 +64,7 @@ class GomafiaService(
         return gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum, tableNum)
     }
 
-    private fun userWithStatsToPlayer(us: UserWithStats, game: GameDto): GamePlayer {
+    private fun userWithStatsToGamePlayer(us: UserWithStats, game: GameDto, player: Player): GamePlayer {
         val gamePlayer = GamePlayer(
                 nickname = us.user.login!!,
                 photoUrl = us.user.avatar_link,
@@ -61,5 +83,15 @@ class GomafiaService(
         )
 
         return gamePlayer
+    }
+
+    private fun extractStat(us: UserWithStats): MutableMap<String, Map<String, String>> {
+        return mutableMapOf(
+                "red" to mapOf("first" to "${us.stats.winRate!!.red!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.red["per_game"]}"),
+                "black" to mapOf("first" to "${us.stats.winRate!!.mafia!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.black["per_game"]}"),
+                "sher" to mapOf("first" to "${us.stats.winRate!!.sheriff!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.sheriff["per_game"]}"),
+                "don" to mapOf("first" to "${us.stats.winRate!!.don!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.black["per_game"]}"),
+                "header" to mapOf("first" to "${us.stats.winRate!!.totalWins!!.percent}%", "second" to "${us.stats.advancedPoints!!.points10Games}")
+        )
     }
 }
