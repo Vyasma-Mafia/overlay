@@ -492,7 +492,7 @@
         let playerNickname = element.querySelector("select option[selected]").text
         fetch(`/${id}/status`, {
             method: "POST",
-            body: `{"${playerNickname}" : ["1","${status}"]}`,
+            body: `{"${playerNickname}" : ["","${status}"]}`,
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
