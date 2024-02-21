@@ -12,7 +12,13 @@ import com.stoum.overlay.model.gomafia.UserWithStats
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.repository.PlayerRepository
 import jakarta.transaction.Transactional
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Service
+import org.springframework.web.client.ResponseErrorHandler
+import org.springframework.web.client.RestClient
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Service
 class GomafiaService(
@@ -35,13 +41,14 @@ class GomafiaService(
                     player = Player(
                             nickname = u.user.login!!,
                             stat = extractStat(u),
-                            playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
+                            //todo remove hack for cup of BO
+                            playerPhotos = mutableListOf(PlayerPhoto(url = "/photo/${playerDto.login}.png", type = PhotoType.CUSTOM, description = "Custom photo"))
                     )
                     playerRepository.save(player)
                 }
                 game.players.add(GamePlayer(
                         nickname = playerDto.login!!,
-                        photoUrl = player.playerPhotos.first().url,
+                        photoUrl = player.playerPhotos.firstOrNull() { pp -> pp.type == PhotoType.CUSTOM }?.url ?: player.playerPhotos.first().url,
                         role = "red",
                         place = playerDto.place!!,
                         //status = "killed" to "$it",

@@ -943,6 +943,13 @@
     const urlParams = new URLSearchParams(queryString);
 
     let id = "[[${id}]]"
+    let tournamentId = "[[${tournamentId}]]"
+    let gameNum = "[[${gameNum}]]"
+    let tableNum = "[[${tableNum}]]"
+
+    function nextGame() {
+        window.location.replace(`/${tournamentId}/${parseInt(gameNum) + 1}/${tableNum}/overlay`)
+    }
 
     const socket = new EventSource(`/${id}/gameinfo`);
 
@@ -958,6 +965,10 @@
             switch (split[0]) {
                 case "!gameinfo": {
                     parseGameInfo(split[1])
+                    break
+                }
+                case "!nextgame": {
+                    nextGame()
                 }
             }
         }

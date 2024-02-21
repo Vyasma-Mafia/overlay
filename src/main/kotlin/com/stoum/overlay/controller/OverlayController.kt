@@ -12,6 +12,7 @@ import com.stoum.overlay.service.gomafia.GomafiaService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import java.util.logging.Logger
 
@@ -39,6 +40,9 @@ class OverlayController(
         val game = getOrCreateGame(tournamentId, gameNum, tableNum)
 
         model.addAttribute("id", game.id)
+        model.addAttribute("tournamentId", tournamentId)
+        model.addAttribute("gameNum", gameNum)
+        model.addAttribute("tableNum", tableNum)
 
         Logger.getAnonymousLogger().info("${game.id}")
 
@@ -51,6 +55,11 @@ class OverlayController(
         return "control-panel"
     }
 
+    @PostMapping("/{id}/next")
+    fun next(@PathVariable id: String, model: Model) {
+        emitterService.sendTo(id, "!nextgame")
+    }
+
     @RequestMapping("/{tournamentId}/{gameNum}/{tableNum}/control")
     fun control(
             @PathVariable tournamentId: Int,
@@ -61,6 +70,9 @@ class OverlayController(
         val game = getOrCreateGame(tournamentId, gameNum, tableNum)
 
         model.addAttribute("id", game.id)
+        model.addAttribute("tournamentId", tournamentId)
+        model.addAttribute("gameNum", gameNum)
+        model.addAttribute("tableNum", tableNum)
 
         Logger.getAnonymousLogger().info("${game.id}")
         return "control-panel"

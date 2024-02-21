@@ -382,7 +382,7 @@
             </td>
             <td></td>
             <td class="binding">
-                <button></button>
+                <button alt="Следующая игра" onclick="nextGame()"> > </button>
             </td>
         </tr>
     </table>
@@ -427,6 +427,16 @@
 
 
     let id = "[[${id}]]"
+    let tournamentId = "[[${tournamentId}]]"
+    let gameNum = "[[${gameNum}]]"
+    let tableNum = "[[${tableNum}]]"
+
+    function nextGame() {
+        window.location.replace(`/${tournamentId}/${parseInt(gameNum) + 1}/${tableNum}/control`)
+        fetch(`/${id}/next`, {
+            method: "POST"
+        })
+    }
 
     const socket = new EventSource(`/${id}/controlinfo`);
 
