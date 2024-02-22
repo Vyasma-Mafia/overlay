@@ -20,6 +20,7 @@ class Game (
         var tableNum: Int? = null,
         @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     @JoinColumn(name = "game_id")
+        @OrderBy("place ASC")
     var players: MutableList<GamePlayer> = mutableListOf(),
 ) {
 

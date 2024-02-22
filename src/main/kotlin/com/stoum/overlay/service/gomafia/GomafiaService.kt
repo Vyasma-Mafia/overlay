@@ -41,10 +41,16 @@ class GomafiaService(
                     player = Player(
                             nickname = u.user.login!!,
                             stat = extractStat(u),
+                            //playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
                             //todo remove hack for cup of BO
                             playerPhotos = mutableListOf(PlayerPhoto(url = "/photo/${playerDto.login}.png", type = PhotoType.CUSTOM, description = "Custom photo"))
                     )
                     playerRepository.save(player)
+                }
+
+                if (player.playerPhotos.isEmpty()) {
+                    val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
+                    player.playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
                 }
                 game.players.add(GamePlayer(
                         nickname = playerDto.login!!,

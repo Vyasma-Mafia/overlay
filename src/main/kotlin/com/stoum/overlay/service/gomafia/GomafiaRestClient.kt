@@ -124,8 +124,9 @@ class GomafiaRestClient {
                 statsMap.gm("win_rate").gm("total_wins").gm("value") as Int,
                 statsMap.gm("win_rate").gm("total_wins").gm("percent") as Int,
         )
+        val avgPoints = statsMap.gm("games_stats").gm("average_points")
         val gamesStats = StatsDto.GamesStats(
-                statsMap.gm("games_stats").gm("average_points") as Double,
+                if (avgPoints is Double) avgPoints else (avgPoints as Int).toDouble(),
                 statsMap.gm("games_stats").gm("prize_places") as Int,
         )
         val advancedPoints = mapper.convertValue((data["stats"] as Map<String, Any>)["advanced_points"]!!, StatsDto.AdvancedPoints::class.java )

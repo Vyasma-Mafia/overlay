@@ -1,7 +1,8 @@
 body {
     margin: 0;
     line-height: 0;
-    font-family: Andale Mono, monospace;
+    font-family: lack-regular, monospace;
+    color: #8459aa;
     line-height: 1;
     position: absolute;
     width: 100%;
@@ -32,13 +33,13 @@ footer {
     overflow: hidden;
     position: relative;
     border-radius: 5px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .3), -17px 0 15px -17px rgba(0, 0, 0, .8), 17px 0 15px -17px rgba(0, 0, 0, .8), 0 0 30px rgba(0, 0, 0, .1) inset, 0 2px 0 rgba(250, 170, 0, 1);
+    /*box-shadow: 0 1px 4px rgba(0, 0, 0, .3), -17px 0 15px -17px rgba(0, 0, 0, .8), 17px 0 15px -17px rgba(0, 0, 0, .8), 0 0 30px rgba(0, 0, 0, .1) inset, 0 2px 0 rgba(250, 170, 0, 1);*/
     transition: margin-top 1.5s, box-shadow 1.5s;
     perspective: 30000px;
 }
 
 .speaker {
-    box-shadow: 0 2px 15px rgba(85, 153, 255, 0.9), 0 2px 7px rgba(17, 0, 255, 0.527);
+    box-shadow: 0 2px 15px rgba(132,89,170, 0.9), 0 2px 7px rgba(17, 0, 255, 0.527);
 }
 
 .player.dead {
@@ -200,20 +201,29 @@ footer {
     width: 25px;
     height: 25px;
     text-align: center;
-    background-color: #fff;
+    background-color: #8459aa;
     border-radius: 50%;
-    color: #000;
+    color: #fff;
     font-weight: 800;
     font-size: 18px;
     line-height: 25px;
 }
 
 .nick {
+    font-family: lack-regular;
     position: absolute;
     left: 37px;
     bottom: 10px;
     color: #fff;
     font-size: 18px;
+}
+
+@font-face {
+
+    font-family: "lack-regular";
+    src: url("/fonts/lack-regular.otf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
 }
 
 /* This container is needed to position the front and back side */
@@ -285,3 +295,4 @@ tbody tr td:first-child {
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
 }
+
