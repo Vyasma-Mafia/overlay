@@ -19,7 +19,7 @@ services:
 
   overlay:
     build: .
-    container_name: achievement-service
+    container_name: overlay
     ports:
       - "8090:8080"
     environment:
