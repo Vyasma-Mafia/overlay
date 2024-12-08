@@ -1,0 +1,41 @@
+services:
+  overlay-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: overlay
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5435:5432"
+    volumes:
+      - overlay-postgres-data:/var/lib/postgresql/data
+    networks:
+      - overlay
+    healthcheck: # Add health check for better service readiness tracking
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  overlay:
+    build: .
+    container_name: overlay
+    ports:
+      - "8090:8080"
+    environment:
+      DATABASE_URL: jdbc:postgresql://overlay-db:5432/overlay
+      DATABASE_USER: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - .env
+    depends_on:
+      overlay-db:
+        condition: service_healthy
+    networks:
+      - overlay
+
+volumes:
+  overlay-postgres-data:
+
+networks:
+  overlay:
