@@ -93,11 +93,11 @@ footer {
 }
 
 .check.black {
-    background-image: url("/icon/mafia.png");
+    background-color: rgba(0, 0, 0, 50);
 }
 
 .check.red {
-    background-image: url("/icon/red.png");
+    background-color: rgba(255, 0, 0, 50);
 }
 
 .check-1 {

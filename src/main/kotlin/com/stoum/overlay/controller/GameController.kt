@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
+import java.util.UUID
 
 @RestController
 class GameController(
@@ -48,6 +49,28 @@ class GameController(
         status.forEach { (nickname, s) ->
             game.getPlayerByNickname(nickname).status = s[1] to s[0]
         }
+
+        gameRepository.save(game)
+
+        emitterService.emitGame(id)
+    }
+
+    @PostMapping("/{id}/visibleOverlay")
+    fun setVisibleOverlay(@PathVariable id: String, @RequestParam value: Boolean) {
+        val game = gameRepository.findById(UUID.fromString(id)).get()
+
+        game.visibleOverlay = value
+
+        gameRepository.save(game)
+
+        emitterService.emitGame(id)
+    }
+
+    @PostMapping("/{id}/visibleRoles")
+    fun setVisibleRoles(@PathVariable id: String, @RequestParam value: Boolean) {
+        val game = gameRepository.findById(UUID.fromString(id)).get()
+
+        game.visibleRoles = value
 
         gameRepository.save(game)
 
