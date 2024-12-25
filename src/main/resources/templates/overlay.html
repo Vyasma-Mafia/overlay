@@ -994,6 +994,11 @@
     function parseGameInfo(gameInfoString) {
         gameInfo = JSON.parse(gameInfoString)
         players = gameInfo.players
+        if (gameInfo.visibleOverlay !== false) {
+            document.getElementsByTagName('body')[0].setAttribute('class', 'visible');
+        } else {
+            document.getElementsByTagName('body')[0].setAttribute('class', '');
+        }
 
         players.forEach((playerInfo, index) => {
             playerElement = document.getElementById(`player_${index + 1}`);
@@ -1061,6 +1066,21 @@
                 }
             }
         })
+
+        if (gameInfo.visibleRoles !== false) {
+            document.querySelectorAll('.role').forEach(el => {
+                el.classList.add('visible');
+            });
+            document.querySelectorAll('.check').forEach(el => {
+                if (el.querySelector('.check-text').innerHTML !== '') {
+                    el.classList.add('visible');
+                }
+            });
+        } else {
+            document.querySelectorAll('.role, .check').forEach(el => {
+                el.classList.remove('visible');
+            });
+        }
     }
 
 
@@ -1084,7 +1104,6 @@
 
         ps.onmessage = (event) => {
             panel_status = event.data.split('|');
-            document.getElementsByTagName(panel_status[0])[0].setAttribute('class', panel_status[1]);
         }
     */
 </script>

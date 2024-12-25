@@ -29,7 +29,7 @@
             </td>
             <td>
                 <div class="button r button-1" id="button-roles">
-                    <input type="checkbox" class="checkbox">
+                    <input type="checkbox" class="checkbox" checked>
                     <div class="knobs"></div>
                     <div class="layer"></div>
                 </div>
@@ -589,8 +589,14 @@
 
     $('#button-panel').click(function () {
         if ($('#button-panel').find('.checkbox')[0].checked) {
+            fetch(`/${id}/visibleOverlay?value=true`, {
+                method: 'POST'
+            });
             //panelStatusChannel.postMessage('body|visible');
         } else {
+            fetch(`/${id}/visibleOverlay?value=false`, {
+                method: 'POST'
+            });
             //panelStatusChannel.postMessage('body|');
         }
 
@@ -599,8 +605,14 @@
 
     $('#button-roles').click(function () {
         if ($('#button-roles').find('.checkbox')[0].checked) {
+            fetch(`/${id}/visibleRoles?value=true`, {
+                method: 'POST'
+            });
             //panelStatusChannel.postMessage('footer|show-roles');
         } else {
+            fetch(`/${id}/visibleRoles?value=false`, {
+                method: 'POST'
+            });
             //panelStatusChannel.postMessage('footer|');
         }
 

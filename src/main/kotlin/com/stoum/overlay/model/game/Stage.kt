@@ -6,13 +6,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.github.mafia.vyasma.polemicaachivementservice.utils.enums.StringEnum
 import com.github.mafia.vyasma.polemicaachivementservice.utils.enums.StringEnumDeserializer
 import com.github.mafia.vyasma.polemicaachivementservice.utils.enums.StringEnumSerializer
-import org.hibernate.validator.constraints.Range
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Stage(
     val type: StageType,
     val day: Int,
-    @Range(min = 1, max = 10)
     val player: Int
 ) {
 }
