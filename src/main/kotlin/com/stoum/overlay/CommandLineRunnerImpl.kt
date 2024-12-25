@@ -1,7 +1,7 @@
 package com.stoum.overlay
 
-import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.repository.GamePlayerRepository
+import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import org.slf4j.Logger
