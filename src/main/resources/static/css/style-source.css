@@ -168,27 +168,24 @@ footer {
     background-repeat: no-repeat;
     background-position: top;
     background-size: cover;
-    visibility: visible;
+    visibility: hidden;
     opacity: 0;
     transition: visibility 1.5s, opacity 1.5s linear;
 }
 
 .sher .role {
-    visibility: visible;
     opacity: 1;
     background-color: rgba(250, 170, 0, 0.8);
     background-image: url("/icon/loupe.png");
 }
 
 .don .role {
-    visibility: visible;
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.8);
     background-image: url("/icon/hat.png");
 }
 
 .black .role {
-    visibility: visible;
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.8);
     background-image: url("/icon/gun.png");
