@@ -35,6 +35,18 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td>
+                Начать игру
+            </td>
+            <td>
+                <div class="button r button-1" id="button-started">
+                    <input type="checkbox" class="checkbox">
+                    <div class="knobs"></div>
+                    <div class="layer"></div>
+                </div>
+            </td>
+        </tr>
     </table>
 </header>
 <div class="main">
@@ -599,7 +611,6 @@
             });
             //panelStatusChannel.postMessage('body|');
         }
-
     });
 
 
@@ -615,7 +626,20 @@
             });
             //panelStatusChannel.postMessage('footer|');
         }
+    });
 
+    $('#button-started').click(function () {
+        if ($('#button-started').find('.checkbox')[0].checked) {
+            fetch(`/${id}/started?value=true`, {
+                method: 'POST'
+            });
+            //panelStatusChannel.postMessage('footer|show-roles');
+        } else {
+            fetch(`/${id}/started?value=false`, {
+                method: 'POST'
+            });
+            //panelStatusChannel.postMessage('footer|');
+        }
     });
 
     $('select').on('change', function () {

@@ -22,11 +22,15 @@ class PolemicaClientImpl(private val polemicaWebClient: WebClient) : PolemicaCli
             ""
         }
 
-    override fun getGamesFromClub(clubId: Long, offset: Long, limit: Long): List<PolemicaClient.PolemicaGameReference> {
+    override fun getGamesFromClub(
+        clubId: Long,
+        offset: Long,
+        limit: Long
+    ): List<PolemicaClient.PolemicaClubGameReference> {
         return polemicaWebClient.get()
             .uri("/v1/clubs/${clubId}/games?offset=${offset}&limit=${limit}")
             .retrieve()
-            .bodyToFlux(PolemicaClient.PolemicaGameReference::class.java)
+            .bodyToFlux(PolemicaClient.PolemicaClubGameReference::class.java)
             .collectList()
             .block() ?: throw RuntimeException("Get games from club error")
     }
@@ -40,11 +44,11 @@ class PolemicaClientImpl(private val polemicaWebClient: WebClient) : PolemicaCli
             .block() ?: throw RuntimeException("Get competitions error")
     }
 
-    override fun getGamesFromCompetition(id: Long): List<PolemicaClient.PolemicaGameReference> {
+    override fun getGamesFromCompetition(id: Long): List<PolemicaClient.PolemicaTournamentGameReference> {
         return polemicaWebClient.get()
             .uri("/v1/competitions/${id}/games")
             .retrieve()
-            .bodyToFlux(PolemicaClient.PolemicaGameReference::class.java)
+            .bodyToFlux(PolemicaClient.PolemicaTournamentGameReference::class.java)
             .collectList()
             .block() ?: throw RuntimeException("Get games from competition error")
     }

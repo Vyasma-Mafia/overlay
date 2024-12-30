@@ -9,9 +9,9 @@ import java.time.LocalDateTime
 interface PolemicaClient {
 
     fun getGameFromClub(clubGameId: PolemicaClubGameId): PolemicaGame
-    fun getGamesFromClub(clubId: Long, offset: Long, limit: Long): List<PolemicaGameReference>
+    fun getGamesFromClub(clubId: Long, offset: Long, limit: Long): List<PolemicaClubGameReference>
     fun getCompetitions(): List<PolemicaCompetition>
-    fun getGamesFromCompetition(id: Long): List<PolemicaGameReference>
+    fun getGamesFromCompetition(id: Long): List<PolemicaTournamentGameReference>
     fun getGameFromCompetition(polemicaCompetitionGameId: PolemicaClient.PolemicaCompetitionGameId): PolemicaGame
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,8 +38,19 @@ interface PolemicaClient {
     data class PolemicaCompetitionGameId(val competitionId: Long, val gameId: Long, val version: Long? = null)
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    data class PolemicaGameReference(
+    data class PolemicaClubGameReference(
         val id: Long,
+        val started: LocalDateTime,
+        val result: PolemicaGameResult?,
+        val referee: PolemicaUser,
+        val version: Long?
+    )
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class PolemicaTournamentGameReference(
+        val id: Long,
+        val num: Long,
+        val table: Long,
         val started: LocalDateTime,
         val result: PolemicaGameResult?,
         val referee: PolemicaUser,

@@ -18,7 +18,13 @@ enum class Position(override val value: Int) : IntEnum {
     SEVEN(7),
     EIGHT(8),
     NINE(9),
-    TEN(10)
+    TEN(10);
+
+    companion object {
+        fun fromInt(value: Int): Position? {
+            return entries.firstOrNull { it.value == value }
+        }
+    }
 }
 
 class PositionDeserializer : IntEnumDeserializer<Position>(Position.entries.toTypedArray())
