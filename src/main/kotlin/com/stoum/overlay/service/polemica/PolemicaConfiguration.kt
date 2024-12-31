@@ -1,7 +1,7 @@
 package com.stoum.overlay.service.polemica
 
-import com.github.mafia.vyasma.polemicaachivementservice.crawler.PolemicaClient
-import com.github.mafia.vyasma.polemicaachivementservice.crawler.PolemicaClientImpl
+import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
+import com.github.mafia.vyasma.polemica.library.client.PolemicaClientImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean

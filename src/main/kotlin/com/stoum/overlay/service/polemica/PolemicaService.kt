@@ -1,16 +1,15 @@
 package com.stoum.overlay.service.polemica
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.mafia.vyasma.polemicaachivementservice.crawler.PolemicaClient
-import com.github.mafia.vyasma.polemicaachivementservice.model.game.Position
-import com.github.mafia.vyasma.polemicaachivementservice.model.game.Role
-import com.github.mafia.vyasma.polemicaachivementservice.utils.KickReason
-import com.github.mafia.vyasma.polemicaachivementservice.utils.getKickedFromTable
-import com.github.mafia.vyasma.polemicaachivementservice.utils.getRole
-import com.github.mafia.vyasma.polemicaachivementservice.utils.isBlack
+import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
+import com.github.mafia.vyasma.polemica.library.model.game.Position
+import com.github.mafia.vyasma.polemica.library.model.game.Role
+import com.github.mafia.vyasma.polemica.library.utils.KickReason
+import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
+import com.github.mafia.vyasma.polemica.library.utils.getRole
+import com.github.mafia.vyasma.polemica.library.utils.isBlack
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.getLogger
-import com.stoum.overlay.repository.GamePlayerRepository
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit
 class PolemicaService(
     val polemicaClient: PolemicaClient,
     val gameRepository: GameRepository,
-    val gamePlayerRepository: GamePlayerRepository,
     val emitterService: EmitterService
 ) {
     private val gameIdCache = Caffeine.newBuilder()
