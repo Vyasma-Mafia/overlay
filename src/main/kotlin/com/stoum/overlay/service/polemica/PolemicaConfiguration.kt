@@ -6,24 +6,25 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @ConditionalOnProperty(value = ["app.polemicaEnable"], havingValue = "true")
 class PolemicaConfiguration {
     @Value("\${polemica.api.baseUrl:https://app.polemicagame.com}")
-    private lateinit var botBaseUrl: String
+    private lateinit var polemicaBaseUrl: String
 
-    @Value("\${POLEMICA_TOKEN}")
-    private lateinit var botToken: String
+    @Value("\${POLEMICA_USERNAME}")
+    private lateinit var polemicaUsername: String
+
+    @Value("\${POLEMICA_PASSWORD}")
+    private lateinit var polemicaPassword: String
 
     @Bean
     fun polemicaWebClient(): PolemicaClient {
         return PolemicaClientImpl(
-            WebClient.builder()
-                .baseUrl(botBaseUrl)
-                .defaultHeader("Authorization", "Bearer $botToken")
-                .build()
+            polemicaBaseUrl,
+            polemicaUsername,
+            polemicaPassword
         )
     }
 }
