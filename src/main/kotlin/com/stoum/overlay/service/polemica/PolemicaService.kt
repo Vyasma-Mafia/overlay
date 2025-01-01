@@ -2,9 +2,11 @@ package com.stoum.overlay.service.polemica
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
+import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
 import com.github.mafia.vyasma.polemica.library.model.game.Position
 import com.github.mafia.vyasma.polemica.library.model.game.Role
 import com.github.mafia.vyasma.polemica.library.utils.KickReason
+import com.github.mafia.vyasma.polemica.library.utils.getFirstKilled
 import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
 import com.github.mafia.vyasma.polemica.library.utils.getRole
 import com.github.mafia.vyasma.polemica.library.utils.isBlack
@@ -59,6 +61,7 @@ class PolemicaService(
             )
             getLogger().info("Polemica game ${polemicaGame.id} in tournament $tournamentId crawled")
             val kicked = polemicaGame.getKickedFromTable().groupBy { it.position }.mapValues { it.value.first() }
+            val firstKilled = polemicaGame.getFirstKilled()
             if (polemicaGame.result != null) {
                 game.started = false
                 gameRepository.save(game)
@@ -67,14 +70,16 @@ class PolemicaService(
             game.players.forEach { player ->
                 Position.fromInt(player.place)?.let { position ->
                     kicked[position]?.let {
-                        player.status = Pair(kickReasonToStatus(it.reason), "")
+                        val status = if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed"
+                        player.status = Pair(status, "")
                     }
                     player.role = polemicaRoleToRole(polemicaGame.getRole(position))
+                    player.guess = polemicaGuessToGuess(polemicaGame.players.find { it.position == position }?.guess)
                     if (player.role == "sher") {
                         val checks = polemicaGame.checks.filter { it.role == Role.SHERIFF }.sortedBy { it.night }
                         player.checks = checks.map {
                             mapOf(
-                                "first" to polemicaColorToString(polemicaGame.getRole(position).isBlack()),
+                                "first" to polemicaColorToString(polemicaGame.getRole(it.player).isBlack()),
                                 "second" to it.player.value.toString()
                             )
                         }.toMutableList()
@@ -84,6 +89,14 @@ class PolemicaService(
             gameRepository.save(game)
             emitterService.emitGame(game.id.toString())
         }
+    }
+
+    private fun polemicaGuessToGuess(guess: PolemicaGuess?): MutableList<Map<String, String>> {
+        val guessList = mutableListOf<Map<String, String>>()
+        guess?.vice?.let { guessList.add(mapOf("first" to "vice", "second" to it.value.toString())) }
+        guess?.civs?.forEach { guessList.add(mapOf("first" to "red", "second" to it.value.toString())) }
+        guess?.mafs?.forEach { guessList.add(mapOf("first" to "black", "second" to it.value.toString())) }
+        return guessList
     }
 
     fun kickReasonToStatus(kickReason: KickReason) = when (kickReason) {

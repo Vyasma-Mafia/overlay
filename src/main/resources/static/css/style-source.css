@@ -72,6 +72,62 @@ footer {
     transition: visibility 1.5s, opacity 1.5s linear;
 }
 
+.guess {
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    left: 6px;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 1.5s, opacity 1.5s linear;
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.guess.black {
+    background-color: rgba(0, 0, 0, 50);
+}
+
+.guess.red {
+    background-color: rgba(255, 0, 0, 50);
+}
+
+.guess.vice {
+    background-color: rgba(255, 255, 0, 50);
+}
+
+.guess-1 {
+    top: 52px;
+}
+
+.guess-2 {
+    top: 88px;
+}
+
+.guess-3 {
+    top: 124px;
+}
+
+.guess-4 {
+    top: 160px;
+}
+
+
+.guess-text {
+    position: relative;
+    top: -15px;
+    text-align: center;
+    font-weight: 900;
+    font-size: 20px;
+    color: white;
+    text-shadow: 0px 0px 5px #000000;
+    /*-webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;*/
+}
+
 .visible {
     visibility: visible !important;
     opacity: 1 !important;
@@ -112,6 +168,10 @@ footer {
     top: 124px;
 }
 
+.check-4 {
+    top: 160px;
+}
+
 .check-text {
     position: relative;
     top: -15px;
@@ -148,6 +208,10 @@ footer {
 
 .killed .status {
     background-image: url("/icon/killed.png");
+}
+
+.first-killed .status {
+    background-image: url("/icon/first-killed.png");
 }
 
 .voted .status {
