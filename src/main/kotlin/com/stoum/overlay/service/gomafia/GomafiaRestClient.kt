@@ -2,7 +2,14 @@ package com.stoum.overlay.service.gomafia
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.stoum.overlay.model.gomafia.*
+import com.stoum.overlay.model.gomafia.ClubDto
+import com.stoum.overlay.model.gomafia.GameDto
+import com.stoum.overlay.model.gomafia.GomafiaRegion
+import com.stoum.overlay.model.gomafia.StatsDto
+import com.stoum.overlay.model.gomafia.TournamentDto
+import com.stoum.overlay.model.gomafia.TournamentResponse
+import com.stoum.overlay.model.gomafia.UserDto
+import com.stoum.overlay.model.gomafia.UserWithStats
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -86,7 +93,9 @@ class GomafiaRestClient {
 
         val data = getDataMap(resp!!)
 
-        val games = (data["games"] as ArrayList<*>).flatMap { g  ->
+        val games = if (data["games"] == null) {
+            listOf()
+        } else (data["games"] as ArrayList<*>).flatMap { g ->
             val gMap = (g as Map<*, *>)
             val gNum = gMap["gameNum"] as Int
             (gMap["game"] as ArrayList<*>).map { gdto ->

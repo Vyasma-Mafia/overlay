@@ -65,6 +65,12 @@ class PolemicaService(
             if (polemicaGame.result != null) {
                 game.started = false
                 gameRepository.save(game)
+                val nextGame =
+                    gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum + 1, tableNum)
+                        ?: return
+                nextGame.started = true
+                gameRepository.save(nextGame)
+                emitterService.sendTo(game.id.toString(), "!nextgame")
                 return
             }
             game.players.forEach { player ->
