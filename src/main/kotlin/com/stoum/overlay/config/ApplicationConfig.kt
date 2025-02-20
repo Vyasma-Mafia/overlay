@@ -9,7 +9,8 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = true)
 data class ApplicationConfig(
     val crawlScheduler: Scheduler,
-    val polemicaEnable: Boolean
+    val polemicaEnable: Boolean,
+    val development: Boolean
 ) {
     @Bean
     fun crawlScheduler() = crawlScheduler

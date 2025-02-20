@@ -15,10 +15,14 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import java.util.UUID
 
 @Entity
-@Table(name = "game")
+@Table(
+    name = "game",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["tournamentId", "gameNum", "tableNum"])]
+)
 class Game (
         @Id
     @GeneratedValue(strategy = GenerationType.UUID)
