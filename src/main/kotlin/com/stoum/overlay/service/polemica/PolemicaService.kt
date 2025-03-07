@@ -14,6 +14,8 @@ import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
@@ -25,9 +27,10 @@ class PolemicaService(
     val gameRepository: GameRepository,
     val emitterService: EmitterService
 ) {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
     private val gameIdCache = Caffeine.newBuilder()
-        .expireAfterWrite(180, TimeUnit.SECONDS)
-        .maximumSize(100)
+        .expireAfterWrite(10, TimeUnit.MINUTES)
+        .maximumSize(256)
         .build<PolemicaTournamentGame, Long>()
 
     fun crawl() {
@@ -51,6 +54,7 @@ class PolemicaService(
             } else {
                 id = idO
             }
+            log.info("Polemica game ${id} for $tournamentGame crawled")
             if (id == null) return@forEach
             val polemicaGame = polemicaClient.getGameFromCompetition(
                 PolemicaClient.PolemicaCompetitionGameId(
