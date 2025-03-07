@@ -54,7 +54,7 @@ class PolemicaService(
             } else {
                 id = idO
             }
-            log.info("Polemica game ${id} for $tournamentGame crawled")
+            log.info("Polemica game $id for $tournamentGame crawled")
             if (id == null) return@forEach
             val polemicaGame = polemicaClient.getGameFromCompetition(
                 PolemicaClient.PolemicaCompetitionGameId(
@@ -84,15 +84,15 @@ class PolemicaService(
                         player.status = Pair(status, "")
                     }
                     player.role = polemicaRoleToRole(polemicaGame.getRole(position))
-                    player.guess = polemicaGuessToGuess(polemicaGame.players.find { it.position == position }?.guess)
+                    player.guess = polemicaGuessToGuess(polemicaGame.players!!.find { it.position == position }?.guess)
                     if (player.role == "sher") {
-                        val checks = polemicaGame.checks.filter { it.role == Role.SHERIFF }.sortedBy { it.night }
-                        player.checks = checks.map {
+                        val checks = polemicaGame.checks?.filter { it.role == Role.SHERIFF }?.sortedBy { it.night }
+                        player.checks = checks?.map {
                             mapOf(
                                 "first" to polemicaColorToString(polemicaGame.getRole(it.player).isBlack()),
                                 "second" to it.player.value.toString()
                             )
-                        }.toMutableList()
+                        }?.toMutableList()
                     }
                 }
             }
