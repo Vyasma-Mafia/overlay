@@ -104,7 +104,7 @@ jobs:
     steps:
       - name: Deploy Docker image to the VM
         uses: appleboy/ssh-action@v0.1.6
-        with:
+        with: 
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
