@@ -18,6 +18,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
+import java.util.UUID
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -28,6 +30,7 @@ class PolemicaService(
     val emitterService: EmitterService
 ) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+    private val taskExecutorService = Executors.newSingleThreadScheduledExecutor()
     private val gameIdCache = Caffeine.newBuilder()
         .expireAfterWrite(10, TimeUnit.MINUTES)
         .maximumSize(256)
@@ -74,7 +77,7 @@ class PolemicaService(
                         ?: return
                 nextGame.started = true
                 gameRepository.save(nextGame)
-                emitterService.sendTo(game.id.toString(), "!nextgame")
+                scheduleNextGameTasks(game.id)
                 return
             }
             game.players.forEach { player ->
@@ -123,6 +126,16 @@ class PolemicaService(
     }
 
     fun polemicaColorToString(isBlack: Boolean) = if (isBlack) "black" else "red"
+
+    fun scheduleNextGameTasks(gameId: UUID?) {
+        val delays = longArrayOf(0, 10, 20, 30, 60, 90, 120, 150, 180)
+
+        for (delayMinutes in delays) {
+            taskExecutorService.schedule({
+                emitterService.sendTo(gameId.toString(), "!nextgame")
+            }, delayMinutes, TimeUnit.SECONDS)
+        }
+    }
 
     data class PolemicaTournamentGame(val tournamentId: Int, val gameNum: Int, val tableNum: Int)
 }
