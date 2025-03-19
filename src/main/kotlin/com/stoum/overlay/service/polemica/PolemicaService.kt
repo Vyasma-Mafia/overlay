@@ -33,74 +33,82 @@ class PolemicaService(
     private val taskExecutorService = Executors.newSingleThreadScheduledExecutor()
     private val gameIdCache = Caffeine.newBuilder()
         .expireAfterWrite(10, TimeUnit.MINUTES)
-        .maximumSize(256)
+        .maximumSize(1024)
         .build<PolemicaTournamentGame, Long>()
 
     fun crawl() {
         gameRepository.findGameByTypeAndStarted(GameType.POLEMICA, true).forEach { game ->
-            val tournamentId = game.tournamentId
-            val gameNum = game.gameNum
-            val tableNum = game.tableNum
-            if (tournamentId == null || gameNum == null || tableNum == null) return@forEach
-            val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum)
-            val idO = gameIdCache.getIfPresent(tournamentGame)
-            var id: Long? = null
-            if (idO == null) {
-                polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
-                    val polemicaTournamentGame =
-                        PolemicaTournamentGame(tournamentId, tGame.num.toInt(), tGame.table.toInt())
-                    if (polemicaTournamentGame == tournamentGame) {
-                        id = tGame.id
+            try {
+                val tournamentId = game.tournamentId
+                val gameNum = game.gameNum
+                val tableNum = game.tableNum
+                if (tournamentId == null || gameNum == null || tableNum == null) return@forEach
+                val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum)
+                val idO = gameIdCache.getIfPresent(tournamentGame)
+                var id: Long? = null
+                if (idO == null) {
+                    polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
+                        val polemicaTournamentGame =
+                            PolemicaTournamentGame(tournamentId, tGame.num.toInt(), tGame.table.toInt())
+                        if (polemicaTournamentGame == tournamentGame) {
+                            id = tGame.id
+                        }
+                        gameIdCache.put(polemicaTournamentGame, tGame.id)
                     }
-                    gameIdCache.put(polemicaTournamentGame, tGame.id)
+                } else {
+                    id = idO
                 }
-            } else {
-                id = idO
-            }
-            log.info("Polemica game $id for $tournamentGame crawled")
-            if (id == null) return@forEach
-            val polemicaGame = polemicaClient.getGameFromCompetition(
-                PolemicaClient.PolemicaCompetitionGameId(
-                    tournamentId.toLong(),
-                    id ?: 0L,
-                    4
+                log.info("Polemica game $id for $tournamentGame crawled")
+                if (id == null) return@forEach
+                val polemicaGame = polemicaClient.getGameFromCompetition(
+                    PolemicaClient.PolemicaCompetitionGameId(
+                        tournamentId.toLong(),
+                        id ?: 0L,
+                        4
+                    )
                 )
-            )
-            getLogger().info("Polemica game ${polemicaGame.id} in tournament $tournamentId crawled")
-            val kicked = polemicaGame.getKickedFromTable().groupBy { it.position }.mapValues { it.value.first() }
-            val firstKilled = polemicaGame.getFirstKilled()
-            if (polemicaGame.result != null) {
-                game.started = false
-                gameRepository.save(game)
-                val nextGame =
-                    gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum + 1, tableNum)
-                        ?: return
-                nextGame.started = true
-                gameRepository.save(nextGame)
-                scheduleNextGameTasks(game.id)
-                return
-            }
-            game.players.forEach { player ->
-                Position.fromInt(player.place)?.let { position ->
-                    kicked[position]?.let {
-                        val status = if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed"
-                        player.status = Pair(status, "")
-                    }
-                    player.role = polemicaRoleToRole(polemicaGame.getRole(position))
-                    player.guess = polemicaGuessToGuess(polemicaGame.players!!.find { it.position == position }?.guess)
-                    if (player.role == "sher") {
-                        val checks = polemicaGame.checks?.filter { it.role == Role.SHERIFF }?.sortedBy { it.night }
-                        player.checks = checks?.map {
-                            mapOf(
-                                "first" to polemicaColorToString(polemicaGame.getRole(it.player).isBlack()),
-                                "second" to it.player.value.toString()
-                            )
-                        }?.toMutableList()
+                getLogger().info("Polemica game ${polemicaGame.id} in tournament $tournamentId crawled")
+                val kicked = polemicaGame.getKickedFromTable().groupBy { it.position }.mapValues { it.value.first() }
+                val firstKilled = polemicaGame.getFirstKilled()
+                if (polemicaGame.result != null) {
+                    game.started = false
+                    gameRepository.save(game)
+                    val nextGame =
+                        gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum + 1, tableNum)
+                            ?: return
+                    nextGame.started = true
+                    gameRepository.save(nextGame)
+                    scheduleNextGameTasks(game.id)
+                    return
+                }
+                game.players.forEach { player ->
+                    Position.fromInt(player.place)?.let { position ->
+                        kicked[position]?.let {
+                            val status = if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed"
+                            player.status = Pair(status, "")
+                        }
+                        player.role = polemicaRoleToRole(polemicaGame.getRole(position))
+                        player.guess =
+                            polemicaGuessToGuess(polemicaGame.players!!.find { it.position == position }?.guess)
+                        if (player.role == "sher") {
+                            val checks = polemicaGame.checks?.filter { it.role == Role.SHERIFF }?.sortedBy { it.night }
+                            player.checks = checks?.map {
+                                mapOf(
+                                    "first" to polemicaColorToString(polemicaGame.getRole(it.player).isBlack()),
+                                    "second" to it.player.value.toString()
+                                )
+                            }?.toMutableList()
+                        }
                     }
                 }
+                gameRepository.save(game)
+                emitterService.emitGame(game.id.toString())
+            } catch (e: Exception) {
+                getLogger().error(
+                    "Error while crawling polemica game {}: {} {} {}",
+                    game.id, game.tournamentId, game.gameNum, game.tableNum, e
+                )
             }
-            gameRepository.save(game)
-            emitterService.emitGame(game.id.toString())
         }
     }
 

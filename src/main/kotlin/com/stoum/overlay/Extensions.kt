@@ -1,7 +1,8 @@
 package com.stoum.overlay
 
-import java.util.logging.Logger
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 fun Any.getLogger(): Logger {
-    return Logger.getLogger(this::class.simpleName)
+    return LoggerFactory.getLogger(this::class.simpleName)
 }
