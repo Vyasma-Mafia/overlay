@@ -39,6 +39,8 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.springframework.session:spring-session-jdbc'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
+
     // Polemica
     implementation 'com.github.Vyasma-Mafia:polemica-library:1.3.2'
 
