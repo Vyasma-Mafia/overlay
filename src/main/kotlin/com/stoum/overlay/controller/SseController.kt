@@ -1,6 +1,7 @@
 package com.stoum.overlay.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import kotlinx.coroutines.delay
@@ -11,9 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter.event
-import java.util.*
+import java.util.UUID
 import java.util.logging.Logger
-
 
 @Controller
 class SseController(
@@ -24,7 +24,7 @@ class SseController(
 
     @GetMapping("/{id}/gameinfo")
     fun gameinfo(@PathVariable id: String?): SseEmitter? {
-        Logger.getAnonymousLogger().info("got overlay request for sse")
+        getLogger().info("got overlay request for sse $id")
         if (id != null) {
             val emitter = SseEmitter()
             emitterService.registerEmitter(id, emitter)
@@ -32,7 +32,7 @@ class SseController(
             emitter.send(
                 event()
                     .name("message")
-                    .reconnectTime(5000L)
+                    .reconnectTime(500L)
                     .data("Registered with id $id")
             )
             return emitter.also {

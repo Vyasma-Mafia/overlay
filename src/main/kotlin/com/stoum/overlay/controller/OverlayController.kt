@@ -1,13 +1,13 @@
 package com.stoum.overlay.controller
 
-import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import com.stoum.overlay.entity.Game
-import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
+import com.stoum.overlay.getLogger
 import com.stoum.overlay.model.gomafia.GameDto
 import com.stoum.overlay.model.gomafia.UserWithStats
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
+import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import com.stoum.overlay.service.gomafia.GomafiaService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import java.util.logging.Logger
-
 
 @Controller
 class OverlayController(
@@ -44,7 +43,7 @@ class OverlayController(
         model.addAttribute("gameNum", gameNum)
         model.addAttribute("tableNum", tableNum)
 
-        Logger.getAnonymousLogger().info("${game.id}")
+        getLogger().info("Overlay for ${game.id}: $tournamentId, $gameNum, $tableNum")
 
         return "overlay"
     }
