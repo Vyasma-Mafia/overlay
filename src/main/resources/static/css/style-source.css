@@ -1,9 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
+
+@font-face {
+    font-family: 'MrNorwester';
+    src: url('../fonts/mr_NorwesterG.otf') format('opentype');
+}
+
+html {
+    background: transparent !important;
+}
+
 body {
     margin: 0;
-    line-height: 0;
-    font-family: lack-regular, monospace;
-    color: #8459aa;
     line-height: 1;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
     position: absolute;
     width: 100%;
     height: 100%;
@@ -11,108 +21,1092 @@ body {
     visibility: hidden;
     opacity: 0;
     transition: visibility 1.5s, opacity 1.5s linear;
+    background: none !important;
 }
 
 body.visible {
     visibility: visible;
     opacity: 1;
+    background: none !important;
 }
 
 footer {
     position: absolute;
-    bottom: 10px;
+    bottom: 20px;
     width: 100%;
-    height: 20%;
     display: flex;
     justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    background: none !important;
 }
 
 .player {
-    margin: 0 0.625%;
-    width: 8.6%;
-    overflow: hidden;
+    width: 160px;
+    height: 220px;
     position: relative;
-    border-radius: 5px;
-    /*box-shadow: 0 1px 4px rgba(0, 0, 0, .3), -17px 0 15px -17px rgba(0, 0, 0, .8), 17px 0 15px -17px rgba(0, 0, 0, .8), 0 0 30px rgba(0, 0, 0, .1) inset, 0 2px 0 rgba(250, 170, 0, 1);*/
-    transition: margin-top 1.5s, box-shadow 1.5s;
-    perspective: 30000px;
+    border-radius: 8px;
+    background: linear-gradient(180deg,
+    #971919 0%,
+    #701515 35%,
+    #451111 65%,
+    #100e1d 100%
+    ) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    transform-origin: top center;
+    overflow: visible;
+}
+
+/* Градиенты для разных ролей */
+.player.don {
+    background: linear-gradient(180deg,
+    #313131 0%,
+    #252525 35%,
+    #1a1a1a 65%,
+    #100e1d 100%
+    ) !important;
+}
+
+.player.sher {
+    background: linear-gradient(180deg,
+    #fff18a 0%,
+    #eac667 100%
+    ) !important;
+}
+
+.player.black {
+    background: linear-gradient(180deg,
+    #494949 0%,
+    #353535 35%,
+    #252525 65%,
+    #100e1d 100%
+    ) !important;
+}
+
+/* Добавляем тонкую обводку для улучшения визуального эффекта */
+.player::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    padding: 1px;
+    background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0) 100%
+    );
+    /*mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);*/
+    /*-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);*/
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    pointer-events: none;
 }
 
 .speaker {
-    box-shadow: 0 2px 15px rgba(132,89,170, 0.9), 0 2px 7px rgba(17, 0, 255, 0.527);
+    transform: translateY(-12px);
+}
+
+/* Подсветка для разных ролей */
+.player.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
+}
+
+/* Подсветка для шерифа */
+.sher.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
+}
+
+/* Подсветка для дона */
+.don.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
+}
+
+/* Подсветка для черных */
+.black.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
 }
 
 .player.dead {
-    margin-top: 0.5%;
+    height: 180px;
+    transform: translateY(40px);
+    border-radius: 8px;
+}
+
+.player.dead .photo {
+    height: calc(100% - 70px);
+    filter: grayscale(100%) brightness(0.7);
+    opacity: 0.7;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    background-position: center;
+    background-size: contain;
 }
 
 .photo {
-    height: 100%;
-    width: 100%;
+    height: calc(100% - 70px);
+    margin-top: 35px;
+    border-radius: 0;
+    background-position: center;
+    background-size: contain;
     background-repeat: no-repeat;
-    background-position: top;
-    background-size: cover;
-    box-shadow: 0px -70px 25px -40px rgba(0, 0, 0, 0.8) inset, 0px -100px 50px -40px rgba(0, 0, 0, 0.5) inset;
-    transition: all 1s;
+    position: relative;
+    z-index: 1;
+    mix-blend-mode: normal;
+    transition: all 0.3s ease;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    overflow: hidden;
 }
 
+
+/* Обновляем стили для мертвого игрока */
 .dead .photo {
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
+    filter: grayscale(100%) brightness(0.7);
+    opacity: 0.7;
 }
 
 .status {
-    height: 40px;
-    width: 40px;
+    height: 36px;
+    width: 36px;
     position: absolute;
-    top: 6px;
-    left: 6px;
+    top: -3px;
+    right: -3px;
     visibility: hidden;
     opacity: 0;
-    transition: visibility 1.5s, opacity 1.5s linear;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 1);
+    z-index: 3;
+    background-size: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scale(1.3);
+}
+
+.dead .status {
+    visibility: visible;
+    opacity: 1;
+}
+
+.killed .status {
+    background-image: url("../icon/killed.png");
+    background-size: 22px;
+}
+
+.voted .status {
+    background-image: url("../icon/voted.png");
+    background-size: 22px;
+}
+
+.deleted .status {
+    background-image: url("../icon/deleted.png");
+    background-size: 19px;
+}
+
+.first-killed .status {
+    background-image: url("../icon/firstkilled.png");
+    background-size: 22px;
+}
+
+.role {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Текст ролей */
+body.show-roles .role {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Мирные жители */
+body.show-roles .player .role::after {
+    content: 'Красный';
+    color: rgba(160, 20, 20, 0.85);
+    font-weight: 600;
+}
+
+/* Шериф */
+body.show-roles .sher .role::after {
+    content: 'Шериф';
+    color: rgba(255, 159, 90, 0.85);
+    font-weight: 600;
+}
+
+/* Черный */
+body.show-roles .black .role::after {
+    content: 'Черный';
+    color: rgba(15, 15, 15, 0.85);
+    font-weight: 600;
+}
+
+/* Дон */
+body.show-roles .don .role::after {
+    content: 'Дон';
+    color: rgba(35, 10, 55, 0.85);
+    font-weight: 600;
+}
+
+.number {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ff5555;
+    color: white;
+    font-size: 22px;
+    font-weight: normal;
+    font-family: 'MrNorwester', sans-serif;
+    margin: 0;
+}
+
+.number::after {
+    font-size: 16px;
+    margin-left: 12px;
+    text-transform: uppercase;
+}
+
+/* Стили для статистики */
+.player .stats {
+    display: none; /* Скрываем старую панель статистики */
+}
+
+.stats-right .player .stats {
+    left: auto;
+    right: -220px;
+}
+
+body.show-stats .player.speaker .stats {
+    visibility: visible;
+    opacity: 1;
+}
+
+.speaker .stats {
+    transform: translateY(12px); /* Компенсируем сдвиг карточки вверх */
+}
+
+.stats-panel {
+    position: fixed;
+    top: 150px;
+    left: -500px;
+    max-width: 460px;
+    width: 100%;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease-out;
+    background: transparent;
+    padding: 32px;
+}
+
+.stats-panel::before {
+    content: '';
+    position: absolute;
+    inset: -2.5px;
+    background: linear-gradient(135deg,
+    rgba(137, 119, 253, 1) 0%,
+    rgba(147, 51, 234, 1) 25%,
+    rgba(255, 85, 85, 1) 50%,
+    rgba(147, 51, 234, 1) 75%,
+    rgba(137, 119, 253, 1) 100%
+    );
+    border-radius: 24px;
+    /*mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);*/
+    /*-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);*/
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    padding: 3px;
+    opacity: 0.8;
+    background-size: 300% 300%;
+    animation: gradient 4s linear infinite;
+    z-index: 0;
+}
+
+.stats-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+    rgba(32, 33, 37, 0.95) 0%,
+    rgba(41, 36, 71, 0.95) 100%
+    );
+    border-radius: 20px;
+    z-index: 0;
+}
+
+.stats-header {
+    position: relative;
+    z-index: 1;
+}
+
+.stats-content {
+    position: relative;
+    z-index: 1;
+}
+
+body.show-stats .stats-panel {
+    left: 70px;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Стили для правостороннего отображения */
+body.stats-right .stats-panel {
+    left: auto;
+    right: -500px;
+}
+
+body.stats-right.show-stats .stats-panel {
+    left: auto;
+    right: 70px;
+}
+
+.stats-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 84px;
+    background: linear-gradient(135deg,
+    rgba(137, 119, 253, 0.2) 0%,
+    rgba(147, 51, 234, 0.2) 100%
+    );
+    padding: 16px 32px;
+    border-radius: 16px;
+    border: 1px solid rgba(137, 119, 253, 0.2);
+    position: relative;
+    justify-content: space-between;
+    min-height: 48px;
+}
+
+.stats-header .logo {
+    width: 80px;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.stats-header .logo-gg {
+    width: 120px;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.stats-header .player-name {
+    font-family: 'MrNorwester', sans-serif;
+    font-size: 28px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    background: linear-gradient(90deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(137, 119, 253, 0.9) 50%,
+    rgba(255, 255, 255, 1) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    left: calc(50% + 25px);
+    transform: translateX(-50%);
+    bottom: -72px;
+}
+
+.stats-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: -20px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: linear-gradient(135deg,
+    rgba(42, 43, 47, 0.9) 0%,
+    rgba(51, 45, 82, 0.9) 100%
+    );
+    position: relative;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    border: 1px solid rgba(137, 119, 253, 0.15);
+    transition: all 0.3s ease;
+}
+
+.stat-row:hover {
+    background: linear-gradient(135deg,
+    rgba(51, 45, 82, 0.95) 0%,
+    rgba(67, 58, 107, 0.95) 100%
+    );
+    border-color: rgba(137, 119, 253, 0.3);
+    transform: translateX(4px);
+}
+
+.stat-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg,
+    rgb(137, 119, 253) 0%,
+    rgb(147, 51, 234) 50%,
+    rgb(137, 119, 253) 100%
+    );
+    box-shadow: 0 0 15px rgba(137, 119, 253, 0.5);
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    font-family: 'MrNorwester', sans-serif;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    color: #ffffff;
+    font-size: 22px;
+    font-family: 'MrNorwester', sans-serif;
+    position: relative;
+}
+
+.numbers-panel {
+    position: fixed;
+    top: 25px;
+    right: -100%;
+    width: max-content;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease-out;
+    background: transparent;
+}
+
+.numbers-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    padding: 16px 32px;
+    background: transparent;
+}
+
+.numbers-content::before {
+    content: '';
+    position: absolute;
+    inset: -2.5px;
+    background: linear-gradient(135deg,
+    rgba(137, 119, 253, 1) 0%,
+    rgba(147, 51, 234, 1) 25%,
+    rgba(255, 85, 85, 1) 50%,
+    rgba(147, 51, 234, 1) 75%,
+    rgba(137, 119, 253, 1) 100%
+    );
+    border-radius: 24px;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    padding: 3px;
+    opacity: 0.8;
+    background-size: 300% 300%;
+    animation: gradient 4s linear infinite;
+    z-index: 0;
+}
+
+.numbers-content::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+    rgba(32, 33, 37, 0.95) 0%,
+    rgba(41, 36, 71, 0.95) 100%
+    );
+    border-radius: 22px;
+    z-index: 0;
+    opacity: 0.95;
+}
+
+.numbers-row {
+    position: relative;
+    z-index: 1;
+}
+
+.number-label {
+    font-family: 'MrNorwester', sans-serif;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+}
+
+.number-separator {
+    margin: 0 6px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 20px;
+}
+
+.number-value {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.number-group {
+    display: inline-flex;
+    background: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0;
+}
+
+.number-group .number-badge {
+    border: none;
+    background: #ffffff;
+    min-width: 24px;
+    padding: 0 6px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.number-group .number-badge:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.number-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    /*padding: 0 10px;*/
+    border-radius: 6px;
+    background: #ffffff;
+    font-family: 'MrNorwester', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    color: #ffffff;
+    -webkit-text-stroke: 0.7px #000;
+}
+
+.number-badge.sher {
+    color: #EAC35E; /* Желтоватый для шерифа */
+}
+
+.number-badge.red {
+    color: #ff5555; /* Красный для красных */
+}
+
+.number-badge.black {
+    color: #000000; /* Черный для черных */
+}
+
+
+.number-badge:hover {
+    background: #f5f5f5;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Стили для цифр мафии */
+.numbers-row[data-role="black"] .number-badge {
+    color: #000000;
+}
+
+/* Стили для цифр дона */
+.numbers-row[data-role="don"] .number-badge {
+    color: #000000;
+}
+
+/* Стили для шерифа в проверках дона */
+.numbers-row[data-role="don"] .number-badge[data-sher="true"] {
+    color: #ff4d4d;
+}
+
+/* Убираем все возможные конфликтующие стили */
+.numbers-row:nth-child(3) .number-badge,
+.numbers-row:nth-child(4) .number-badge,
+.number-badge[data-role],
+.don-checks .number-badge[data-sher="true"] {
+    color: initial;
+}
+
+.fact-panel {
+    top: 20px;
+    left: -100%;
+    max-width: 650px;
+    width: max-content;
+    min-width: 200px;
+    transition: left 0.5s ease-in-out;
+    z-index: 999;
+    position: relative;
+    background: transparent;
+    padding: 24px 32px;
+}
+
+.fact-panel::before {
+    content: '';
+    position: absolute;
+    inset: -2.5px;
+    background: linear-gradient(135deg,
+    rgba(137, 119, 253, 1) 0%,
+    rgba(147, 51, 234, 1) 25%,
+    rgba(255, 85, 85, 1) 50%,
+    rgba(147, 51, 234, 1) 75%,
+    rgba(137, 119, 253, 1) 100%
+    );
+    border-radius: 24px;
+    /*mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);*/
+    /*-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);*/
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    padding: 2.5px;
+    opacity: 0.8;
+    background-size: 300% 300%;
+    animation: gradient 4s linear infinite;
+    z-index: 0;
+}
+
+.fact-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+    rgba(32, 33, 37, 0.95) 0%,
+    rgba(41, 36, 71, 0.95) 100%
+    );
+    border-radius: 20px;
+    z-index: 0;
+}
+
+.fact-panel p {
+    margin: 0;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.3s ease-in-out 0.3s, transform 0.3s ease-in-out 0.3s;
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    line-height: 1.6;
+    font-weight: 400;
+    padding: 0;
+    white-space: normal;
+    word-wrap: break-word;
+    display: inline;
+    letter-spacing: 0;
+}
+
+.fact-panel p:last-child {
+    margin-bottom: 0;
+}
+
+/* Убираем overflow везде, где он может быть */
+.numbers-content,
+.stats-content,
+.fact-panel,
+.stats-panel,
+.numbers-panel,
+.player .stats {
+    overflow: visible;
+}
+
+.role-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 35px;
+    background: #ff5555;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    justify-content: flex-start;
+    font-family: 'MrNorwester', sans-serif;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: normal;
+    z-index: 2;
+    border-radius: 8px 8px 0 0;
+}
+
+.role-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35px;
+    display: flex;
+    align-items: stretch;
+    background: white;
+    z-index: 2;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+
+.player-name {
+    flex: 1;
+    background: white;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 16px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'MrNorwester', sans-serif;
+    font-weight: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Цвета для разных ролей */
+.player.don .role-header,
+.player.don .number {
+    background: #000000;
+}
+
+.player.sher .role-header,
+.player.sher .number {
+    background: #EAC35E;
+}
+
+.player.black .role-header,
+.player.black .number {
+    background: #2f2f2f;
+}
+
+/* Подсветка для разных ролей */
+.player.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
+}
+
+.sher.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
+}
+
+.don.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
+}
+
+.black.speaker {
+    box-shadow: 0 0 12px rgba(255, 159, 90, 1),
+    0 0 25px rgba(255, 159, 90, 0.8),
+    0 0 45px rgba(255, 159, 90, 0.4);
+}
+
+.player.dead .role-footer {
+    border-radius: 0 0 8px 8px;
+}
+
+.player.dead .role-header {
+    border-radius: 8px 8px 0 0;
+}
+
+.stats-panel,
+.numbers-panel,
+.fact-panel {
+    border-radius: 24px;
+}
+
+.game-number-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.game-number-panel {
+    background: transparent;
+    padding: 16px 32px;
+    color: white;
+    font-family: 'MrNorwester', sans-serif;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+}
+
+.game-number-panel::before {
+    content: '';
+    position: absolute;
+    inset: -2.5px;
+    background: linear-gradient(135deg,
+    rgba(137, 119, 253, 1) 0%,
+    rgba(147, 51, 234, 1) 25%,
+    rgba(255, 85, 85, 1) 50%,
+    rgba(147, 51, 234, 1) 75%,
+    rgba(137, 119, 253, 1) 100%
+    );
+    border-radius: 24px;
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    padding: 2.5px;
+    opacity: 0.8;
+    background-size: 100% 100%;
+    animation: gradient 4s linear infinite;
+    z-index: 0;
+}
+
+.game-number-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+    rgba(32, 33, 37, 0.95) 0%,
+    rgba(41, 36, 71, 0.95) 100%
+    );
+    border-radius: 22px;
+    z-index: 0;
+    opacity: 0.95;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 150% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+.game-number-panel span {
+    font-size: 22px;
+    position: relative;
+    z-index: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-number-slash {
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 4px;
+    font-size: 24px !important;
+    font-weight: 300;
+}
+
+.game-number-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #8977fd;
+    transition: color 0.2s ease;
+}
+
+.game-number-button:hover {
+    color: #ff5555;
+}
+
+/* Базовый стиль для никнейма */
+.player-name[data-nickname="Градиент"] {
+    background: linear-gradient(90deg,
+    #000000,
+    #8977fd,
+    #000000
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.player.role-header,
+.player.number {
+    background: linear-gradient(90deg,
+    #ff3333,
+    #ff9999
+    ) !important;
+}
+
+/* Градиентный фон для дона */
+.player.don.role-header,
+.player.don.number {
+    background: linear-gradient(90deg,
+    #000000,
+    #666666
+    ) !important;
+}
+
+/* Градиентный фон для шерифа */
+.player.sher.role-header,
+.player.sher.number {
+    background: linear-gradient(90deg,
+    #eac667,
+    rgba(255, 255, 0, 0.8)
+    ) !important;
+}
+
+/* Градиентный фон для черных */
+.player.black.role-header,
+.player.black.number {
+    background: linear-gradient(90deg,
+    #1a1a1a,
+    #808080
+    ) !important;
+}
+
+/* Анимированный градиент для никнейма "Градиент" при выступлении */
+.player.speaker .player-name[data-nickname="Градиент"] {
+    background: linear-gradient(90deg,
+    #000000,
+    #8977fd,
+    #000000
+    );
+    background-size: 200% 100%;
+    animation: shine 4s linear infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes shine {
+    0% {
+        background-position: 0 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+.numbers-content {
+    background: linear-gradient(135deg,
+    rgba(137, 119, 253, 0.3) 0%,
+    rgba(179, 132, 227, 0.3) 100%
+    );
+    padding: 8px 16px;
+    border-radius: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.numbers-panel.visible {
+    right: 20px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.numbers-row {
+    background: transparent;
+    padding: 8px;
+    color: white;
+    font-family: 'MrNorwester', sans-serif;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: relative;
+
+}
+
+.numbers-row span {
+    font-size: 22px;
+    position: relative;
+    z-index: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.fact-panel.visible {
+    left: 60px;
+}
+
+.fact-panel.visible p {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 .guess {
     height: 30px;
     width: 30px;
     position: absolute;
-    left: 6px;
+    top: -35px;
     visibility: hidden;
     opacity: 0;
     transition: visibility 1.5s, opacity 1.5s linear;
     background-repeat: no-repeat;
     background-position: top;
     background-size: cover;
-    border-radius: 50%;
+    border-radius: 8px;
+    border: 2px solid black;
     background-color: rgba(255, 255, 255, 0.5);
 }
 
 .guess.black {
-    background-color: rgba(0, 0, 0, 50);
+    background-color: rgba(0, 0, 0, 1);
 }
 
 .guess.red {
-    background-color: rgba(255, 0, 0, 50);
+    background-color: rgba(255, 0, 0, 1);
 }
 
 .guess.vice {
-    background-color: rgba(255, 255, 0, 50);
+    background-color: rgb(234, 198, 103);
 }
 
 .guess-1 {
-    top: 52px;
+    left: 5px
 }
 
 .guess-2 {
-    top: 88px;
+    left: 40px
 }
 
 .guess-3 {
-    top: 124px;
+    left: 75px
 }
 
 .guess-4 {
-    top: 160px;
+    left: 105px;
 }
 
 
@@ -123,7 +1117,7 @@ footer {
     font-weight: 900;
     font-size: 20px;
     color: white;
-    text-shadow: 0px 0px 5px #000000;
+    text-shadow: 0 0 5px #000000;
     /*-webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;*/
 }
@@ -179,7 +1173,7 @@ footer {
     font-weight: 900;
     font-size: 20px;
     color: white;
-    text-shadow: 0px 0px 5px #000000;
+    text-shadow: 0 0 5px #000000;
     /*-webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;*/
 }
@@ -191,169 +1185,7 @@ footer {
     font-weight: 900;
     font-size: 40px;
     color: white;
-    text-shadow: 0px 0px 5px #000000;
+    text-shadow: 0 0 5px #000000;
     /*-webkit-text-stroke-width: 2px;
     -webkit-text-stroke-color: black;*/
 }
-
-.dead .status {
-    visibility: visible;
-    opacity: 1;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    background-repeat: no-repeat;
-    background-position: top;
-    background-size: cover;
-}
-
-.killed .status {
-    background-image: url("/icon/killed.png");
-}
-
-.first-killed .status {
-    background-image: url("/icon/first-killed.png");
-}
-
-.voted .status {
-    background-image: url("/icon/voted.png");
-}
-
-.deleted .status {
-    background-image: url("/icon/deleted.png");
-}
-
-.role {
-    height: 40px;
-    width: 40px;
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    border-radius: 50%;
-    background-repeat: no-repeat;
-    background-position: top;
-    background-size: cover;
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 1.5s, opacity 1.5s linear;
-}
-
-.sher .role {
-    opacity: 1;
-    background-color: rgba(250, 170, 0, 0.8);
-    background-image: url("/icon/loupe.png");
-}
-
-.don .role {
-    opacity: 1;
-    background-color: rgba(0, 0, 0, 0.8);
-    background-image: url("/icon/hat.png");
-}
-
-.black .role {
-    opacity: 1;
-    background-color: rgba(0, 0, 0, 0.8);
-    background-image: url("/icon/gun.png");
-}
-
-.number {
-    position: absolute;
-    left: 6px;
-    bottom: 6px;
-    width: 25px;
-    height: 25px;
-    text-align: center;
-    background-color: #8459aa;
-    border-radius: 50%;
-    color: #fff;
-    font-weight: 800;
-    font-size: 18px;
-    line-height: 25px;
-}
-
-.nick {
-    font-family: lack-regular;
-    position: absolute;
-    left: 37px;
-    bottom: 10px;
-    color: #fff;
-    font-size: 18px;
-}
-
-@font-face {
-
-    font-family: "lack-regular";
-    src: url("/fonts/lack-regular.otf") format("truetype");
-    font-style: normal;
-    font-weight: normal;
-}
-
-/* This container is needed to position the front and back side */
-.flip-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    transition: transform 0.8s;
-    transform-style: preserve-3d;
-}
-
-/* Do an horizontal flip when you move the mouse over the flip box container */
-.player:hover .flip-container {
-    transform: rotateY(180deg);
-}
-
-/* Position the front and back side */
-.flip-front, .flip-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-backface-visibility: hidden; /* Safari */
-    backface-visibility: hidden;
-}
-
-
-/* Style the back side */
-.flip-back {
-    color: white;
-    transform: rotateY(180deg);
-}
-
-.stat-table {
-    background-color: rgba(255, 255, 255, 0.5);
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    table-layout: auto;
-    width: 100%;
-    height: 100%;
-
-    text-align: center;
-    font-weight: 900;
-    font-size: 18px;
-    color: black;
-    /*    -webkit-text-stroke-width: 1px;
-        -webkit-text-stroke-color: rgba(0, 0, 0, 0.7);*/
-}
-
-thead tr th:first-child,
-tbody tr td:first-child {
-    width: 20px;
-    min-width: 20px;
-    max-width: 20px;
-    word-break: break-all;
-}
-
-
-.flip-photo {
-    height: 100%;
-    width: 100%;
-    background-repeat: no-repeat;
-    background-position: top;
-    background-size: cover;
-    box-shadow: 0px -70px 25px -40px rgba(0, 0, 0, 0.8) inset, 0px -100px 50px -40px rgba(0, 0, 0, 0.5) inset;
-    transition: all 1s;
-    /*filter: grayscale(50%);*/
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-}
-

@@ -32,7 +32,7 @@ class SseController(
             emitter.send(
                 event()
                     .name("message")
-                    .reconnectTime(500L)
+                    .reconnectTime(5000L)
                     .data("Registered with id $id")
             )
             return emitter.also {

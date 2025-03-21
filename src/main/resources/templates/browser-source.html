@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<img src="../static/icon/loupe.png" />
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <title>Игра</title>
+    <link rel="stylesheet" href="./css/style-source.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<body class="visible">
+<div class="fact-panel">
+    <p id="fact-content"></p>
+</div>
+
+<div class="stats-panel">
+    <div class="stats-header">
+        <img src="content/icon/logo_fsm.png" alt="FSM" class="logo">
+        <img src="content/icon/logo_GG.svg" alt="GG" class="logo-gg">
+        <span class="player-name">Игроки</span>
+    </div>
+    <div class="stats-content" id="stats-content">
+        <!-- Поля статистики будут добавляться динамически -->
+    </div>
+</div>
+
+<div class="game-number-container">
+    <div class="game-number-panel">
+        <span>Игра</span>
+        <span id="current-game-number">-</span>
+        <span class="game-number-slash">/</span>
+        <span id="total-games-number">-</span>
+    </div>
+</div>
+
+<div class="players-container">
+    <footer>
+        <div class="player" id="player_1">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">1</div>
+                <div class="player-name"></div>
+            </div>
+            <div class="stats"></div>
+        </div>
+        <div class="player" id="player_2">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">2</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_3">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">3</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_4">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">4</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_5">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">5</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_6">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">6</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_7">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">7</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_8">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">8</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_9">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">9</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+        <div class="player" id="player_10">
+            <div class="role-header"></div>
+            <div class="photo"></div>
+            <div class="status"></div>
+            <div class="role-footer">
+                <div class="number">10</div>
+                <div class="player-name"></div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<div class="numbers-panel">
+    <div class="numbers-content">
+        <div class="numbers-row">
+            <span class="number-label">ПУ:</span>
+            <span class="number-value">
+                    <div class="number-group" id="pu-value"></div>
+                </span>
+            <span class="number-separator">|</span>
+            <span class="number-label">ЛХ:</span>
+            <span class="number-value">
+                    <div class="number-group" id="lh-value"></div>
+                </span>
+            <span class="number-separator">|</span>
+            <span class="number-label">Дон:</span>
+            <span class="number-value">
+                    <div class="number-group" id="don-checks"></div>
+                </span>
+            <span class="number-separator">|</span>
+            <span class="number-label">Шериф:</span>
+            <span class="number-value">
+                    <div class="number-group" id="sheriff-checks"></div>
+                </span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .numbers-panel {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .numbers-panel.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .number-separator {
+        margin: 0 8px;
+        color: #4a4b4f;
+    }
+
+    .number-badge {
+        background-color: rgba(255, 255, 255, 0.15); /* Белый фон с прозрачностью */
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin: 0 2px;
+    }
+</style>
+
+<script>
+    const ps = new BroadcastChannel('panel_status');
+    const pl = new BroadcastChannel('player_list');
+    const cl = new BroadcastChannel('class_list');
+    const pn = new BroadcastChannel('player_numbers');
+    const fc = new BroadcastChannel('fact_channel');
+
+    // Обработчик для получения факта
+    fc.onmessage = function (event) {
+        const factPanel = document.querySelector('.fact-panel');
+        if (event.data.visible) {
+            factPanel.classList.add('visible');
+            document.getElementById('fact-content').textContent = event.data.text;
+        } else {
+            factPanel.classList.remove('visible');
+        }
+    };
+
+    // При загрузке страницы проверяем сохраненный факт и его видимость
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedFact = localStorage.getItem('gameFact');
+        const isVisible = localStorage.getItem('factVisible') === 'true';
+        const factPanel = document.querySelector('.fact-panel');
+        const factContent = document.getElementById('fact-content');
+
+        if (savedFact && isVisible) {
+            factContent.textContent = savedFact;
+            factPanel.classList.add('visible');
+        } else {
+            factPanel.classList.remove('visible');
+        }
+    });
+
+    pl.onmessage = (event) => {
+        const [elementId, data] = event.data.split('|');
+
+        // Если это статистика (содержит _stats в ID)
+        if (elementId.includes('_stats')) {
+            const playerId = elementId.replace('_stats', '');
+            const statsContainer = document.querySelector(`#${playerId} .stats`);
+            if (statsContainer) {
+                statsContainer.innerHTML = data;
+            }
+        } else {
+            // Если это имя игрока
+            const playerElement = document.getElementById(elementId);
+            if (playerElement) {
+                const playerName = playerElement.querySelector('.player-name');
+                if (playerName) {
+                    playerName.textContent = data;
+                    // Добавляем атрибут data-nickname для стилизации
+                    playerName.setAttribute('data-nickname', data);
+                }
+                playerElement.querySelector('.photo').style.backgroundImage = `url("content/photo/${data}.png")`;
+            }
+        }
+    };
+
+    cl.onmessage = (event) => {
+        const [elementId, classes] = event.data.split('|');
+        const element = document.getElementById(elementId);
+        if (element) {
+            const wasSpeaker = element.classList.contains('speaker');
+            element.setAttribute('class', classes);
+            const isSpeaker = element.classList.contains('speaker');
+
+            // Обновляем роль в шапке
+            const roleHeader = element.querySelector('.role-header');
+            if (roleHeader) {
+                if (element.classList.contains('don')) {
+                    roleHeader.textContent = 'Дон';
+                } else if (element.classList.contains('sheriff')) {
+                    roleHeader.textContent = 'Шериф';
+                } else if (element.classList.contains('black')) {
+                    roleHeader.textContent = 'Черный';
+                } else {
+                    roleHeader.textContent = 'Красный';
+                }
+            }
+
+            if (!wasSpeaker && isSpeaker) {
+                updateSpeakerStats(element);
+            }
+            if (wasSpeaker && !isSpeaker) {
+                clearStats();
+            }
+        }
+    };
+
+    ps.onmessage = (event) => {
+        const [elementName, classes] = event.data.split('|');
+        const element = document.getElementsByTagName(elementName)[0];
+        if (element) {
+            element.className = classes;
+        }
+    };
+
+    // Функция для получения цвета в зависимости от роли игрока
+    function getPlayerColor(number) {
+        const player = document.getElementById(`player_${number}`);
+        if (player) {
+            if (player.classList.contains('sheriff')) return '#ff4d4d'; // Красный для шерифа
+            if (player.classList.contains('don') || player.classList.contains('black')) return '#000000'; // Черный для дона и черных
+            return '#ff4d4d'; // Красный для мирных
+        }
+        return '#ff4d4d'; // Дефолтный цвет
+    }
+
+    // Функция для форматирования значений с разделителями и цветами
+    function formatNumbersWithSeparators(values) {
+        if (!values || values === '-') return '';
+        const numbers = values.split(',').map(v => v.trim()).filter(v => v);
+        if (numbers.length === 0) return '';
+
+        return numbers.map(number => {
+            const color = getPlayerColor(number);
+            return `<span class="number-badge" style="color: ${color}">${number}</span>`;
+        }).join('');
+    }
+
+    pn.onmessage = (event) => {
+        const {
+            pu,
+            lh,
+            don,
+            sheriff
+        } = event.data;
+
+        // Функция для определения роли игрока по номеру
+        const getPlayerRole = (number) => {
+            const player = document.getElementById(`player_${number}`);
+            if (player) {
+                if (player.classList.contains('sheriff')) return 'sheriff';
+                if (player.classList.contains('don')) return 'don';
+                if (player.classList.contains('black')) return 'black';
+                return 'red';
+            }
+            return 'unknown';
+        };
+
+        // Функция для создания элемента с цифрой
+        const createNumberBadge = (number, section) => {
+            const badge = document.createElement('span');
+            badge.className = 'number-badge';
+            badge.textContent = number;
+
+            const role = getPlayerRole(number);
+            let color = '#000000'; // По умолчанию черный
+
+            if (section === 'don') {
+                // Для секции дона
+                if (role === 'sheriff') {
+                    color = '#8977fd'; // Фиолетовый для шерифа
+                } else if (role === 'red') {
+                    color = '#ff5555'; // Красный для красных
+                } else {
+                    color = '#000000'; // Черный для остальных
+                }
+            } else {
+                // Для ПУ, ЛХ и проверок шерифа
+                if (role === 'sheriff' || role === 'red') {
+                    color = '#ff5555'; // Красный для шерифа и красных
+                } else {
+                    color = '#000000'; // Черный для дона и черных
+                }
+            }
+
+            badge.style.color = color;
+            return badge;
+        };
+
+        // Обновляем значения
+        document.getElementById('pu-value').textContent = '';
+        if (pu && pu !== '-') {
+            document.getElementById('pu-value').appendChild(createNumberBadge(pu, 'pu'));
+        }
+
+        document.getElementById('lh-value').textContent = '';
+        if (lh && lh !== '-') {
+            lh.split(', ').forEach(num => {
+                document.getElementById('lh-value').appendChild(createNumberBadge(num, 'lh'));
+            });
+        }
+
+        document.getElementById('don-checks').textContent = '';
+        if (don && don !== '-') {
+            don.split(', ').forEach(num => {
+                document.getElementById('don-checks').appendChild(createNumberBadge(num, 'don'));
+            });
+        }
+
+        document.getElementById('sheriff-checks').textContent = '';
+        if (sheriff && sheriff !== '-') {
+            sheriff.split(', ').forEach(num => {
+                document.getElementById('sheriff-checks').appendChild(createNumberBadge(num, 'sheriff'));
+            });
+        }
+
+        // Показываем панель только если есть данные
+        const numbersPanel = document.querySelector('.numbers-panel');
+        if ((pu && pu !== '-') || (lh && lh !== '-') || (don && don !== '-') || (sheriff && sheriff !== '-')) {
+            numbersPanel.classList.add('visible');
+        } else {
+            numbersPanel.classList.remove('visible');
+        }
+    };
+
+    function updateSpeakerStats(playerElement) {
+        const playerName = playerElement.querySelector('.player-name').textContent;
+        const statsHeader = document.querySelector('.stats-panel .player-name');
+        const statsContent = document.getElementById('stats-content');
+
+        if (statsHeader && playerName) {
+            statsHeader.textContent = playerName;
+        }
+
+        if (statsContent) {
+            statsContent.innerHTML = '';
+
+            const stats = JSON.parse(localStorage.getItem(`player_stats_${playerName}`)) || {};
+            const statFields = JSON.parse(localStorage.getItem('statFields')) || [];
+
+            const playerRole = playerElement.classList.contains('sheriff') ? 'sheriff' :
+                playerElement.classList.contains('don') ? 'don' :
+                    playerElement.classList.contains('black') ? 'black' : 'red';
+
+            const filteredFields = statFields.filter(field => {
+                if (field.type === 'always') return true;
+                if (playerRole === 'sheriff' && field.type === 'sheriff') return true;
+                if ((playerRole === 'don' || playerRole === 'black') && field.type === 'black') return true;
+                if (playerRole === 'red' && field.type === 'red') return true;
+                return false;
+            });
+
+            const fieldsToShow = filteredFields.length > 0 ? filteredFields : [
+                {
+                    name: 'Игр всего',
+                    type: 'always'
+                },
+                {
+                    name: 'Побед всего',
+                    type: 'always'
+                },
+                ...(playerRole === 'sheriff' ? [{
+                        name: 'Побед за шерифа',
+                        type: 'sheriff'
+                    }] :
+                    (playerRole === 'don' || playerRole === 'black') ? [{
+                            name: 'Побед за мафию',
+                            type: 'black'
+                        }] :
+                        [{
+                            name: 'Побед за красных',
+                            type: 'red'
+                        }])
+            ];
+
+            fieldsToShow.forEach(field => {
+                const statRow = document.createElement('div');
+                statRow.className = 'stat-row';
+                statRow.innerHTML = `
+                    <span class="stat-label">${field.name}</span>
+                    <span class="stat-value">${stats[field.name] || '-'}</span>
+                `;
+                statsContent.appendChild(statRow);
+            });
+        }
+    }
+
+    function clearStats() {
+        const statsHeader = document.querySelector('.stats-panel .player-name');
+        const statsContent = document.getElementById('stats-content');
+
+        if (statsHeader) {
+            statsHeader.textContent = 'Игроки';
+        }
+        if (statsContent) {
+            statsContent.innerHTML = '';
+        }
+    }
+
+    // Добавляем обработчик для номера игры
+    const gameNumberChannel = new BroadcastChannel('game_number_channel');
+    gameNumberChannel.onmessage = function (event) {
+        document.getElementById('current-game-number').textContent = event.data.current || '-';
+        document.getElementById('total-games-number').textContent = event.data.total || '-';
+    };
+</script>
+</body>
+
+</html>

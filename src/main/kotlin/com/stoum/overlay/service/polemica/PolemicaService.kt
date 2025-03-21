@@ -9,7 +9,6 @@ import com.github.mafia.vyasma.polemica.library.utils.KickReason
 import com.github.mafia.vyasma.polemica.library.utils.getFirstKilled
 import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
 import com.github.mafia.vyasma.polemica.library.utils.getRole
-import com.github.mafia.vyasma.polemica.library.utils.isBlack
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
@@ -94,7 +93,16 @@ class PolemicaService(
                             val checks = polemicaGame.checks?.filter { it.role == Role.SHERIFF }?.sortedBy { it.night }
                             player.checks = checks?.map {
                                 mapOf(
-                                    "first" to polemicaColorToString(polemicaGame.getRole(it.player).isBlack()),
+                                    "first" to polemicaRoleToRole(polemicaGame.getRole(it.player)),
+                                    "second" to it.player.value.toString()
+                                )
+                            }?.toMutableList()
+                        }
+                        if (player.role == "don") {
+                            val checks = polemicaGame.checks?.filter { it.role == Role.DON }?.sortedBy { it.night }
+                            player.checks = checks?.map {
+                                mapOf(
+                                    "first" to polemicaRoleToRole(polemicaGame.getRole(it.player)),
                                     "second" to it.player.value.toString()
                                 )
                             }?.toMutableList()
