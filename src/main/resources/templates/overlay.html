@@ -283,7 +283,7 @@
             const numbersPanel = document.querySelector('.numbers-panel');
             numbersPanel.classList.add('visible');
         }
-        document.getElementById('current-game-text').innerText = 'Мой любимый турнир. Стол 1. Игра 1';
+        document.getElementById('current-game-text').innerText = gameInfo.text;
 
         players.forEach((playerInfo, index) => {
             const playerElement = document.getElementById(`player_${index + 1}`);

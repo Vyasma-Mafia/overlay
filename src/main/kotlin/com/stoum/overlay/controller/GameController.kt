@@ -88,6 +88,17 @@ class GameController(
         emitterService.emitGame(id)
     }
 
+    @PostMapping("/{id}/text")
+    fun setText(@PathVariable id: String, @RequestParam value: String) {
+        val game = gameRepository.findById(UUID.fromString(id)).get()
+
+        game.text = value
+
+        gameRepository.save(game)
+
+        emitterService.emitGame(id)
+    }
+
     fun Game.getPlayerByPlace(place: Int): GamePlayer {
         return this.players.find { p -> p.place == place - 1 }!!
     }
