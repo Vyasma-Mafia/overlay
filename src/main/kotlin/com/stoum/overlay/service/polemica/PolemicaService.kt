@@ -69,17 +69,7 @@ class PolemicaService(
                 getLogger().info("Polemica game ${polemicaGame.id} in tournament $tournamentId crawled")
                 val kicked = polemicaGame.getKickedFromTable().groupBy { it.position }.mapValues { it.value.first() }
                 val firstKilled = polemicaGame.getFirstKilled()
-                if (polemicaGame.result != null) {
-                    game.started = false
-                    gameRepository.save(game)
-                    val nextGame =
-                        gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum + 1, tableNum)
-                            ?: return
-                    nextGame.started = true
-                    gameRepository.save(nextGame)
-                    scheduleNextGameTasks(game.id)
-                    return
-                }
+
                 game.players.forEach { player ->
                     Position.fromInt(player.place)?.let { position ->
                         kicked[position]?.let {
@@ -108,6 +98,17 @@ class PolemicaService(
                             }?.toMutableList()
                         }
                     }
+                }
+                if (polemicaGame.result != null) {
+                    game.started = false
+                    gameRepository.save(game)
+                    val nextGame =
+                        gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum + 1, tableNum)
+                            ?: return
+                    nextGame.started = true
+                    gameRepository.save(nextGame)
+                    scheduleNextGameTasks(game.id)
+                    return
                 }
                 gameRepository.save(game)
                 emitterService.emitGame(game.id.toString())
