@@ -42,11 +42,54 @@ footer {
     background: none !important;
 }
 
+.role {
+    height: 25px;
+    width: 25px;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 1);
+    /*box-shadow: 0 0 0 2px rgba(255, 255, 255, 1);*/
+    z-index: 3;
+    background-size: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scale(1.3);
+}
+
+.sher .role {
+    opacity: 1;
+    background-color: rgb(234, 198, 103);
+    background-image: url("../icon/loupe.png");
+}
+
+.don .role {
+    opacity: 1;
+    background-color: rgb(220, 220, 220);
+    background-image: url("../icon/hat.png");
+}
+
+.black .role {
+    opacity: 1;
+    background-color: rgb(13, 13, 13);
+    background-image: url("../icon/gun.png");
+}
+
+.red .role {
+    opacity: 1;
+    background-color: rgb(152, 20, 29);
+    background-image: url("../icon/heart.png");
+}
+
 .player {
     width: 160px;
     height: 220px;
     position: relative;
-    border-radius: 8px;
+    border-radius: 10px;
     background: linear-gradient(180deg,
     #971919 0%,
     #701515 35%,
@@ -143,22 +186,22 @@ footer {
 }
 
 .player.dead .photo {
-    height: calc(100% - 70px);
+    height: 100%;
     filter: grayscale(100%) brightness(0.7);
-    opacity: 0.7;
+    opacity: 0.8;
     margin-left: 0;
     margin-right: 0;
     width: 100%;
     background-position: center;
-    background-size: contain;
+    background-size: cover;
 }
 
 .photo {
-    height: calc(100% - 70px);
-    margin-top: 35px;
-    border-radius: 0;
+    height: 100%;
+    margin-top: 0;
+    border-radius: 8px;
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     position: relative;
     z-index: 1;
@@ -178,17 +221,17 @@ footer {
 }
 
 .status {
-    height: 36px;
-    width: 36px;
+    height: 25px;
+    width: 25px;
     position: absolute;
-    top: -3px;
-    right: -3px;
+    top: 3px;
+    right: 3px;
     visibility: hidden;
     opacity: 0;
     transition: all 0.3s ease;
-    border-radius: 50%;
+    border-radius: 8px;
     background-color: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 1);
+    /*box-shadow: 0 0 0 2px rgba(255, 255, 255, 1);*/
     z-index: 3;
     background-size: 20px;
     background-position: center;
@@ -221,22 +264,7 @@ footer {
     background-size: 22px;
 }
 
-.role {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 6px 12px;
-    border-radius: 12px;
-    visibility: hidden;
-    opacity: 0;
-    transition: all 0.3s ease;
-    background-color: rgb(255, 255, 255);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    font-weight: 500;
-    text-transform: uppercase;
-    font-family: 'Montserrat', sans-serif;
-}
+
 
 /* Текст ролей */
 body.show-roles .role {
@@ -784,11 +812,12 @@ body.stats-right.show-stats .stats-panel {
     display: flex;
     align-items: center;
     padding: 0 8px;
-    font-size: 16px;
+    font-size: 20px;
     color: #000;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-family: 'MrNorwester', sans-serif;
+    word-wrap: anywhere;
     font-weight: normal;
     white-space: nowrap;
     overflow: hidden;
