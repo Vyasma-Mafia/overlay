@@ -156,9 +156,9 @@ textarea {
 .button {
     position: relative;
     top: 50%;
-    width: 90px;
+    width: 70px;
     height: 24px;
-    overflow: hidden;
+    overflow: visible;
     padding: 3px 0;
 }
 
