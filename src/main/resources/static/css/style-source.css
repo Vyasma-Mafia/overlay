@@ -312,6 +312,7 @@ body.show-roles .don .role::after {
     font-weight: normal;
     font-family: 'MrNorwester', sans-serif;
     margin: 0;
+    text-shadow: 0 0 5px #000000;
 }
 
 .number::after {
@@ -824,10 +825,10 @@ body.stats-right.show-stats .stats-panel {
     text-overflow: ellipsis;
 }
 
-/* Цвета для разных ролей */
+/* Цвета для разных ролтей */
 .player.don .role-header,
 .player.don .number {
-    background: #000000;
+    background: #dcdcdc;
 }
 
 .player.sher .role-header,
@@ -837,7 +838,7 @@ body.stats-right.show-stats .stats-panel {
 
 .player.black .role-header,
 .player.black .number {
-    background: #2f2f2f;
+    background: #0d0d0d;
 }
 
 /* Подсветка для разных ролей */

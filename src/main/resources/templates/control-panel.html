@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
 
 <head>
     <meta charset="utf-8">
@@ -44,6 +44,17 @@
                     <input type="checkbox" class="checkbox">
                     <div class="knobs"></div>
                     <div class="layer"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Название игры
+            </td>
+            <td>
+                <input type="text" id="text-input" placeholder="Введите текст">
+                <div id="button-send-text">
+                    <button class="button">Отправить текст</button>
                 </div>
             </td>
         </tr>
@@ -405,7 +416,7 @@
 <script>
     function addPlayers(players) {
         document.querySelectorAll('.player-list').forEach((element, index, array) => {
-            element.innerHTML = ''
+            element.innerHTML = '';
             players.forEach(player => {
                 element.add(new Option(player, player));
             });
@@ -415,39 +426,39 @@
     function setTable(playersOrdered) {
         document.querySelectorAll('.player-list').forEach((element, index, array) => {
             element.querySelectorAll(`option`).forEach(element => {
-                element.removeAttribute("selected")
-            })
-            element.querySelector(`[value="${playersOrdered[index]}"]`).setAttribute("selected", "selected")
+                element.removeAttribute('selected');
+            });
+            element.querySelector(`[value="${playersOrdered[index]}"]`).setAttribute('selected', 'selected');
         });
         //sendAllData()
     }
 
     function setRoles(roles) {
-        let rolesList = roles.split(" ")
-        sherDivElement = document.querySelector(`.player#player_${rolesList[0]} td.sher-button div`)
-        changeRole(sherDivElement, 'sher', false)
+        let rolesList = roles.split(' ');
+        sherDivElement = document.querySelector(`.player#player_${rolesList[0]} td.sher-button div`);
+        changeRole(sherDivElement, 'sher', false);
         rolesList.slice(1).forEach(slot => {
-            if (slot.toString().startsWith("*")) {
-                donDivElement = document.querySelector(`.player#player_${slot.toString().slice(1)} td.don-button div`)
-                changeRole(donDivElement, 'don', false)
+            if (slot.toString().startsWith('*')) {
+                donDivElement = document.querySelector(`.player#player_${slot.toString().slice(1)} td.don-button div`);
+                changeRole(donDivElement, 'don', false);
             } else {
-                blackDivElement = document.querySelector(`.player#player_${slot.toString()} td.black-button div`)
-                changeRole(blackDivElement, 'black', false)
+                blackDivElement = document.querySelector(`.player#player_${slot.toString()} td.black-button div`);
+                changeRole(blackDivElement, 'black', false);
             }
-        })
+        });
     }
 
 
-    let id = "[[${id}]]"
-    let tournamentId = "[[${tournamentId}]]"
-    let gameNum = "[[${gameNum}]]"
-    let tableNum = "[[${tableNum}]]"
+    let id = '[[${id}]]';
+    let tournamentId = '[[${tournamentId}]]';
+    let gameNum = '[[${gameNum}]]';
+    let tableNum = '[[${tableNum}]]';
 
     function nextGame() {
-        window.location.replace(`/${tournamentId}/${parseInt(gameNum) + 1}/${tableNum}/control`)
+        window.location.replace(`/${tournamentId}/${parseInt(gameNum) + 1}/${tableNum}/control`);
         fetch(`/${id}/next`, {
-            method: "POST"
-        })
+            method: 'POST'
+        });
     }
 
     const socket = new EventSource(`/${id}/controlinfo`);
@@ -457,32 +468,32 @@
         socket.send('register control-panel');
         console.log("Connected to gameinfo WS")
     });*/
-    socket.addEventListener("message", function (event) {
+    socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
-        if (event.data.toString().startsWith("!")) {
-            let split = event.data.toString().split(/ (.*)/s)
+        if (event.data.toString().startsWith('!')) {
+            let split = event.data.toString().split(/ (.*)/s);
             switch (split[0]) {
-                case "!gameinfo": {
-                    let playersOrdered = JSON.parse(split[1]).playersOrdered
-                    addPlayers(playersOrdered)
-                    setTable(playersOrdered)
-                    socket.close()
-                    break
+                case '!gameinfo': {
+                    let playersOrdered = JSON.parse(split[1]).playersOrdered;
+                    addPlayers(playersOrdered);
+                    setTable(playersOrdered);
+                    socket.close();
+                    break;
                 }
-                case "!addplayers": {
+                case '!addplayers': {
                     let players = event.data.split(' ').slice(1).join(' ');
-                    addPlayers(players)
-                    break
+                    addPlayers(players);
+                    break;
                 }
-                case "!settable": {
+                case '!settable': {
                     let playersOrdered = event.data.split(' ').slice(1).join(' ');
-                    setTable(playersOrdered)
-                    break
+                    setTable(playersOrdered);
+                    break;
                 }
-                case "!setroles": {
-                    clearRole()
-                    let roles = event.data.split(' ').slice(1).join(" ");
-                    setRoles(roles)
+                case '!setroles': {
+                    clearRole();
+                    let roles = event.data.split(' ').slice(1).join(' ');
+                    setRoles(roles);
                 }
             }
         }
@@ -507,16 +518,16 @@
                 element.classList.remove('voted');
                 element.classList.remove('deleted');
             } else {
-                element.classList.add('dead')
+                element.classList.add('dead');
             }
             element.classList.add(status);
         }
-        let playerNickname = element.querySelector("select option[selected]").text
+        let playerNickname = element.querySelector('select option[selected]').text;
         fetch(`/${id}/status`, {
-            method: "POST",
+            method: 'POST',
             body: `{"${playerNickname}" : ["","${status}"]}`,
             headers: {
-                "Content-type": "application/json; charset=UTF-8"
+                'Content-type': 'application/json; charset=UTF-8'
             }
         });
 
@@ -534,12 +545,12 @@
             element.classList.add(role);
         }
         //classes = element.id + '|' + element.classList.value;
-        playerNickname = element.querySelector("select option[selected]").text
+        playerNickname = element.querySelector('select option[selected]').text;
         fetch(`/${id}/roles`, {
-            method: "POST",
+            method: 'POST',
             body: `{"${playerNickname}" : "${role}"}`,
             headers: {
-                "Content-type": "application/json; charset=UTF-8"
+                'Content-type': 'application/json; charset=UTF-8'
             }
         });
         //playerStatusChannel.postMessage(classes);
@@ -556,7 +567,7 @@
                     playerStatusChannel.postMessage(item.id + '|' + item.classList.value);
                 }
             });
-            element.classList.add('speaker')
+            element.classList.add('speaker');
         }
         classes = element.id + '|' + element.classList.value;
         playerStatusChannel.postMessage(classes);
@@ -596,7 +607,7 @@
             //playerStatusChannel.postMessage(player);
         });
 
-        socket.send("!setrole reset")
+        socket.send('!setrole reset');
     }
 
     $('#button-panel').click(function () {
@@ -642,8 +653,30 @@
         }
     });
 
+    document.getElementById('button-send-text').addEventListener('click', function () {
+        const textInput = document.getElementById('text-input').value;
+
+        // Проверяем, что ввод не является пустым
+        if (textInput.trim() !== '') {
+            fetch(`/${id}/text?value=${encodeURIComponent(textInput)}`, {
+                method: 'POST'
+            }).then(response => {
+                if (response.ok) {
+                    alert('Текст успешно отправлен!');
+                } else {
+                    alert('Ошибка при отправке текста.');
+                }
+            }).catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка сети при отправке текста.');
+            });
+        } else {
+            alert('Пожалуйста, введите текст перед отправкой.');
+        }
+    });
+
     $('select').on('change', function () {
-        player = $(this).parents('.player')[0].id + '|' + $(this).find(":selected").val();
+        player = $(this).parents('.player')[0].id + '|' + $(this).find(':selected').val();
         playerRoleChannel.postMessage(player);
     });
 
