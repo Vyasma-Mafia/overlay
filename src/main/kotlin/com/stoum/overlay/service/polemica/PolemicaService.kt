@@ -117,6 +117,7 @@ class PolemicaService(
                     "Error while crawling polemica game {}: {} {} {}",
                     game.id, game.tournamentId, game.gameNum, game.tableNum, e
                 )
+                gameIdCache.invalidateAll()
             }
         }
     }
