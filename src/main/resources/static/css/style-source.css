@@ -114,8 +114,8 @@ footer {
 
 .player.sher {
     background: linear-gradient(180deg,
-    #fff18a 0%,
-    #eac667 100%
+    #eac667 0%,
+    #fff18a 100%
     ) !important;
 }
 
@@ -306,7 +306,7 @@ body.show-roles .don .role::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #ff5555;
+    background: #98141d;
     color: white;
     font-size: 22px;
     font-weight: normal;
@@ -646,7 +646,6 @@ body.stats-right.show-stats .stats-panel {
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.2s ease;
     color: #ffffff;
-    -webkit-text-stroke: 0.7px #000;
 }
 
 .number-badge.sher {
@@ -654,7 +653,7 @@ body.stats-right.show-stats .stats-panel {
 }
 
 .number-badge.red {
-    color: #ff5555; /* Красный для красных */
+    color: #98141d; /* Красный для красных */
 }
 
 .number-badge.black {
@@ -777,7 +776,7 @@ body.stats-right.show-stats .stats-panel {
     left: 0;
     right: 0;
     height: 35px;
-    background: #ff5555;
+    background: #98141d;
     color: white;
     display: flex;
     align-items: center;
@@ -976,7 +975,7 @@ body.stats-right.show-stats .stats-panel {
 }
 
 .game-number-button:hover {
-    color: #ff5555;
+    color: #98141d;
 }
 
 /* Базовый стиль для никнейма */
@@ -1172,28 +1171,14 @@ body.stats-right.show-stats .stats-panel {
     background-color: rgba(255, 255, 255, 0.5);
 }
 
-.check.black {
+.check.black,
+.check.don {
     background-color: rgba(0, 0, 0, 50);
 }
 
+
 .check.red {
     background-color: rgba(255, 0, 0, 50);
-}
-
-.check-1 {
-    top: 52px;
-}
-
-.check-2 {
-    top: 88px;
-}
-
-.check-3 {
-    top: 124px;
-}
-
-.check-4 {
-    top: 160px;
 }
 
 .check-text {

@@ -113,10 +113,6 @@
             <div class="guess guess-2"><p class="guess-text"></p></div>
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
-            <div class="check check-1"><p class="check-text"></p></div>
-            <div class="check check-2"><p class="check-text"></p></div>
-            <div class="check check-3"><p class="check-text"></p></div>
-            <div class="check check-4"><p class="check-text"></p></div>
             <div class="role"></div>
             <div class="role-footer">
                 <div class="number">7</div>
@@ -131,10 +127,6 @@
             <div class="guess guess-2"><p class="guess-text"></p></div>
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
-            <div class="check check-1"><p class="check-text"></p></div>
-            <div class="check check-2"><p class="check-text"></p></div>
-            <div class="check check-3"><p class="check-text"></p></div>
-            <div class="check check-4"><p class="check-text"></p></div>
             <div class="role"></div>
             <div class="role-footer">
                 <div class="number">8</div>
@@ -255,11 +247,11 @@
         } else {
             document.getElementsByTagName('body')[0].setAttribute('class', '');
         }
-        if (players.filter(it => it.checks.size !== 0).size !== 0) {
-            const numbersPanel = document.querySelector('.numbers-panel');
-            numbersPanel.classList.add('visible');
-        }
+
         document.getElementById('current-game-text').innerText = gameInfo.text;
+
+        const donChecksContainer = document.getElementById('don-checks');
+        const sherChecksContainer = document.getElementById('sher-checks');
 
         players.forEach((playerInfo, index) => {
             const playerElement = document.getElementById(`player_${index + 1}`);
@@ -292,7 +284,7 @@
             const ROLES = ['don', 'sher', 'black', 'red'];
 
             //todo set role
-            if (playerInfo.role) {
+            if (playerInfo.role && gameInfo.visibleRoles === true) {
                 ROLES.filter(it => it !== playerInfo.role).forEach(it => playerElement.classList.remove(it));
                 playerElement.classList.add(playerInfo.role)
             } else {
@@ -321,8 +313,6 @@
                 return badge;
             };
 
-            const donChecksContainer = document.getElementById('don-checks');
-            const sherChecksContainer = document.getElementById('sher-checks');
             // Если у вас есть условие для разделения данных на дон и шериф
             if (playerInfo.role === 'don') {
                 donChecksContainer.textContent = '';
@@ -355,13 +345,13 @@
             document.querySelectorAll('.role').forEach(el => {
                 el.classList.add('visible');
             });
-            document.querySelectorAll('.check').forEach(el => {
-                if (el.querySelector('.check-text').innerHTML !== '') {
+            if (donChecksContainer.hasChildNodes() || sherChecksContainer.hasChildNodes()) {
+                document.querySelectorAll('.numbers-panel').forEach(el => {
                     el.classList.add('visible');
-                }
-            });
+                });
+            }
         } else {
-            document.querySelectorAll('.role, .check').forEach(el => {
+            document.querySelectorAll('.role, .numbers-panel').forEach(el => {
                 el.classList.remove('visible');
             });
         }
