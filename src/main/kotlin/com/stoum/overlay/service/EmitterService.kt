@@ -1,23 +1,24 @@
 package com.stoum.overlay.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import java.util.*
+import java.time.LocalDateTime
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class EmitterService(
     val gameRepository: GameRepository
 ) {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     val objectMapper = ObjectMapper()
 
-    private val emitters = ConcurrentHashMap<String, SseEmitter>()
+    private val emitters = ConcurrentHashMap<String, MutableList<SseEmitterInfo>>()
 
     fun emitGame(gameId: String) {
         val game = gameRepository.findById(UUID.fromString(gameId))
@@ -28,22 +29,50 @@ class EmitterService(
     }
 
     fun registerEmitter(id: String, emitter: SseEmitter): SseEmitter {
-        emitters[id] = emitter
+        emitters.computeIfAbsent(id) { arrayListOf() }
+        emitters[id]?.add(SseEmitterInfo(emitter, LocalDateTime.now()))
         return emitter
     }
 
     fun sendTo(id: String, payload: String) {
-        emitters[id]?.send(payload)
+        runBlocking {
+            emitters[id]?.forEach {
+                launch {
+                    try {
+                        it.sseEmitter.send(payload)
+                    } catch (e: Exception) {
+                        getLogger().warn("Error on send to $id with emitter $it")
+                    }
+                }
+            }
+        }
+        clearEmitters(id)
+    }
+
+    fun clearEmitters(id: String) {
+        emitters[id]?.removeIf {
+            try {
+                it.sseEmitter.send("ping")
+            } catch (e: Exception) {
+                if (it.registered.isBefore(LocalDateTime.now().minusDays(1))) {
+                    getLogger().info("Emitter $it for $id is deleted")
+                    return@removeIf true
+                }
+            }
+            return@removeIf false
+        }
     }
 
     fun sendToAll(payload: String) {
-        emitters.forEachValue(1L) {
-            log.info("sending to $it")
-            it.send(payload)
+        emitters.flatMap { it.value }.forEach {
+            getLogger().info("sending to $it")
+            it.sseEmitter.send(payload)
         }
     }
 
     fun hasEmitters(): Boolean {
         return emitters.isNotEmpty()
     }
+
+    data class SseEmitterInfo(val sseEmitter: SseEmitter, val registered: LocalDateTime)
 }

@@ -1,10 +1,11 @@
 package com.stoum.overlay.service.polemica
 
-import org.slf4j.LoggerFactory
+import com.stoum.overlay.getLogger
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 
 @Component
 @ConditionalOnProperty(
@@ -13,15 +14,14 @@ import org.springframework.stereotype.Component
 )
 @EnableScheduling
 class PolemicaCrawlSchedulerComponent(val polemicaService: PolemicaService) {
-    private val logger = LoggerFactory.getLogger(PolemicaCrawlSchedulerComponent::class.java.name)
 
-    @Scheduled(fixedDelayString = "#{@crawlScheduler.interval.toMillis()}")
+    @Scheduled(fixedRateString = "#{@crawlScheduler.interval.toMillis()}", timeUnit = TimeUnit.MILLISECONDS)
     private fun update() {
         try {
-            logger.info("Game updates crawl started")
+            getLogger().info("Game updates crawl started")
             polemicaService.crawl()
         } catch (e: Exception) {
-            logger.error("Error on crawling: " + e.message, e)
+            getLogger().error("Error on crawling: " + e.message, e)
         }
     }
 }

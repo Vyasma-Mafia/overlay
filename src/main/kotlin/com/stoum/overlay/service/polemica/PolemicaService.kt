@@ -104,11 +104,11 @@ class PolemicaService(
                     gameRepository.save(game)
                     val nextGame =
                         gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum + 1, tableNum)
-                            ?: return
+                            ?: return@forEach
                     nextGame.started = true
                     gameRepository.save(nextGame)
                     scheduleNextGameTasks(game.id)
-                    return
+                    return@forEach
                 }
                 gameRepository.save(game)
                 emitterService.emitGame(game.id.toString())
