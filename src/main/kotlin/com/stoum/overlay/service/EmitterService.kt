@@ -58,10 +58,8 @@ class EmitterService(
                 it.sseEmitter.send("ping")
             } catch (e: Exception) {
                 val errors = it.errorsCounter.incrementAndGet()
-                if (errors < ERRORS_LOG || errors == ERRORS_TO_EXCLUDE) {
-                    getLogger().info("Emitter ${it.sseEmitter} for $id is deleted on $errors")
-                }
                 if (errors > ERRORS_TO_EXCLUDE) {
+                    getLogger().info("Emitter ${it.sseEmitter} for $id is deleted on $errors")
                     return@removeIf true
                 }
             }
