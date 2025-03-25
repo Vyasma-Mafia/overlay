@@ -499,14 +499,6 @@
         }
     });
 
-    const panelStatusChannel = new BroadcastChannel('panel_status');
-    const playerRoleChannel = new BroadcastChannel('player_list');
-    const playerStatusChannel = new BroadcastChannel('class_list');
-
-    $(document).ready(function () {
-
-    });
-
     function changeStatus(object, status) {
         element = object.parentElement.parentElement;
         if (element.classList.contains(status)) {
@@ -587,8 +579,11 @@
             item.classList.remove('dead');
         });
         document.querySelectorAll('.player').forEach((element, index, array) => {
-            player = element.id + '|' + element.classList.value;
-            playerStatusChannel.postMessage(player);
+            fetch(`/${id}/resetStatuses`, {
+                method: 'POST'
+            });
+            // player = element.id + '|' + element.classList.value;
+            // playerStatusChannel.postMessage(player);
         });
     }
 
@@ -607,7 +602,10 @@
             //playerStatusChannel.postMessage(player);
         });
 
-        socket.send('!setrole reset');
+        fetch(`/${id}/resetRoles`, {
+            method: 'POST'
+        });
+        // socket.send('!setrole reset');
     }
 
     $('#button-panel').click(function () {
@@ -699,8 +697,6 @@
         document.querySelectorAll('.player').forEach((element, index, array) => {
             item = element.querySelectorAll('.player-list')[0];
             player = element.id + '|' + $(item[item.selectedIndex]).text();
-
-            playerRoleChannel.postMessage(player);
         });
     }
 </script>

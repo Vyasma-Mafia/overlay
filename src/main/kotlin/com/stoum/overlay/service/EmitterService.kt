@@ -7,9 +7,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import java.time.LocalDateTime
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
+
+const val ERRORS_TO_EXCLUDE = 50L
+const val ERRORS_LOG = 5L
 
 @Service
 class EmitterService(
@@ -30,7 +33,7 @@ class EmitterService(
 
     fun registerEmitter(id: String, emitter: SseEmitter): SseEmitter {
         emitters.computeIfAbsent(id) { arrayListOf() }
-        emitters[id]?.add(SseEmitterInfo(emitter, LocalDateTime.now()))
+        emitters[id]?.add(SseEmitterInfo(emitter, AtomicLong(0)))
         return emitter
     }
 
@@ -54,8 +57,11 @@ class EmitterService(
             try {
                 it.sseEmitter.send("ping")
             } catch (e: Exception) {
-                if (it.registered.isBefore(LocalDateTime.now().minusDays(1))) {
-                    getLogger().info("Emitter $it for $id is deleted")
+                val errors = it.errorsCounter.incrementAndGet()
+                if (errors < ERRORS_LOG || errors == ERRORS_TO_EXCLUDE) {
+                    getLogger().info("Emitter ${it.sseEmitter} for $id is deleted on $errors")
+                }
+                if (errors > ERRORS_TO_EXCLUDE) {
                     return@removeIf true
                 }
             }
@@ -74,5 +80,5 @@ class EmitterService(
         return emitters.isNotEmpty()
     }
 
-    data class SseEmitterInfo(val sseEmitter: SseEmitter, val registered: LocalDateTime)
+    data class SseEmitterInfo(val sseEmitter: SseEmitter, val errorsCounter: AtomicLong)
 }

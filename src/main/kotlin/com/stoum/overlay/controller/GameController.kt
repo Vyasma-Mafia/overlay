@@ -99,6 +99,29 @@ class GameController(
         emitterService.emitGame(id)
     }
 
+    @PostMapping("/{id}/resetStatuses")
+    fun resetStatuses(@PathVariable id: String) {
+        val game = gameRepository.findById(UUID.fromString(id)).get()
+
+        game.players.forEach { it.status = null }
+
+        gameRepository.save(game)
+
+        emitterService.emitGame(id)
+    }
+
+    @PostMapping("/{id}/resetRoles")
+    fun resetRoles(@PathVariable id: String) {
+        val game = gameRepository.findById(UUID.fromString(id)).get()
+
+        game.players.forEach { it.role = null }
+
+        gameRepository.save(game)
+
+        emitterService.emitGame(id)
+    }
+
+
     fun Game.getPlayerByPlace(place: Int): GamePlayer {
         return this.players.find { p -> p.place == place - 1 }!!
     }
