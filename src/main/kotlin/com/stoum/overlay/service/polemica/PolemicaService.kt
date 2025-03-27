@@ -72,9 +72,8 @@ class PolemicaService(
 
                 game.players.forEach { player ->
                     Position.fromInt(player.place)?.let { position ->
-                        kicked[position]?.let {
-                            val status = if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed"
-                            player.status = Pair(status, "")
+                        player.status = kicked[position]?.let {
+                            Pair(if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed", "")
                         }
                         player.role = polemicaRoleToRole(polemicaGame.getRole(position))
                         player.guess =

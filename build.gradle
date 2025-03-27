@@ -42,7 +42,7 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
     // Polemica
-    implementation 'com.github.Vyasma-Mafia:polemica-library:1.3.2'
+    implementation 'com.github.Vyasma-Mafia:polemica-library:1.3.3'
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
