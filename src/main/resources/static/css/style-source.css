@@ -660,6 +660,10 @@ body.stats-right.show-stats .stats-panel {
     color: #000000; /* Черный для черных */
 }
 
+.number-badge.don {
+    color: #000000; /* Черный для дона */
+}
+
 
 .number-badge:hover {
     background: #f5f5f5;
