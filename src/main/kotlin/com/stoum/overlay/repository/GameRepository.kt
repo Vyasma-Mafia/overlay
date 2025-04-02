@@ -6,6 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface GameRepository : JpaRepository<Game, UUID> {
-    fun findGameByTournamentIdAndGameNumAndTableNum(tournamentId: Int, gameNum: Int, tableNum: Int): Game?
+    fun findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+        tournamentId: Int,
+        gameNum: Int,
+        tableNum: Int,
+        phase: Int?
+    ): Game?
+
+    fun findGamesByTournamentIdAndGameNumAndTableNum(tournamentId: Int, gameNum: Int, tableNum: Int): List<Game>
     fun findGameByTypeAndStarted(type: GameType, startred: Boolean): List<Game>
 }

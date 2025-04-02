@@ -9,10 +9,13 @@ import com.github.mafia.vyasma.polemica.library.utils.KickReason
 import com.github.mafia.vyasma.polemica.library.utils.getFirstKilled
 import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
 import com.github.mafia.vyasma.polemica.library.utils.getRole
+import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
+import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
+import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -35,20 +38,94 @@ class PolemicaService(
         .maximumSize(1024)
         .build<PolemicaTournamentGame, Long>()
 
+    @Transactional
+    fun getOrTryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
+        log.info("Getting game tournamentId: $tournamentId, gameNum: $gameNum, tableNum: $tableNum, phase: $phase")
+        val game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+            tournamentId,
+            gameNum,
+            tableNum,
+            phase
+        )
+        if (game == null) {
+            return tryCreateGame(tournamentId, gameNum, tableNum, phase)
+        }
+        return game
+    }
+
+    private fun tryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
+        val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
+        polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
+            val polemicaTournamentGame =
+                PolemicaTournamentGame(
+                    tournamentId,
+                    tGame.num.toInt(),
+                    tGame.table.toInt(),
+                    tGame.phase.toInt()
+                )
+            if (polemicaTournamentGame == tournamentGame) {
+                return createGameFromPolemica(polemicaTournamentGame, tGame.id)
+            }
+        }
+        return null
+    }
+
+    private fun createGameFromPolemica(polemicaTournamentGame: PolemicaTournamentGame, polemicaGameId: Long): Game {
+        val polemicaTournament = polemicaClient.getCompetition(polemicaTournamentGame.tournamentId.toLong())
+        val polemicaGame = polemicaClient.getGameFromCompetition(
+            PolemicaClient.PolemicaCompetitionGameId(
+                polemicaTournamentGame.tournamentId.toLong(),
+                polemicaGameId,
+                4
+            )
+        )
+        val players = polemicaGame.players?.sortedBy { it.position.value }?.map {
+            GamePlayer(
+                id = null,
+                nickname = it.username,
+                place = it.position.value,
+                photoUrl = "https://storage.yandexcloud.net/mafia-photos/${it.player}.jpg",
+                role = "red",
+                checks = arrayListOf(),
+                guess = arrayListOf(),
+                stat = mutableMapOf()
+            )
+        }?.toMutableList() ?: mutableListOf()
+        val game = Game(
+            id = null,
+            type = GameType.POLEMICA,
+            tournamentId = polemicaTournamentGame.tournamentId,
+            gameNum = polemicaTournamentGame.gameNum,
+            tableNum = polemicaTournamentGame.tableNum,
+            phase = polemicaTournamentGame.phase,
+            players = players,
+            started = true,
+            visibleOverlay = true,
+            visibleRoles = true,
+            text = "${polemicaTournament!!.name} | Игра ${polemicaTournamentGame.gameNum}"
+        )
+        return gameRepository.save(game)
+    }
+
     fun crawl() {
         gameRepository.findGameByTypeAndStarted(GameType.POLEMICA, true).forEach { game ->
             try {
-                val tournamentId = game.tournamentId
-                val gameNum = game.gameNum
-                val tableNum = game.tableNum
-                if (tournamentId == null || gameNum == null || tableNum == null) return@forEach
-                val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum)
+                val (tournamentId, gameNum, tableNum, phase) = with(game) {
+                    listOfNotNull(tournamentId, gameNum, tableNum, phase)
+                        .takeIf { it.size == 4 } ?: return@forEach
+                }
+                val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
                 val idO = gameIdCache.getIfPresent(tournamentGame)
                 var id: Long? = null
                 if (idO == null) {
                     polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
                         val polemicaTournamentGame =
-                            PolemicaTournamentGame(tournamentId, tGame.num.toInt(), tGame.table.toInt())
+                            PolemicaTournamentGame(
+                                tournamentId,
+                                tGame.num.toInt(),
+                                tGame.table.toInt(),
+                                tGame.phase.toInt()
+                            )
                         if (polemicaTournamentGame == tournamentGame) {
                             id = tGame.id
                         }
@@ -101,9 +178,7 @@ class PolemicaService(
                 if (polemicaGame.result != null) {
                     game.started = false
                     gameRepository.save(game)
-                    val nextGame =
-                        gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum + 1, tableNum)
-                            ?: return@forEach
+                    val nextGame = getNextGame(tournamentGame) ?: return@forEach
                     nextGame.started = true
                     gameRepository.save(nextGame)
                     scheduleNextGameTasks(game.id)
@@ -118,6 +193,28 @@ class PolemicaService(
                 )
                 gameIdCache.invalidateAll()
             }
+        }
+    }
+
+    private fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame): Game? {
+        with(polemicaTournamentGame) {
+            val nextGameNum = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+                tournamentId,
+                gameNum + 1,
+                tableNum,
+                phase
+            )
+            if (nextGameNum != null) {
+                return nextGameNum
+            }
+            val nextPhaseGame = gameRepository.findGamesByTournamentIdAndGameNumAndTableNum(tournamentId, 1, tableNum)
+                .filter { it.phase != null }
+                .filter { it.phase!! > phase }
+                .minByOrNull { it.phase!! }
+            if (nextPhaseGame != null) {
+                return nextPhaseGame
+            }
+            return null
         }
     }
 
@@ -154,5 +251,5 @@ class PolemicaService(
         }
     }
 
-    data class PolemicaTournamentGame(val tournamentId: Int, val gameNum: Int, val tableNum: Int)
+    data class PolemicaTournamentGame(val tournamentId: Int, val gameNum: Int, val tableNum: Int, val phase: Int)
 }

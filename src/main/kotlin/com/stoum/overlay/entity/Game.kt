@@ -21,7 +21,7 @@ import java.util.UUID
 @Entity
 @Table(
     name = "game",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["tournamentId", "gameNum", "tableNum"])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["tournamentId", "gameNum", "tableNum", "phase"])]
 )
 class Game (
         @Id
@@ -32,8 +32,9 @@ class Game (
         var tournamentId: Int? = null,
         var gameNum: Int? = null,
         var tableNum: Int? = null,
+    var phase: Int? = null,
         @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
-    @JoinColumn(name = "game_id")
+        @JoinColumn(name = "game_id")
         @OrderBy("place ASC")
     var players: MutableList<GamePlayer> = mutableListOf(),
     var started: Boolean? = null,

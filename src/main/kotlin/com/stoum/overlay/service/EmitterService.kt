@@ -11,13 +11,13 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
-const val ERRORS_TO_EXCLUDE = 50L
-const val ERRORS_LOG = 5L
+
 
 @Service
 class EmitterService(
     val gameRepository: GameRepository
 ) {
+    val ERRORS_TO_EXCLUDE = 10L
 
     val objectMapper = ObjectMapper()
 
@@ -33,6 +33,7 @@ class EmitterService(
 
     fun registerEmitter(id: String, emitter: SseEmitter): SseEmitter {
         emitters.computeIfAbsent(id) { arrayListOf() }
+        getLogger().info("Registering emitter for $id: $emitter")
         emitters[id]?.add(SseEmitterInfo(emitter, AtomicLong(0)))
         return emitter
     }

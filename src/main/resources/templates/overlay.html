@@ -185,9 +185,11 @@
     let tournamentId = "[[${tournamentId}]]"
     let gameNum = "[[${gameNum}]]"
     let tableNum = "[[${tableNum}]]"
+    let phase = '[[${phase}]]';
 
-    function nextGame() {
-        window.location.replace(`/${tournamentId}/${parseInt(gameNum) + 1}/${tableNum}/overlay`)
+    function nextGame(nextGameInfoString) {
+        nextGameInfo = JSON.parse(nextGameInfoString);
+        window.location.replace(`/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/games/${nextGameInfo.gameNum}/tables/${nextGameInfo.tableNum}/overlay`);
     }
 
     const socket = new EventSource(`/${id}/gameinfo`);
@@ -207,7 +209,7 @@
                     break
                 }
                 case "!nextgame": {
-                    nextGame()
+                    nextGame(split[1]);
                 }
             }
         }

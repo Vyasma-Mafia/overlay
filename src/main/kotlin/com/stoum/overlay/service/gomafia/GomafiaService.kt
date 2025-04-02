@@ -12,13 +12,7 @@ import com.stoum.overlay.model.gomafia.UserWithStats
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.repository.PlayerRepository
 import jakarta.transaction.Transactional
-import org.springframework.http.HttpStatusCode
-import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Service
-import org.springframework.web.client.ResponseErrorHandler
-import org.springframework.web.client.RestClient
-import java.net.HttpURLConnection
-import java.net.URL
 
 @Service
 class GomafiaService(
@@ -70,11 +64,17 @@ class GomafiaService(
     @Transactional
     fun getGame(tournamentId: Int, gameNum: Int, tableNum: Int): Game? {
         log.info("Getting game tournamentId: ${tournamentId}, gameNum: ${gameNum}, tableNum: $tableNum")
-        if(gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum, tableNum) == null) {
+        if (gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+                tournamentId,
+                gameNum,
+                tableNum,
+                null
+            ) == null
+        ) {
             log.info("Game not found, initiating tournament")
             initTournament(tournamentId, gameNum)
         }
-        return gameRepository.findGameByTournamentIdAndGameNumAndTableNum(tournamentId, gameNum, tableNum)
+        return gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(tournamentId, gameNum, tableNum, null)
     }
 
     private fun userWithStatsToGamePlayer(us: UserWithStats, game: GameDto, player: Player): GamePlayer {
