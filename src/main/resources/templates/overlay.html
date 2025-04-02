@@ -189,7 +189,7 @@
 
     function nextGame(nextGameInfoString) {
         nextGameInfo = JSON.parse(nextGameInfoString);
-        window.location.replace(`/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/games/${nextGameInfo.gameNum}/tables/${nextGameInfo.tableNum}/overlay`);
+        window.location.replace(`/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/tables/${nextGameInfo.tableNum}/games/${nextGameInfo.gameNum}/overlay`);
     }
 
     const socket = new EventSource(`/${id}/gameinfo`);

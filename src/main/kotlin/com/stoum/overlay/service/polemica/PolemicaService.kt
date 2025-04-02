@@ -181,7 +181,7 @@ class PolemicaService(
                     val nextGame = getNextGame(tournamentGame) ?: return@forEach
                     nextGame.started = true
                     gameRepository.save(nextGame)
-                    scheduleNextGameTasks(game.id)
+                    scheduleNextGameTasks(game.id, nextGame)
                     return@forEach
                 }
                 gameRepository.save(game)
@@ -196,7 +196,7 @@ class PolemicaService(
         }
     }
 
-    private fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame): Game? {
+    fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame): Game? {
         with(polemicaTournamentGame) {
             val nextGameNum = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
                 tournamentId,
@@ -241,12 +241,12 @@ class PolemicaService(
 
     fun polemicaColorToString(isBlack: Boolean) = if (isBlack) "black" else "red"
 
-    fun scheduleNextGameTasks(gameId: UUID?) {
+    fun scheduleNextGameTasks(gameId: UUID?, game: Game) {
         val delays = longArrayOf(0, 10, 20, 30, 60, 90, 120, 150, 180)
 
         for (delayMinutes in delays) {
             taskExecutorService.schedule({
-                emitterService.sendTo(gameId.toString(), "!nextgame")
+                emitterService.changeGame(gameId.toString(), game)
             }, delayMinutes, TimeUnit.SECONDS)
         }
     }

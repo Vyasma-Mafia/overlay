@@ -1,6 +1,7 @@
 package com.stoum.overlay.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.stoum.overlay.entity.Game
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
 import kotlinx.coroutines.launch
@@ -29,6 +30,10 @@ class EmitterService(
             it.playersOrdered = it.players.sortedBy { p -> p.place }.map { p -> p.nickname }
             sendTo(gameId, "!gameinfo ${objectMapper.writeValueAsString(it)}")
         }
+    }
+
+    fun changeGame(gameId: String, game: Game) {
+        sendTo(gameId, "!nextgame ${objectMapper.writeValueAsString(game)}")
     }
 
     fun registerEmitter(id: String, emitter: SseEmitter): SseEmitter {

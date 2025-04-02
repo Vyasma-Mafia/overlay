@@ -453,9 +453,10 @@
     let tournamentId = '[[${tournamentId}]]';
     let gameNum = '[[${gameNum}]]';
     let tableNum = '[[${tableNum}]]';
+    let phase = '[[${phase}]]';
 
     function nextGame() {
-        window.location.replace(`/${tournamentId}/${parseInt(gameNum) + 1}/${tableNum}/control`);
+        window.location.replace(`/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/tables/${nextGameInfo.tableNum}/games/${nextGameInfo.gameNum + 1}/control`);
         fetch(`/${id}/next`, {
             method: 'POST'
         });
