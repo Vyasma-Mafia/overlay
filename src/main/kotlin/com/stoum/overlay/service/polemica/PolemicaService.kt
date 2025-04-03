@@ -56,13 +56,7 @@ class PolemicaService(
 
     private fun initTournament(tournamentId: Int) {
         polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
-            val polemicaTournamentGame =
-                PolemicaTournamentGame(
-                    tournamentId,
-                    tGame.num.toInt(),
-                    tGame.table.toInt(),
-                    tGame.phase.toInt()
-                )
+            val polemicaTournamentGame = PolemicaTournamentGame(tournamentId, tGame)
             val game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
                 tournamentId,
                 polemicaTournamentGame.gameNum,
@@ -83,13 +77,7 @@ class PolemicaService(
     private fun tryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
         val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
         polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
-            val polemicaTournamentGame =
-                PolemicaTournamentGame(
-                    tournamentId,
-                    tGame.num.toInt(),
-                    tGame.table.toInt(),
-                    tGame.phase.toInt()
-                )
+            val polemicaTournamentGame = PolemicaTournamentGame(tournamentId, tGame)
             if (polemicaTournamentGame == tournamentGame) {
                 return createGameFromPolemica(polemicaTournamentGame, tGame.id)
             }
@@ -137,22 +125,16 @@ class PolemicaService(
     fun crawl() {
         gameRepository.findGameByTypeAndStarted(GameType.POLEMICA, true).forEach { game ->
             try {
-                val (tournamentId, gameNum, tableNum, phase) = with(game) {
+                val (tournamentId, _, _, _) = with(game) {
                     listOfNotNull(tournamentId, gameNum, tableNum, phase)
                         .takeIf { it.size == 4 } ?: return@forEach
                 }
-                val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
+                val tournamentGame = PolemicaTournamentGame(game)
                 val idO = gameIdCache.getIfPresent(tournamentGame)
                 var id: Long? = null
                 if (idO == null) {
                     polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
-                        val polemicaTournamentGame =
-                            PolemicaTournamentGame(
-                                tournamentId,
-                                tGame.num.toInt(),
-                                tGame.table.toInt(),
-                                tGame.phase.toInt()
-                            )
+                        val polemicaTournamentGame = PolemicaTournamentGame(tournamentId, tGame)
                         if (polemicaTournamentGame == tournamentGame) {
                             id = tGame.id
                         }
@@ -280,5 +262,17 @@ class PolemicaService(
         }
     }
 
-    data class PolemicaTournamentGame(val tournamentId: Int, val gameNum: Int, val tableNum: Int, val phase: Int)
+    data class PolemicaTournamentGame(val tournamentId: Int, val gameNum: Int, val tableNum: Int, val phase: Int) {
+        constructor(game: Game) : this(game.tournamentId!!, game.gameNum!!, game.tableNum!!, game.phase!!)
+
+        constructor(
+            tournamentId: Int,
+            tGame: PolemicaClient.PolemicaTournamentGameReference
+        ) : this(
+            tournamentId,
+            tGame.num.toInt(),
+            tGame.table.toInt(),
+            tGame.phase.toInt()
+        )
+    }
 }
