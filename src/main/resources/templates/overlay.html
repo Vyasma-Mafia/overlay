@@ -225,6 +225,7 @@
         socket = new EventSource(`/${id}/gameinfo`);
         socket.onopen = () => {
             reconnectFrequencySec = 1;
+            reconnectTimeout = null;
             console.log(`Connected to /${id}/gameinfo`);
         };
         socket.onmessage = function (event) {
@@ -246,7 +247,7 @@
             socket.close();
             socket = null;
             clearTimeout(reconnectTimeout);
-            console.log('Try recconect after sec ' + reconnectFrequencySec);
+            console.log('Try reconnect after sec ' + reconnectFrequencySec);
             reconnectTimeout = setTimeout(() => {
                 createSseConnection();
                 reconnectFrequencySec *= 2;
