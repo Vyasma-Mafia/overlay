@@ -30,6 +30,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">1</div>
                 <div class="player-name"></div>
@@ -44,6 +46,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">2</div>
                 <div class="player-name"></div>
@@ -58,6 +62,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">3</div>
                 <div class="player-name"></div>
@@ -72,6 +78,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">4</div>
                 <div class="player-name"></div>
@@ -86,6 +94,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">5</div>
                 <div class="player-name"></div>
@@ -100,6 +110,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">6</div>
                 <div class="player-name"></div>
@@ -114,6 +126,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">7</div>
                 <div class="player-name"></div>
@@ -128,6 +142,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">8</div>
                 <div class="player-name"></div>
@@ -142,6 +158,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">9</div>
                 <div class="player-name"></div>
@@ -156,6 +174,8 @@
             <div class="guess guess-3"><p class="guess-text"></p></div>
             <div class="guess guess-4"><p class="guess-text"></p></div>
             <div class="role"></div>
+            <div class="fouls"></div>
+            <div class="techs"></div>
             <div class="role-footer">
                 <div class="number">10</div>
                 <div class="player-name"></div>
@@ -291,6 +311,22 @@
                 playerElement.classList.add(playerInfo.role)
             } else {
                 ROLES.forEach(it => playerElement.classList.remove(it));
+            }
+
+            let foulsElement = playerElement.querySelector('.fouls');
+            if (playerInfo.fouls && playerInfo.fouls > 0) {
+                foulsElement.innerText = playerInfo.fouls;
+                foulsElement.classList.add('visible');
+            } else {
+                foulsElement.classList.remove('visible');
+            }
+
+            let techsElement = playerElement.querySelector('.techs');
+            if (playerInfo.techs && playerInfo.techs > 0) {
+                techsElement.innerText = 'T';
+                techsElement.classList.add('visible');
+            } else {
+                techsElement.classList.remove('visible');
             }
 
             // const roleHeader = playerElement.querySelector('.role-header');

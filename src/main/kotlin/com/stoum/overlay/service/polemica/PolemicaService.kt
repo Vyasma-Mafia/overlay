@@ -153,6 +153,8 @@ class PolemicaService(
                             Pair(if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed", "")
                         }
                         player.role = polemicaRoleToRole(polemicaGame.getRole(position))
+                        player.fouls = polemicaGame.players?.find { it.position == position }?.fouls?.size
+                        player.techs = polemicaGame.players?.find { it.position == position }?.techs?.size
                         player.guess =
                             polemicaGuessToGuess(polemicaGame.players!!.find { it.position == position }?.guess)
                         if (player.role == "sher") {

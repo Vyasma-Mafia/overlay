@@ -42,6 +42,47 @@ footer {
     background: none !important;
 }
 
+.fouls {
+    height: 25px;
+    width: 15px;
+    position: absolute;
+    visibility: hidden;
+    top: 33px;
+    background-color: gray;
+    color: white;
+    transition: all 0.3s ease;
+    z-index: 4;
+    border-radius: 4px;
+    background-size: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.techs {
+    height: 25px;
+    width: 15px;
+    position: absolute;
+    visibility: hidden;
+    top: 33px;
+    left: 16px;
+    background-color: #2f2f2f;
+    color: white;
+    transition: all 0.3s ease;
+    z-index: 4;
+    border-radius: 4px;
+    background-size: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+}
+
 .role {
     height: 25px;
     width: 25px;

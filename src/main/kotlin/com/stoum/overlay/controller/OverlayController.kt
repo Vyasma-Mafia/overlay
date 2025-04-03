@@ -67,7 +67,7 @@ class OverlayController(
         }
     }
 
-    @RequestMapping("/polemica/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}//control")
+    @RequestMapping("/polemica/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}/control")
     fun control(
         @PathVariable tournamentId: Int,
         @PathVariable phase: Int,
