@@ -209,31 +209,55 @@
 
     function nextGame(nextGameInfoString) {
         nextGameInfo = JSON.parse(nextGameInfoString);
-        window.location.replace(`/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/tables/${nextGameInfo.tableNum}/games/${nextGameInfo.gameNum}/overlay`);
+        let url = `/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/tables/${nextGameInfo.tableNum}/games/${nextGameInfo.gameNum}/overlay`;
+        console.log(`Window location to ${url}`);
+        window.location.replace(url);
     }
 
-    const socket = new EventSource(`/${id}/gameinfo`);
+    let socket;
 
-/*    socket.addEventListener('open', function (event) {
-        socket.send('register overlay');
-        console.log("Connected to gameinfo WS")
-    });*/
 
-    socket.onmessage =  function (event) {
-        console.log(JSON.stringify(event.data));
-        if (event.data.toString().startsWith("!")) {
-            let split = event.data.toString().split(/ (.*)/s)
-            switch (split[0]) {
-                case "!gameinfo": {
-                    parseGameInfo(split[1])
-                    break
-                }
-                case "!nextgame": {
-                    nextGame(split[1]);
+    function createSseConnection() {
+        if (socket) {
+            socket.close();
+            socket = null;
+        }
+        socket = new EventSource(`/${id}/gameinfo`);
+        socket.onopen = () => {
+            reconnectFrequencySec = 1;
+            console.log(`Connected to /${id}/gameinfo`);
+        };
+        socket.onmessage = function (event) {
+            console.log(JSON.stringify(event.data));
+            if (event.data.toString().startsWith('!')) {
+                let split = event.data.toString().split(/ (.*)/s);
+                switch (split[0]) {
+                    case '!gameinfo': {
+                        parseGameInfo(split[1]);
+                        break;
+                    }
+                    case '!nextgame': {
+                        nextGame(split[1]);
+                    }
                 }
             }
-        }
-    };
+        };
+        socket.onerror = function (error) {
+            socket.close();
+            socket = null;
+            clearTimeout(reconnectTimeout);
+            console.log('Try recconect after sec ' + reconnectFrequencySec);
+            reconnectTimeout = setTimeout(() => {
+                createSseConnection();
+                reconnectFrequencySec *= 2;
+                if (reconnectFrequencySec >= 64) {
+                    reconnectFrequencySec = 64;
+                }
+            }, reconnectFrequencySec * 1000);
+        };
+    }
+
+    createSseConnection();
 
     function checkImage(url) {
         var request = new XMLHttpRequest();
