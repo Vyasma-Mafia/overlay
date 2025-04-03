@@ -41,16 +41,43 @@ class PolemicaService(
     @Transactional
     fun getOrTryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
         log.info("Getting game tournamentId: $tournamentId, gameNum: $gameNum, tableNum: $tableNum, phase: $phase")
-        val game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+        var game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
             tournamentId,
             gameNum,
             tableNum,
             phase
         )
         if (game == null) {
-            return tryCreateGame(tournamentId, gameNum, tableNum, phase)
+            game = tryCreateGame(tournamentId, gameNum, tableNum, phase)
+            taskExecutorService.submit { initTournament(tournamentId) }
         }
         return game
+    }
+
+    private fun initTournament(tournamentId: Int) {
+        polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
+            val polemicaTournamentGame =
+                PolemicaTournamentGame(
+                    tournamentId,
+                    tGame.num.toInt(),
+                    tGame.table.toInt(),
+                    tGame.phase.toInt()
+                )
+            val game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+                tournamentId,
+                polemicaTournamentGame.gameNum,
+                polemicaTournamentGame.tableNum,
+                polemicaTournamentGame.phase
+            )
+            if (game == null) {
+                tryCreateGame(
+                    tournamentId,
+                    polemicaTournamentGame.gameNum,
+                    polemicaTournamentGame.tableNum,
+                    polemicaTournamentGame.phase
+                )
+            }
+        }
     }
 
     private fun tryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
