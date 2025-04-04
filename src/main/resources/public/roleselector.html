@@ -23,11 +23,11 @@
         }
 
         .container {
-            max-width: 90%; /* Увеличил контейнер */
-            max-height: 90%;
-            height: 800px;
+            max-width: 800px;
             margin: 0 auto;
             text-align: center;
+            width: 100%;
+            overflow-x: hidden; /* Предотвращает горизонтальную прокрутку в контейнере */
         }
 
         h1 {
@@ -37,17 +37,33 @@
         }
 
         .game-info {
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f39c12;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 5px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
         }
 
         .player-card {
             position: relative;
-            width: 80%;
+            width: 90%;
             margin: 0 auto 30px;
             perspective: 1000px;
-            height: 90%; /* Увеличил высоту карты */
+            height: 400px;
+            transform-style: preserve-3d;
+            z-index: 1; /* Обеспечивает правильное позиционирование в 3D пространстве */
         }
+
 
         .card-inner {
             position: relative;
@@ -56,6 +72,8 @@
             text-align: center;
             transition: transform 0.6s;
             transform-style: preserve-3d;
+            /* Добавьте фиксированную ширину для предотвращения изменения размеров */
+            will-change: transform; /* Подсказка браузеру для оптимизации анимации */
         }
 
         .card-inner.flipped {
@@ -68,6 +86,11 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
+            /* Важно: добавляем left/top/right/bottom для фиксации позиции */
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
             border-radius: 15px;
             display: flex;
             flex-direction: column;
@@ -77,42 +100,47 @@
         }
 
         .card-front {
-            background-color: #3498db;
-            background-image: linear-gradient(45deg, #3498db, #2980b9);
+            background: radial-gradient(circle, #3498db 0%, #2980b9 100%);
         }
 
         .card-back {
             transform: rotateY(180deg);
         }
 
-        .card-back.citizen {
-            background-color: #e74c3c;
-            background-image: linear-gradient(45deg, #e74c3c, #c0392b);
+        .card-back.red {
+            background: radial-gradient(circle, #9a1d1f 0%, #781618 100%);
         }
 
-        .card-back.sheriff {
-            background-color: #f1c40f;
-            background-image: linear-gradient(45deg, #f1c40f, #f39c12);
-            color: #333;
+        .card-back.sher {
+            background: radial-gradient(circle, #ebc667 0%, #d1a94d 100%);
         }
 
-        .card-back.mafia {
-            background-color: #2c3e50;
-            background-image: linear-gradient(45deg, #2c3e50, #1a252f);
+        .card-back.black {
+            background: radial-gradient(circle, #0d0d0d 0%, #000000 100%);
         }
 
         .card-back.don {
-            background-color: #7f8c8d;
-            background-image: linear-gradient(45deg, #7f8c8d, #95a5a6);
+            background: radial-gradient(circle, #dcdcdc 0%, #b0b0b0 100%);
         }
 
         .card-icon {
-            font-size: 80px; /* Увеличил иконку */
+            width: 120px;
+            height: 120px;
             margin-bottom: 20px;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .front-icon {
+            font-size: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .role-name {
-            font-size: 36px; /* Увеличил текст */
+            font-size: 36px;
             font-weight: bold;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
         }
@@ -194,7 +222,7 @@
             height: 12px;
             background-color: #34495e;
             border-radius: 6px;
-            margin: 20px 0;
+            margin: 5px 0 20px;
             overflow: hidden;
         }
 
@@ -208,26 +236,32 @@
         /* Адаптивность для мобильных устройств */
         @media screen and (max-width: 768px) {
             .player-card {
-                height: 500px;
+                height: 650px;
             }
 
             .card-icon {
-                font-size: 60px;
+                width: 100px;
+                height: 100px;
             }
 
             .role-name {
                 font-size: 30px;
             }
+
+            .timer {
+                font-size: 20px;
+            }
         }
 
         @media screen and (max-width: 480px) {
             .player-card {
-                height: 300px;
+                height: 500px;
                 width: 95%;
             }
 
             .card-icon {
-                font-size: 50px;
+                width: 80px;
+                height: 80px;
             }
 
             .role-name {
@@ -236,6 +270,10 @@
 
             h1 {
                 font-size: 22px;
+            }
+
+            .timer {
+                font-size: 18px;
             }
 
             .btn {
@@ -251,6 +289,11 @@
                 flex: 1 1 40%;
                 min-width: 120px;
             }
+
+            .game-info {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 </head>
@@ -262,6 +305,8 @@
         <p>Игрок <span id="current-player">1</span> из 10</p>
     </div>
 
+    <div class="timer" id="timer">00:00</div>
+
     <div class="progress-bar">
         <div class="progress" id="progress"></div>
     </div>
@@ -270,12 +315,12 @@
         <div class="card-inner" id="card">
             <div class="card-front">
                 <div class="player-number" id="player-number">1</div>
-                <div class="card-icon">❓</div>
+                <div class="card-icon front-icon">❓</div>
                 <div class="role-name">Нажмите, чтобы увидеть роль</div>
             </div>
             <div class="card-back" id="card-back">
                 <div class="player-number" id="player-number-back">1</div>
-                <div class="card-icon" id="role-icon">🧍</div>
+                <div class="card-icon" id="role-icon"></div>
                 <div class="role-name" id="role-name">Мирный житель</div>
             </div>
         </div>
@@ -307,19 +352,45 @@
         const nextBtn = document.getElementById('next-btn');
         const prevBtn = document.getElementById('prev-btn');
         const resetBtn = document.getElementById('reset-btn');
+        const timerEl = document.getElementById('timer');
 
         // Состояние игры
         let players = [];
         let currentPlayerIndex = 0;
         let isCardFlipped = false;
 
+        // Переменные для секундомера
+        let timerInterval;
+        let timerStart;
+        let timerRunning = false;
+
+        // Конфигурация ролей
+        const roleConfig = {
+            red: {
+                name: 'Мирный житель',
+                icon: '../static/icon/heart.png'
+            },
+            sher: {
+                name: 'Шериф',
+                icon: '../static/icon/loupe.png'
+            },
+            black: {
+                name: 'Мафия',
+                icon: '../static/icon/gun.png'
+            },
+            don: {
+                name: 'Дон мафии',
+                icon: '../static/icon/hat.png'
+            }
+        };
+
         // Инициализация игры
         function initGame() {
             // Создание и перемешивание ролей
             const roles = [
-                'citizen', 'citizen', 'citizen', 'citizen', 'citizen', 'citizen',
-                'sheriff',
-                'mafia', 'mafia',
+                'red', 'red', 'red', 'red', 'red', 'red',
+                'sher',
+                'black', 'black',
                 'don'
             ];
 
@@ -339,6 +410,8 @@
             // Сброс состояния игры
             currentPlayerIndex = 0;
             isCardFlipped = false;
+            resetTimer();
+            startTimer();
             updateUI();
         }
 
@@ -356,24 +429,9 @@
             cardBack.classList.add(player.role);
 
             // Обновление иконки и текста роли
-            switch (player.role) {
-                case 'citizen':
-                    roleIcon.textContent = '🧍';
-                    roleName.textContent = 'Мирный житель';
-                    break;
-                case 'sheriff':
-                    roleIcon.textContent = '👮';
-                    roleName.textContent = 'Шериф';
-                    break;
-                case 'mafia':
-                    roleIcon.textContent = '🕵️';
-                    roleName.textContent = 'Мафия';
-                    break;
-                case 'don':
-                    roleIcon.textContent = '👑';
-                    roleName.textContent = 'Дон мафии';
-                    break;
-            }
+            const roleData = roleConfig[player.role];
+            roleIcon.style.backgroundImage = `url(${roleData.icon})`;
+            roleName.textContent = roleData.name;
 
             // Убираем флип карты, если был
             card.classList.remove('flipped');
@@ -385,17 +443,46 @@
 
             // Обновление кнопок
             showBtn.disabled = false;
-            showBtn.textContent = player.seen ? 'Показать роль еще раз' : 'Разбудить игрока';
+            showBtn.textContent = 'Показать роль';
             nextBtn.disabled = true;
 
             // Обновление кнопки Предыдущий
             prevBtn.disabled = currentPlayerIndex === 0;
         }
 
+        // Функции для секундомера
+        function startTimer() {
+            if (!timerRunning) {
+                timerStart = new Date().getTime();
+                timerRunning = true;
+                timerInterval = setInterval(updateTimer, 100);
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const elapsed = now - timerStart;
+
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+
+            timerEl.textContent =
+                (minutes < 10 ? '0' : '') + minutes + ':' +
+                (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerEl.textContent = '00:00';
+        }
+
         // Переход к следующему игроку
         function nextPlayer() {
             if (currentPlayerIndex < players.length - 1) {
                 currentPlayerIndex++;
+                resetTimer();
+                startTimer();
                 updateUI();
             } else {
                 // Все игроки просмотрены
@@ -407,6 +494,8 @@
         function prevPlayer() {
             if (currentPlayerIndex > 0) {
                 currentPlayerIndex--;
+                resetTimer();
+                startTimer();
                 updateUI();
             }
         }
@@ -429,7 +518,7 @@
                 // Переворачиваем карту обратно
                 card.classList.remove('flipped');
                 isCardFlipped = false;
-                showBtn.textContent = 'Показать роль еще раз';
+                showBtn.textContent = 'Показать роль';
             }
         });
 
