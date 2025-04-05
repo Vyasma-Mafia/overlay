@@ -52,6 +52,12 @@ class OverlayController(
         return "control-panel"
     }
 
+    @RequestMapping("/roleselector")
+    fun control(model: Model): String? {
+        return "role-selector"
+    }
+
+
     @PostMapping("/{id}/next")
     fun next(@PathVariable id: String, model: Model) {
         val game = gameRepository.findById(UUID.fromString(id))
