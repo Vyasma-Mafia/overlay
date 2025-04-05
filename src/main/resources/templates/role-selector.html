@@ -8,8 +8,6 @@
 </head>
 <body>
 <div class="container">
-    <h1>Ночь в городе</h1>
-
     <div class="game-info">
         <p>Игрок <span id="current-player">1</span> из 10</p>
     </div>
@@ -20,24 +18,25 @@
         <div class="progress" id="progress"></div>
     </div>
 
-    <div class="player-card">
-        <div class="card-inner" id="card">
-            <div class="card-front">
-                <div class="player-number" id="player-number">1</div>
-                <div class="card-icon front-icon">❓</div>
-                <div class="role-name">Нажмите, чтобы увидеть роль</div>
-            </div>
-            <div class="card-back" id="card-back">
-                <div class="player-number" id="player-number-back">1</div>
-                <div class="card-icon" id="role-icon"></div>
-                <div class="role-name" id="role-name">Мирный житель</div>
+    <div class="player-card-container">
+        <div class="player-card" id="player-card">
+            <div class="card-inner" id="card">
+                <div class="card-front">
+                    <div class="player-number" id="player-number">1</div>
+                    <div class="card-icon front-icon">❓</div>
+                    <div class="role-name">Нажмите, чтобы увидеть роль</div>
+                </div>
+                <div class="card-back" id="card-back">
+                    <div class="player-number" id="player-number-back">1</div>
+                    <div class="card-icon" id="role-icon"></div>
+                    <div class="role-name" id="role-name">Мирный житель</div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="controls">
         <button class="btn navigation" id="prev-btn" disabled>← Предыдущий</button>
-        <button class="btn primary" id="show-btn">Разбудить игрока</button>
         <button class="btn navigation" id="next-btn" disabled>Следующий →</button>
     </div>
 
@@ -49,6 +48,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Элементы DOM
+        const playerCardEl = document.getElementById('player-card');
         const card = document.getElementById('card');
         const cardBack = document.getElementById('card-back');
         const roleIcon = document.getElementById('role-icon');
@@ -57,7 +57,7 @@
         const playerNumberBack = document.getElementById('player-number-back');
         const currentPlayerText = document.getElementById('current-player');
         const progressBar = document.getElementById('progress');
-        const showBtn = document.getElementById('show-btn');
+        // const showBtn = document.getElementById('show-btn');
         const nextBtn = document.getElementById('next-btn');
         const prevBtn = document.getElementById('prev-btn');
         const resetBtn = document.getElementById('reset-btn');
@@ -73,23 +73,23 @@
         let timerStart;
         let timerRunning = false;
 
+        // Переменные для отслеживания свайпов
+        let touchStartX = 0;
+        let touchEndX = 0;
+
         // Конфигурация ролей
         const roleConfig = {
             red: {
-                name: 'Мирный житель',
-                icon: '../static/icon/heart.png'
+                name: 'Мирный житель'
             },
             sher: {
-                name: 'Шериф',
-                icon: '../static/icon/loupe.png'
+                name: 'Шериф'
             },
             black: {
-                name: 'Мафия',
-                icon: '../static/icon/gun.png'
+                name: 'Мафия'
             },
             don: {
-                name: 'Дон мафии',
-                icon: '../static/icon/hat.png'
+                name: 'Дон мафии'
             }
         };
 
@@ -137,11 +137,12 @@
             cardBack.className = 'card-back';
             cardBack.classList.add(player.role);
 
-            // Обновление иконки и текста роли
-            const roleData = roleConfig[player.role];
-            roleIcon.classList.remove(...Object.keys(roleConfig));
+            // Обновление иконки
+            roleIcon.className = 'card-icon';
             roleIcon.classList.add(player.role);
-            roleName.textContent = roleData.name;
+
+            // Обновление имени роли
+            roleName.textContent = roleConfig[player.role].name;
 
             // Убираем флип карты, если был
             card.classList.remove('flipped');
@@ -152,8 +153,8 @@
             progressBar.style.width = `${progress}%`;
 
             // Обновление кнопок
-            showBtn.disabled = false;
-            showBtn.textContent = 'Показать роль';
+            // showBtn.disabled = false;
+            // showBtn.textContent = 'Показать роль';
             nextBtn.disabled = true;
 
             // Обновление кнопки Предыдущий
@@ -187,31 +188,8 @@
             timerEl.textContent = '00:00';
         }
 
-        // Переход к следующему игроку
-        function nextPlayer() {
-            if (currentPlayerIndex < players.length - 1) {
-                currentPlayerIndex++;
-                resetTimer();
-                startTimer();
-                updateUI();
-            } else {
-                // Все игроки просмотрены
-                alert('Все игроки увидели свои роли! Игра может начинаться.');
-            }
-        }
-
-        // Переход к предыдущему игроку
-        function prevPlayer() {
-            if (currentPlayerIndex > 0) {
-                currentPlayerIndex--;
-                resetTimer();
-                startTimer();
-                updateUI();
-            }
-        }
-
-        // Обработчики событий
-        showBtn.addEventListener('click', function () {
+        // Обработка переворота карты
+        function toggleCard() {
             if (!isCardFlipped) {
                 // Переворачиваем карту, чтобы показать роль
                 card.classList.add('flipped');
@@ -223,22 +201,113 @@
                 // Активируем кнопки навигации
                 nextBtn.disabled = currentPlayerIndex >= players.length - 1;
                 prevBtn.disabled = currentPlayerIndex <= 0;
-                showBtn.textContent = 'Спрятать роль';
+                // showBtn.textContent = 'Спрятать роль';
             } else {
                 // Переворачиваем карту обратно
                 card.classList.remove('flipped');
                 isCardFlipped = false;
-                showBtn.textContent = 'Показать роль';
+                // showBtn.textContent = 'Показать роль';
+            }
+        }
+
+        // Переход к следующему игроку
+        function nextPlayer() {
+            if (currentPlayerIndex < players.length - 1) {
+                if (isCardFlipped) {
+                    // Если карта перевернута, сначала переворачиваем её обратно и ждём окончания анимации
+                    card.classList.remove('flipped');
+                    isCardFlipped = false;
+
+                    // Ждем окончания анимации переворота карты перед обновлением
+                    card.addEventListener('transitionend', function handleTransition() {
+                        card.removeEventListener('transitionend', handleTransition);
+
+                        currentPlayerIndex++;
+                        resetTimer();
+                        startTimer();
+                        updateUI();
+                    }, {once: true});
+                } else {
+                    // Если карта не перевернута, просто переходим к следующему игроку
+                    currentPlayerIndex++;
+                    resetTimer();
+                    startTimer();
+                    updateUI();
+                }
+            } else {
+                // Все игроки просмотрены
+                alert('Все игроки увидели свои роли! Игра может начинаться.');
+            }
+        }
+
+        // Переход к предыдущему игроку
+        function prevPlayer() {
+            if (currentPlayerIndex > 0) {
+                if (isCardFlipped) {
+                    // Если карта перевернута, сначала переворачиваем её обратно и ждём окончания анимации
+                    card.classList.remove('flipped');
+                    isCardFlipped = false;
+
+                    // Ждем окончания анимации переворота карты перед обновлением
+                    card.addEventListener('transitionend', function handleTransition() {
+                        card.removeEventListener('transitionend', handleTransition);
+
+                        currentPlayerIndex--;
+                        resetTimer();
+                        startTimer();
+                        updateUI();
+                    }, {once: true});
+                } else {
+                    // Если карта не перевернута, просто переходим к предыдущему игроку
+                    currentPlayerIndex--;
+                    resetTimer();
+                    startTimer();
+                    updateUI();
+                }
+            }
+        }
+
+        // Обработка свайпа
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 50; // Минимальное расстояние для определения свайпа
+
+            if (swipeDistance > minSwipeDistance) {
+                // Свайп вправо - предыдущий игрок
+                if (!prevBtn.disabled) {
+                    prevPlayer();
+                }
+            } else if (swipeDistance < -minSwipeDistance) {
+                // Свайп влево - следующий игрок
+                if (!nextBtn.disabled) {
+                    nextPlayer();
+                }
+            }
+        }
+
+        // Обработчики событий
+        // showBtn.addEventListener('click', toggleCard);
+
+        // Добавляем обработчик клика на саму карту
+        playerCardEl.addEventListener('click', function (e) {
+            // Предотвращаем нажатие на кнопки, если клик был на карте
+            if (e.target.closest('.btn') === null) {
+                toggleCard();
             }
         });
 
-        nextBtn.addEventListener('click', function () {
-            nextPlayer();
-        });
+        // Обработчики свайпов
+        playerCardEl.addEventListener('touchstart', function (e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
 
-        prevBtn.addEventListener('click', function () {
-            prevPlayer();
-        });
+        playerCardEl.addEventListener('touchend', function (e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        nextBtn.addEventListener('click', nextPlayer);
+        prevBtn.addEventListener('click', prevPlayer);
 
         resetBtn.addEventListener('click', function () {
             if (confirm('Вы уверены, что хотите перемешать роли и начать заново?')) {
