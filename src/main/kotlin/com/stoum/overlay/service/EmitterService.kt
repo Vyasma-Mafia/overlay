@@ -85,5 +85,9 @@ class EmitterService(
         return emitters.isNotEmpty()
     }
 
+    fun hasEmittersForGame(id: String): Boolean {
+        return emitters[id]?.isNotEmpty() == true
+    }
+
     data class SseEmitterInfo(val sseEmitter: SseEmitter, val errorsCounter: AtomicLong)
 }

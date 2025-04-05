@@ -51,6 +51,10 @@ class PolemicaService(
             game = tryCreateGame(tournamentId, gameNum, tableNum, phase)
             taskExecutorService.submit { initTournament(tournamentId) }
         }
+        if (game != null) {
+            game.started = true
+            gameRepository.save(game)
+        }
         return game
     }
 
@@ -162,8 +166,12 @@ class PolemicaService(
                             Pair(if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed", "")
                         }
                         player.role = polemicaRoleToRole(polemicaGame.getRole(position))
-                        player.fouls = polemicaGame.players?.find { it.position == position }?.fouls?.size
-                        player.techs = polemicaGame.players?.find { it.position == position }?.techs?.size
+                        val polemicaPlayer = polemicaGame.players?.find { it.position == position }
+                        player.nickname = polemicaPlayer?.username.toString()
+                        player.photoUrl =
+                            "https://storage.yandexcloud.net/mafia-photos/${polemicaPlayer?.player ?: "null"}.jpg"
+                        player.fouls = polemicaPlayer?.fouls?.size
+                        player.techs = polemicaPlayer?.techs?.size
                         player.guess =
                             polemicaGuessToGuess(polemicaGame.players!!.find { it.position == position }?.guess)
                         if (player.role == "sher") {
@@ -194,6 +202,10 @@ class PolemicaService(
                     gameRepository.save(nextGame)
                     scheduleNextGameTasks(game.id, nextGame)
                     return@forEach
+                }
+                if (!emitterService.hasEmittersForGame(game.id.toString())) {
+                    game.started = false
+                    getLogger().info("No emitters for game ${game.id}")
                 }
                 gameRepository.save(game)
                 emitterService.emitGame(game.id.toString())
