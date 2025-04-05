@@ -132,6 +132,22 @@
             background-repeat: no-repeat;
         }
 
+        .card-icon.red {
+            background-image: url("../static/icon/heart.png");
+        }
+
+        .card-icon.sher {
+            background-image: url("../static/icon/loupe.png");
+        }
+
+        .card-icon.black {
+            background-image: url("../static/icon/gun.png");
+        }
+
+        .card-icon.don {
+            background-image: url("../static/icon/hat.png");
+        }
+
         .front-icon {
             font-size: 80px;
             display: flex;
@@ -430,7 +446,8 @@
 
             // Обновление иконки и текста роли
             const roleData = roleConfig[player.role];
-            roleIcon.style.backgroundImage = `url(${roleData.icon})`;
+            roleIcon.classList.remove(...Object.keys(roleConfig));
+            roleIcon.classList.add(player.role);
             roleName.textContent = roleData.name;
 
             // Убираем флип карты, если был
