@@ -7,3 +7,14 @@ scrape_configs:
   - job_name: 'overlay'
     static_configs:
       - targets: [ 'overlay:8081' ]
+
+remote_write:
+  - url: 'https://monitoring.api.cloud.yandex.net/prometheus/workspaces/monrsv7838cfjteelajg/api/v1/write'
+    bearer_token_file: 'bearer_token_file'
+    queue_config:
+      max_samples_per_send: 2000 # 10000 в случае использования vmagent
+      min_backoff: 100ms
+      max_backoff: 15s
+      retry_on_http_429: true
+    metadata_config:
+      send: false
