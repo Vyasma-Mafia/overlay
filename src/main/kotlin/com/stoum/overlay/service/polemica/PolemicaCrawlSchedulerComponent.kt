@@ -18,7 +18,7 @@ class PolemicaCrawlSchedulerComponent(val polemicaService: PolemicaService) {
     @Scheduled(fixedRateString = "#{@crawlScheduler.interval.toMillis()}", timeUnit = TimeUnit.MILLISECONDS)
     private fun update() {
         try {
-            getLogger().info("Game updates crawl started")
+            // getLogger().info("Game updates crawl started")
             polemicaService.crawl()
         } catch (e: Exception) {
             getLogger().error("Error on crawling: " + e.message, e)
