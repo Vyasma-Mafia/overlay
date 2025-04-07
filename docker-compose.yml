@@ -19,7 +19,7 @@ services:
 
   overlay:
     image: ghcr.io/vyasma-mafia/overlay:master
-    #    build: .
+    build: .
     container_name: overlay
     ports:
       - "8090:8080"
@@ -32,6 +32,14 @@ services:
     depends_on:
       overlay-db:
         condition: service_healthy
+    networks:
+      - overlay
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - overlay
 

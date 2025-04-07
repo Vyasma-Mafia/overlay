@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+  external_labels:
+    monitor: 'codelab-monitor'
+
+scrape_configs:
+  - job_name: 'overlay'
+    static_configs:
+      - targets: [ 'overlay:8081' ]

@@ -15,7 +15,6 @@ import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
-import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -38,7 +37,6 @@ class PolemicaService(
         .maximumSize(1024)
         .build<PolemicaTournamentGame, Long>()
 
-    @Transactional
     fun getOrTryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
         log.info("Getting game tournamentId: $tournamentId, gameNum: $gameNum, tableNum: $tableNum, phase: $phase")
         var game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(

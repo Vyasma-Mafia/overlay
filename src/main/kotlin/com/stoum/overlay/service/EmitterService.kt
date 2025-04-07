@@ -41,6 +41,8 @@ class EmitterService(
         emitters.computeIfAbsent(id) { arrayListOf() }
         getLogger().info("Registering emitter for $id: $emitter")
         emitters[id]?.add(SseEmitterInfo(emitter, AtomicLong(0)))
+        gameRepository.findById(UUID.fromString(id))
+            .ifPresent { it.started = true; gameRepository.save(it) }
         return emitter
     }
 
