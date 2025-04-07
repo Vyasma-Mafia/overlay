@@ -69,6 +69,7 @@ class EmitterService(
                 val errors = it.errorsCounter.incrementAndGet()
                 if (errors > ERRORS_TO_EXCLUDE) {
                     getLogger().info("Emitter ${it.sseEmitter} for $id is deleted on $errors")
+                    it.sseEmitter.complete()
                     return@removeIf true
                 }
             }
