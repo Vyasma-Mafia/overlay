@@ -19,7 +19,7 @@ services:
 
   overlay:
     image: ghcr.io/vyasma-mafia/overlay:master
-    build: .
+    #    build: .
     container_name: overlay
     ports:
       - "8090:8080"
@@ -27,6 +27,7 @@ services:
       DATABASE_URL: jdbc:postgresql://overlay-db:5432/overlay
       DATABASE_USER: ${DB_USER}
       DATABASE_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: prod
     env_file:
       - .env
     depends_on:
