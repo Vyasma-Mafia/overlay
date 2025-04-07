@@ -32,12 +32,20 @@ services:
     depends_on:
       overlay-db:
         condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: service
+    labels:
+      service: "overlay"
     networks:
       - overlay
   prometheus:
     image: prom/prometheus
     ports:
-      - "9090:9090"
+      - "9091:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
