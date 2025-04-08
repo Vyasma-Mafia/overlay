@@ -5,6 +5,7 @@ import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
 import com.github.mafia.vyasma.polemica.library.model.game.Position
 import com.github.mafia.vyasma.polemica.library.model.game.Role
+import com.github.mafia.vyasma.polemica.library.model.game.StageType
 import com.github.mafia.vyasma.polemica.library.utils.KickReason
 import com.github.mafia.vyasma.polemica.library.utils.getFirstKilled
 import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
@@ -145,7 +146,6 @@ class PolemicaService(
                 } else {
                     id = idO
                 }
-                log.info("Polemica game $id for $tournamentGame crawled")
                 if (id == null) return@forEach
                 val polemicaGame = polemicaClient.getGameFromCompetition(
                     PolemicaClient.PolemicaCompetitionGameId(
@@ -154,7 +154,7 @@ class PolemicaService(
                         4
                     )
                 )
-                getLogger().info("Polemica game ${polemicaGame.id} in tournament $tournamentId crawled")
+                getLogger().info("Polemica game ${polemicaGame.id} for $tournamentGame crawled")
                 val kicked = polemicaGame.getKickedFromTable().groupBy { it.position }.mapValues { it.value.first() }
                 val firstKilled = polemicaGame.getFirstKilled()
 
@@ -192,6 +192,19 @@ class PolemicaService(
                         }
                     }
                 }
+
+                game.players.forEach { it.speaker = false }
+                val stage = polemicaGame.stage
+                if (stage != null && listOf(
+                        StageType.SPEECH,
+                        StageType.RESPEECH,
+                        StageType.VOTED,
+                        StageType.SHOOTED
+                    ).contains(stage.type)
+                ) {
+                    game.players.find { it.place == stage.player }?.speaker = true
+                }
+
                 if (polemicaGame.result != null) {
                     game.started = false
                     gameRepository.save(game)

@@ -354,18 +354,11 @@
                 techsElement.classList.remove('visible');
             }
 
-            // const roleHeader = playerElement.querySelector('.role-header');
-            // if (roleHeader) {
-            //     if (playerElement.classList.contains('don')) {
-            //         roleHeader.textContent = 'Дон';
-            //     } else if (playerElement.classList.contains('sher')) {
-            //         roleHeader.textContent = 'Шериф';
-            //     } else if (playerElement.classList.contains('black')) {
-            //         roleHeader.textContent = 'Черный';
-            //     } else {
-            //         roleHeader.textContent = 'Красный';
-            //     }
-            // }
+            if (playerInfo.speaker) {
+                playerElement.classList.add('speaker');
+            } else {
+                playerElement.classList.remove('speaker');
+            }
 
 
             //todo set checks
