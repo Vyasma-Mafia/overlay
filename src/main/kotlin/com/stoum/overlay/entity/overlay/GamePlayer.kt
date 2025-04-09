@@ -24,6 +24,7 @@ class GamePlayer (
     var fouls: Int? = 0,
     var techs: Int? = 0,
     var speaker: Boolean? = false,
+    var voting: Boolean? = false,
     @Convert(converter = MapListConverter::class)
     var checks: MutableList<Map<String, String>>? = null,
     @Convert(converter = MapListConverter::class)

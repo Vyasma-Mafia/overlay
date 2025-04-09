@@ -43,7 +43,7 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
     // Polemica
-    implementation 'com.github.Vyasma-Mafia:polemica-library:1.4.0'
+    implementation 'com.github.Vyasma-Mafia:polemica-library:1.5.0'
 
 
     // https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus

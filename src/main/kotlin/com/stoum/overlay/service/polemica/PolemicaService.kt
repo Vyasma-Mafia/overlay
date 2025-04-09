@@ -10,6 +10,7 @@ import com.github.mafia.vyasma.polemica.library.utils.KickReason
 import com.github.mafia.vyasma.polemica.library.utils.getFirstKilled
 import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
 import com.github.mafia.vyasma.polemica.library.utils.getRole
+import com.github.mafia.vyasma.polemica.library.utils.getVotingParticipants
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
@@ -193,17 +194,44 @@ class PolemicaService(
                     }
                 }
 
-                game.players.forEach { it.speaker = false }
-                val stage = polemicaGame.stage
-                if (stage != null && listOf(
-                        StageType.SPEECH,
-                        StageType.RESPEECH,
-                        StageType.VOTED,
-                        StageType.SHOOTED
-                    ).contains(stage.type)
-                ) {
-                    game.players.find { it.place == stage.player }?.speaker = true
+                // Сброс состояния игроков
+                game.players.forEach { player ->
+                    player.speaker = false
+                    player.voting = false
                 }
+
+                // Обработка только если есть активная стадия
+                polemicaGame.stage?.let { stage ->
+                    // Определение говорящего игрока
+                    if (stage.type in listOf(
+                            StageType.SPEECH,
+                            StageType.RESPEECH,
+                            StageType.VOTED,
+                            StageType.SHOOTED
+                        )
+                    ) {
+                        game.players.find { it.place == stage.player }?.speaker = true
+                    }
+
+                    // Определение участников голосования
+                    val votingParticipants = when {
+                        stage.type == StageType.SPEECH ->
+                            polemicaGame.getVotingParticipants(stage.day, 1)
+
+                        stage.voting != null && stage.type == StageType.VOTING ->
+                            polemicaGame.getVotingParticipants(stage.day, stage.voting!!)
+
+                        stage.voting != null ->
+                            polemicaGame.getVotingParticipants(stage.day, stage.voting!! + 1)
+
+                        else -> emptyList()
+                    }
+
+                    // Пометка игроков, участвующих в голосовании
+                    val votingPlaces = votingParticipants.map { it.value }
+                    game.players.filter { it.place in votingPlaces }.forEach { it.voting = true }
+                }
+
 
                 if (polemicaGame.result != null) {
                     game.started = false
