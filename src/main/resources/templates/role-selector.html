@@ -8,10 +8,6 @@
 </head>
 <body>
 <div class="container">
-    <div class="game-info">
-        <p>Игрок <span id="current-player">1</span> из 10</p>
-    </div>
-
     <div class="timer" id="timer">00:00</div>
 
     <div class="progress-bar">
@@ -55,9 +51,7 @@
         const roleName = document.getElementById('role-name');
         const playerNumber = document.getElementById('player-number');
         const playerNumberBack = document.getElementById('player-number-back');
-        const currentPlayerText = document.getElementById('current-player');
         const progressBar = document.getElementById('progress');
-        // const showBtn = document.getElementById('show-btn');
         const nextBtn = document.getElementById('next-btn');
         const prevBtn = document.getElementById('prev-btn');
         const resetBtn = document.getElementById('reset-btn');
@@ -131,7 +125,6 @@
             // Обновление номера игрока
             playerNumber.textContent = player.id;
             playerNumberBack.textContent = player.id;
-            currentPlayerText.textContent = player.id;
 
             // Обновление роли на обратной стороне карты
             cardBack.className = 'card-back';
@@ -144,21 +137,20 @@
             // Обновление имени роли
             roleName.textContent = roleConfig[player.role].name;
 
-            // Убираем флип карты, если был
-            card.classList.remove('flipped');
-            isCardFlipped = false;
+            // Обновляем состояние карты (перевернута или нет)
+            if (isCardFlipped) {
+                card.classList.add('flipped');
+            } else {
+                card.classList.remove('flipped');
+            }
 
             // Обновление прогресс-бара
             const progress = ((currentPlayerIndex + 1) / players.length) * 100;
             progressBar.style.width = `${progress}%`;
 
             // Обновление кнопок
-            // showBtn.disabled = false;
-            // showBtn.textContent = 'Показать роль';
-            nextBtn.disabled = true;
-
-            // Обновление кнопки Предыдущий
-            prevBtn.disabled = currentPlayerIndex === 0;
+            nextBtn.disabled = currentPlayerIndex >= players.length - 1;
+            prevBtn.disabled = currentPlayerIndex <= 0;
         }
 
         // Функции для секундомера
@@ -190,10 +182,10 @@
 
         // Обработка переворота карты
         function toggleCard() {
-            if (!isCardFlipped) {
+            isCardFlipped = !isCardFlipped;
+            if (isCardFlipped) {
                 // Переворачиваем карту, чтобы показать роль
                 card.classList.add('flipped');
-                isCardFlipped = true;
 
                 // Отмечаем, что игрок увидел свою роль
                 players[currentPlayerIndex].seen = true;
@@ -201,39 +193,34 @@
                 // Активируем кнопки навигации
                 nextBtn.disabled = currentPlayerIndex >= players.length - 1;
                 prevBtn.disabled = currentPlayerIndex <= 0;
-                // showBtn.textContent = 'Спрятать роль';
             } else {
                 // Переворачиваем карту обратно
                 card.classList.remove('flipped');
-                isCardFlipped = false;
-                // showBtn.textContent = 'Показать роль';
             }
         }
 
         // Переход к следующему игроку
         function nextPlayer() {
             if (currentPlayerIndex < players.length - 1) {
-                if (isCardFlipped) {
-                    // Если карта перевернута, сначала переворачиваем её обратно и ждём окончания анимации
-                    card.classList.remove('flipped');
-                    isCardFlipped = false;
+                // Добавляем анимацию
+                playerCardEl.classList.add('slide-out-left');
 
-                    // Ждем окончания анимации переворота карты перед обновлением
-                    card.addEventListener('transitionend', function handleTransition() {
-                        card.removeEventListener('transitionend', handleTransition);
+                playerCardEl.addEventListener('animationend', function handleSlideOut() {
+                    playerCardEl.removeEventListener('animationend', handleSlideOut);
 
-                        currentPlayerIndex++;
-                        resetTimer();
-                        startTimer();
-                        updateUI();
-                    }, {once: true});
-                } else {
-                    // Если карта не перевернута, просто переходим к следующему игроку
                     currentPlayerIndex++;
                     resetTimer();
                     startTimer();
                     updateUI();
-                }
+
+                    playerCardEl.classList.remove('slide-out-left');
+                    playerCardEl.classList.add('slide-in-right');
+
+                    playerCardEl.addEventListener('animationend', function handleSlideIn() {
+                        playerCardEl.removeEventListener('animationend', handleSlideIn);
+                        playerCardEl.classList.remove('slide-in-right');
+                    }, {once: true});
+                }, {once: true});
             } else {
                 // Все игроки просмотрены
                 alert('Все игроки увидели свои роли! Игра может начинаться.');
@@ -243,27 +230,25 @@
         // Переход к предыдущему игроку
         function prevPlayer() {
             if (currentPlayerIndex > 0) {
-                if (isCardFlipped) {
-                    // Если карта перевернута, сначала переворачиваем её обратно и ждём окончания анимации
-                    card.classList.remove('flipped');
-                    isCardFlipped = false;
+                // Добавляем анимацию
+                playerCardEl.classList.add('slide-out-right');
 
-                    // Ждем окончания анимации переворота карты перед обновлением
-                    card.addEventListener('transitionend', function handleTransition() {
-                        card.removeEventListener('transitionend', handleTransition);
+                playerCardEl.addEventListener('animationend', function handleSlideOut() {
+                    playerCardEl.removeEventListener('animationend', handleSlideOut);
 
-                        currentPlayerIndex--;
-                        resetTimer();
-                        startTimer();
-                        updateUI();
-                    }, {once: true});
-                } else {
-                    // Если карта не перевернута, просто переходим к предыдущему игроку
                     currentPlayerIndex--;
                     resetTimer();
                     startTimer();
                     updateUI();
-                }
+
+                    playerCardEl.classList.remove('slide-out-right');
+                    playerCardEl.classList.add('slide-in-left');
+
+                    playerCardEl.addEventListener('animationend', function handleSlideIn() {
+                        playerCardEl.removeEventListener('animationend', handleSlideIn);
+                        playerCardEl.classList.remove('slide-in-left');
+                    }, {once: true});
+                }, {once: true});
             }
         }
 
@@ -284,9 +269,6 @@
                 }
             }
         }
-
-        // Обработчики событий
-        // showBtn.addEventListener('click', toggleCard);
 
         // Добавляем обработчик клика на саму карту
         playerCardEl.addEventListener('click', function (e) {

@@ -1203,3 +1203,19 @@ body.stats-right.show-stats .stats-panel {
     /*-webkit-text-stroke-width: 2px;
     -webkit-text-stroke-color: black;*/
 }
+
+.clubIcon {
+    height: 35px;
+    width: 35px;
+    position: absolute;
+    bottom: 35px;
+    left: 0px;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 3;
+    background-size: cover;
+    background-position: center;
+    background-image: url("https://s3.juicedev.ru/gomafia/club/logo/130/ava_1664368414.jpg");
+}
+
