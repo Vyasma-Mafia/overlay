@@ -2,6 +2,7 @@ package com.stoum.overlay.service.polemica
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
+import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGameResult
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
 import com.github.mafia.vyasma.polemica.library.model.game.Position
 import com.github.mafia.vyasma.polemica.library.model.game.Role
@@ -168,7 +169,7 @@ class PolemicaService(
                         val polemicaPlayer = polemicaGame.players?.find { it.position == position }
                         player.nickname = polemicaPlayer?.username.toString()
                         player.photoUrl =
-                            "https://storage.yandexcloud.net/mafia-photos/${polemicaPlayer?.player ?: "null"}.jpg"
+                            "https://storage.yandexcloud.net/mafia-photos/${polemicaPlayer?.player?.id ?: "null"}.jpg"
                         player.fouls = polemicaPlayer?.fouls?.size
                         player.techs = polemicaPlayer?.techs?.size
                         player.guess =
@@ -235,7 +236,9 @@ class PolemicaService(
 
                 if (polemicaGame.result != null) {
                     game.started = false
+                    game.result = if (polemicaGame.result == PolemicaGameResult.RED_WIN) "red" else "black"
                     gameRepository.save(game)
+                    emitterService.emitGame(game.id.toString())
                     val nextGame = getNextGame(tournamentGame) ?: return@forEach
                     nextGame.started = true
                     gameRepository.save(nextGame)
@@ -304,7 +307,7 @@ class PolemicaService(
     fun polemicaColorToString(isBlack: Boolean) = if (isBlack) "black" else "red"
 
     fun scheduleNextGameTasks(gameId: UUID?, game: Game) {
-        val delays = longArrayOf(0, 10, 20, 30, 60, 90, 120, 150, 180)
+        val delays = longArrayOf(60, 70, 80, 90, 120, 150, 180, 240, 300)
 
         for (delayMinutes in delays) {
             taskExecutorService.schedule({

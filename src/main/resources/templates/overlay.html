@@ -19,6 +19,10 @@
     </div>
 </div>
 
+<div class="result-panel">
+    <p id="result-content"></p>
+</div>
+
 <div class="players-container">
     <footer>
         <div class="player" id="player_1">
@@ -304,6 +308,32 @@
         } else {
             document.getElementsByTagName('body')[0].setAttribute('class', '');
         }
+
+        // Добавляем обработку результатов игры
+        const resultPanel = document.querySelector('.result-panel');
+        const resultContent = document.getElementById('result-content');
+
+        // Проверяем наличие результата игры
+        if (gameInfo.result !== undefined) {
+            if (gameInfo.result === 'black') {
+                // Победа мафии
+                resultContent.textContent = 'ПОБЕДА МАФИИ';
+                resultPanel.classList.remove('red-win');
+                resultPanel.classList.add('black-win', 'visible');
+            } else if (gameInfo.result === 'red') {
+                // Победа мирного города
+                resultContent.textContent = 'ПОБЕДА МИРНОГО ГОРОДА';
+                resultPanel.classList.remove('black-win');
+                resultPanel.classList.add('red-win', 'visible');
+            } else {
+                // Если result имеет другое значение, скрываем панель
+                resultPanel.classList.remove('visible', 'black-win', 'red-win');
+            }
+        } else {
+            // Если result не определен, скрываем панель
+            resultPanel.classList.remove('visible', 'black-win', 'red-win');
+        }
+
 
         document.getElementById('current-game-text').innerText = gameInfo.text;
 

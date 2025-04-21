@@ -1219,3 +1219,130 @@ body.stats-right.show-stats .stats-panel {
     background-image: url("https://s3.juicedev.ru/gomafia/club/logo/130/ava_1664368414.jpg");
 }
 
+/* Стили для панели результатов */
+.result-panel {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    max-width: 700px;
+    width: max-content;
+    min-width: 400px;
+    transition: all 0.7s ease-in-out;
+    z-index: 1001; /* Выше других элементов */
+    background: transparent;
+    padding: 32px 48px;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.result-panel::before {
+    content: '';
+    position: absolute;
+    inset: -2.5px;
+    background: linear-gradient(135deg,
+    rgba(137, 119, 253, 1) 0%,
+    rgba(147, 51, 234, 1) 25%,
+    rgba(255, 85, 85, 1) 50%,
+    rgba(147, 51, 234, 1) 75%,
+    rgba(137, 119, 253, 1) 100%
+    );
+    border-radius: 24px;
+    mask-composite: exclude;
+    -webkit-mask-composite: destination-out;
+    padding: 3px;
+    opacity: 0.8;
+    background-size: 300% 300%;
+    animation: gradient 4s linear infinite;
+    z-index: 0;
+}
+
+.result-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+    rgba(32, 33, 37, 0.95) 0%,
+    rgba(41, 36, 71, 0.95) 100%
+    );
+    border-radius: 20px;
+    z-index: 0;
+}
+
+.result-panel p {
+    margin: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-in-out 0.3s, transform 0.5s ease-in-out 0.3s;
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+    font-family: 'MrNorwester', sans-serif;
+    font-size: 48px;
+    line-height: 1.3;
+    font-weight: 600;
+    padding: 0;
+    white-space: normal;
+    word-wrap: break-word;
+    display: inline-block;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.result-panel.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+}
+
+.result-panel.visible p {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Стили для разных результатов */
+.result-panel.black-win::before {
+    background: linear-gradient(135deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(40, 40, 40, 1) 25%,
+    rgba(80, 80, 80, 1) 50%,
+    rgba(40, 40, 40, 1) 75%,
+    rgba(0, 0, 0, 1) 100%
+    );
+}
+
+.result-panel.red-win::before {
+    background: linear-gradient(135deg,
+    rgba(152, 20, 29, 1) 0%,
+    rgba(200, 30, 40, 1) 25%,
+    rgba(230, 60, 70, 1) 50%,
+    rgba(200, 30, 40, 1) 75%,
+    rgba(152, 20, 29, 1) 100%
+    );
+}
+
+.result-panel.black-win::after {
+    background: linear-gradient(135deg,
+    rgba(10, 10, 10, 0.95) 0%,
+    rgba(30, 30, 30, 0.95) 100%
+    );
+}
+
+.result-panel.red-win::after {
+    background: linear-gradient(135deg,
+    rgba(80, 10, 15, 0.95) 0%,
+    rgba(120, 20, 25, 0.95) 100%
+    );
+}
+
+.result-panel.black-win p {
+    color: #dcdcdc;
+}
+
+.result-panel.red-win p {
+    color: #ffffff;
+}
+
+

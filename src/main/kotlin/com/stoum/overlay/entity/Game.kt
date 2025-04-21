@@ -40,7 +40,8 @@ class Game (
     var started: Boolean? = null,
     var visibleOverlay: Boolean? = true,
     var visibleRoles: Boolean? = true,
-    var text: String? = null
+    var text: String? = null,
+    var result: String? = null
 ) {
 
     @Transient
