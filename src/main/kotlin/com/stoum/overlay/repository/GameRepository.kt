@@ -14,5 +14,6 @@ interface GameRepository : JpaRepository<Game, UUID> {
     ): Game?
 
     fun findGamesByTournamentIdAndGameNumAndTableNum(tournamentId: Int, gameNum: Int, tableNum: Int): List<Game>
-    fun findGameByTypeAndStarted(type: GameType, startred: Boolean): List<Game>
+    fun findGameByTypeAndStarted(type: GameType, started: Boolean): List<Game>
+    fun findGamesByTournamentId(tournamentId: Int): List<Game>
 }

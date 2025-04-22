@@ -279,6 +279,12 @@ class PolemicaService(
             if (nextPhaseGame != null) {
                 return nextPhaseGame
             }
+            val polemicaGamesCount = polemicaClient.getGamesFromCompetition(tournamentId.toLong()).size
+            val dbGamesCount = gameRepository.findGamesByTournamentId(tournamentId).size
+            if (polemicaGamesCount > dbGamesCount) {
+                initTournament(tournamentId)
+                return getNextGame(polemicaTournamentGame)
+            }
             return null
         }
     }

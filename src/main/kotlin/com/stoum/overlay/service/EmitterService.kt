@@ -53,7 +53,7 @@ class EmitterService(
                     try {
                         it.sseEmitter.send(payload)
                     } catch (e: Exception) {
-                        getLogger().warn("Error on send to $id with emitter $it")
+                        getLogger().debug("Error on send to $id with emitter $it")
                     }
                 }
             }
