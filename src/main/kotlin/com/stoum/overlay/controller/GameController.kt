@@ -39,7 +39,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
     @PostMapping("/{id}/status")
@@ -52,7 +52,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
     @PostMapping("/{id}/visibleOverlay")
@@ -63,7 +63,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
     @PostMapping("/{id}/visibleRoles")
@@ -74,7 +74,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
     @PostMapping("/{id}/started")
@@ -85,7 +85,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
     @PostMapping("/{id}/text")
@@ -96,7 +96,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
     @PostMapping("/{id}/resetStatuses")
@@ -107,7 +107,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
     @PostMapping("/{id}/resetRoles")
@@ -118,7 +118,7 @@ class GameController(
 
         gameRepository.save(game)
 
-        emitterService.emitGame(id)
+        emitterService.emitGame(game)
     }
 
 

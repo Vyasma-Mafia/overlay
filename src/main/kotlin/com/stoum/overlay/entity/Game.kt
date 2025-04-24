@@ -23,7 +23,7 @@ import java.util.UUID
     name = "game",
     uniqueConstraints = [UniqueConstraint(columnNames = ["tournamentId", "gameNum", "tableNum", "phase"])]
 )
-class Game (
+data class Game(
         @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,

@@ -24,13 +24,18 @@ class EmitterService(
 
     private val emitters = ConcurrentHashMap<String, MutableList<SseEmitterInfo>>()
 
+    fun emitGame(game: Game) {
+        val gameId = game.id.toString()
+        val gameCopy = game.copy()
+        gameCopy.playersOrdered = gameCopy.players.sortedBy { p -> p.place }.map { p -> p.nickname }
+        sendTo(gameId, "!gameinfo ${objectMapper.writeValueAsString(gameCopy)}")
+    }
+
     fun emitGame(gameId: String) {
         val game = gameRepository.findById(UUID.fromString(gameId))
-        game.ifPresent {
-            it.playersOrdered = it.players.sortedBy { p -> p.place }.map { p -> p.nickname }
-            sendTo(gameId, "!gameinfo ${objectMapper.writeValueAsString(it)}")
-        }
+        game.ifPresent { emitGame(it) }
     }
+
 
     fun changeGame(gameId: String, game: Game) {
         getLogger().info("Change ${gameId} to ${game.id} (${game.tournamentId}, ${game.phase}, ${game.tableNum}, ${game.gameNum})")

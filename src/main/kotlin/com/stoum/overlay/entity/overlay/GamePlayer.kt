@@ -12,7 +12,7 @@ import java.util.UUID
 
 @Entity
 @Table(name = "game_player")
-class GamePlayer (
+data class GamePlayer(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,

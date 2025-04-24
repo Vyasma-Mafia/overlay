@@ -237,8 +237,7 @@ class PolemicaService(
                 if (polemicaGame.result != null) {
                     game.started = false
                     game.result = if (polemicaGame.result == PolemicaGameResult.RED_WIN) "red" else "black"
-                    gameRepository.save(game)
-                    emitterService.emitGame(game.id.toString())
+                    saveAndEmitGame(game)
                     val nextGame = getNextGame(tournamentGame) ?: return@forEach
                     nextGame.started = true
                     gameRepository.save(nextGame)
@@ -249,8 +248,7 @@ class PolemicaService(
                     game.started = false
                     getLogger().info("No emitters for game ${game.id}")
                 }
-                gameRepository.save(game)
-                emitterService.emitGame(game.id.toString())
+                saveAndEmitGame(game)
             } catch (e: Exception) {
                 getLogger().error(
                     "Error while crawling polemica game {}: {} {} {}",
@@ -259,6 +257,11 @@ class PolemicaService(
                 gameIdCache.invalidateAll()
             }
         }
+    }
+
+    private fun saveAndEmitGame(game: Game) {
+        gameRepository.save(game)
+        emitterService.emitGame(game)
     }
 
     fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame): Game? {
