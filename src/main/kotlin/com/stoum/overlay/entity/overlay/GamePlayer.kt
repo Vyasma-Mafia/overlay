@@ -27,11 +27,11 @@ data class GamePlayer(
     var voting: Boolean? = false,
     var clubIcon: String? = null,
     @Convert(converter = MapListConverter::class)
-    var checks: MutableList<Map<String, String>>? = null,
+    var checks: MutableList<Map<String, String>>? = arrayListOf(),
     @Convert(converter = MapListConverter::class)
-    var guess: MutableList<Map<String, String>>? = null,
+    var guess: MutableList<Map<String, String>>? = arrayListOf(),
     @Convert(converter = MapMapConverter::class)
-    var stat: MutableMap<String, Map<String, String>>? = null,
+    var stat: MutableMap<String, Map<String, String>>? = hashMapOf(),
 /*    @JoinColumn(name = "game", referencedColumnName = "id")
     var gameId: UUID*/
 )

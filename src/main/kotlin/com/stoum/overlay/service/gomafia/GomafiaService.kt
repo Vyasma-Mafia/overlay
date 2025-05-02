@@ -27,7 +27,13 @@ class GomafiaService(
         val tournament = gomafiaRestClient.getTournament(tournamentId)
         tournament.games.filter { g -> g.gameNum!! >= startWithGameNum }.forEach { gameDto ->
             log.info("processing $gameDto")
-            val game = Game(type = GameType.FSM, tournamentId = tournamentId, gameNum = gameDto.gameNum, tableNum = gameDto.tableNum)
+            val game = Game(
+                type = GameType.FSM,
+                tournamentId = tournamentId,
+                gameNum = gameDto.gameNum,
+                tableNum = gameDto.tableNum,
+                text = "${tournament.tournamentDto.title} | Стол ${gameDto.tableNum} | Игра ${gameDto.gameNum}"
+            )
             gameDto.table.forEach { playerDto ->
                 var player = playerRepository.findPlayerByNickname(playerDto.login)
                 if (player == null) {
@@ -48,7 +54,7 @@ class GomafiaService(
                 }
                 game.players.add(GamePlayer(
                         nickname = playerDto.login!!,
-                        photoUrl = player.playerPhotos.firstOrNull() { pp -> pp.type == PhotoType.CUSTOM }?.url ?: player.playerPhotos.first().url,
+                    photoUrl = "https://storage.yandexcloud.net/mafia-photos/gomafia/${playerDto.id}.jpg",
                         role = "red",
                         place = playerDto.place!!,
                         //status = "killed" to "$it",
