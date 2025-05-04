@@ -6,6 +6,7 @@ import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.model.GameInfo
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
+import org.hibernate.validator.constraints.Range
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PathVariable
@@ -271,6 +272,17 @@ class GameController(
         } else {
             log.warn("Cannot remove guess: index out of bounds or guess list is null")
         }
+    }
+
+    @PostMapping("/{id}/delay")
+    fun setVisibleRoles(@PathVariable id: String, @RequestParam @Range(min = 0) value: Int) {
+        val game = gameRepository.findById(UUID.fromString(id)).get()
+
+        game.delay = value
+
+        gameRepository.save(game)
+
+        emitterService.emitGame(game)
     }
 
     fun Game.getPlayerByPlace(place: Int): GamePlayer {

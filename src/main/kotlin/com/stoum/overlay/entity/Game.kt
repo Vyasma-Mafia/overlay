@@ -41,7 +41,8 @@ data class Game(
     var visibleOverlay: Boolean? = true,
     var visibleRoles: Boolean? = true,
     var text: String? = null,
-    var result: String? = null
+    var result: String? = null,
+    var delay: Int = 0
 ) {
 
     @Transient

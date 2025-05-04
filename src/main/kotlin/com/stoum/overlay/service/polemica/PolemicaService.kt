@@ -18,8 +18,6 @@ import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -33,7 +31,6 @@ class PolemicaService(
     val gameRepository: GameRepository,
     val emitterService: EmitterService
 ) {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
     private val taskExecutorService = Executors.newSingleThreadScheduledExecutor()
     private val gameIdCache = Caffeine.newBuilder()
         .expireAfterWrite(10, TimeUnit.MINUTES)
@@ -41,7 +38,7 @@ class PolemicaService(
         .build<PolemicaTournamentGame, Long>()
 
     fun getOrTryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
-        log.info("Getting game tournamentId: $tournamentId, gameNum: $gameNum, tableNum: $tableNum, phase: $phase")
+        getLogger().info("Getting game tournamentId: $tournamentId, gameNum: $gameNum, tableNum: $tableNum, phase: $phase")
         var game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
             tournamentId,
             gameNum,
@@ -260,9 +257,24 @@ class PolemicaService(
     }
 
     private fun saveAndEmitGame(game: Game) {
+        // Сохраняем игру в репозиторий
         gameRepository.save(game)
-        emitterService.emitGame(game)
+
+        // Получаем задержку из свойства game
+        val delaySeconds = game.delay
+
+        if (delaySeconds > 0) {
+            val gameCopy = game.copy()
+            getLogger().info("Scheduling game update with delay of ${delaySeconds}s for ${game.id}")
+
+            // Используем taskExecutorService для отложенной отправки
+            taskExecutorService.schedule({ emitterService.emitGame(gameCopy) }, delaySeconds.toLong(), TimeUnit.SECONDS)
+        } else {
+            // Если задержка не требуется, отправляем сразу
+            emitterService.emitGame(game)
+        }
     }
+
 
     fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame): Game? {
         with(polemicaTournamentGame) {
@@ -315,13 +327,21 @@ class PolemicaService(
 
     fun polemicaColorToString(isBlack: Boolean) = if (isBlack) "black" else "red"
 
-    fun scheduleNextGameTasks(gameId: UUID?, game: Game) {
+    fun scheduleNextGameTasks(gameId: UUID?, nextGame: Game) {
         val delays = longArrayOf(60, 70, 80, 90, 120, 150, 180, 240, 300)
 
-        for (delayMinutes in delays) {
-            taskExecutorService.schedule({
-                emitterService.changeGame(gameId.toString(), game)
-            }, delayMinutes, TimeUnit.SECONDS)
+        // Базовая задержка из свойства nextGame
+        val baseDelay = nextGame.delay.toLong()
+
+        for (delaySeconds in delays) {
+            // Учитываем базовую задержку
+            val totalDelay = baseDelay + delaySeconds
+
+            taskExecutorService.schedule(
+                { emitterService.changeGame(gameId.toString(), nextGame) },
+                totalDelay,
+                TimeUnit.SECONDS
+            )
         }
     }
 

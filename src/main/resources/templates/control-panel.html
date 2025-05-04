@@ -42,6 +42,11 @@
             <input type="text" id="game-title" class="text-input" placeholder="Название игры">
             <button id="send-title" class="btn btn-primary">Отправить</button>
         </div>
+
+        <div class="text-input-container">
+            <input type="text" id="game-delay" class="text-input" placeholder="Задержка (delay) в секундах">
+            <button id="send-delay" class="btn btn-primary">Установить задержку</button>
+        </div>
     </div>
 
     <div class="section">
@@ -144,6 +149,18 @@
                 });
             }
         });
+
+        document.getElementById('send-delay').addEventListener('click', function () {
+            const delayValue = document.getElementById('game-delay').value.trim();
+            if (delayValue && !isNaN(delayValue)) {
+                fetch(`/${id}/delay?value=${encodeURIComponent(delayValue)}`, {
+                    method: 'POST'
+                });
+            } else {
+                alert('Пожалуйста, введите корректное числовое значение задержки.');
+            }
+        });
+
 
         document.getElementById('btn-reset-statuses').addEventListener('click', function () {
             fetch(`/${id}/resetStatuses`, {
@@ -322,10 +339,10 @@
                         }
 
                         // Обновить статус
-                        if (player.status && player.status[1]) {
-                            const statusBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .status-button[data-status="${player.status[1]}"]`);
+                        if (player.status) {
+                            const statusBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .status-button[data-status="${player.status}"]`);
                             if (statusBtn) statusBtn.classList.add('active');
-                            playerCard.classList.add(`status-${player.status[1]}`);
+                            playerCard.classList.add(`status-${player.status}`);
                         }
 
                         // Обновить говорящего
@@ -402,6 +419,11 @@
             if (gameInfo.text) {
                 document.getElementById('game-title').value = gameInfo.text;
             }
+
+            if (gameInfo.delay !== undefined) {
+                document.getElementById('game-delay').value = gameInfo.delay;
+            }
+
         }
 
         // Сделать функции глобальными, чтобы они были доступны из HTML
