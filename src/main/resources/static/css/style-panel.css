@@ -1,228 +1,420 @@
-body {
-    background-color: rgb(58, 57, 58);
+:root {
+    --main-bg-color: #1e1e1e;
+    --panel-bg-color: #2d2d2d;
+    --highlight-color: #e67e22;
+    --success-color: #27ae60;
+    --text-color: #f5f5f5;
+    --secondary-bg-color: #3a3a3a;
+    --button-bg-color: #474747;
+    --active-bg-color: #555555;
+    --border-radius: 8px;
+    --check-red-color: #e74c3c;
+    --check-black-color: #2c3e50;
+}
+
+* {
+    box-sizing: border-box;
     margin: 0;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Andale Mono, monospace;
-    font-size: 14px;
-    color: rgb(213, 213, 213);
-}
-
-.player-table {
-    width: 100%;
-    border-spacing: 0;
-    text-align: center;
-    font-size: 14px;
-}
-
-.number {
-    width: 28px;
-}
-
-.number p {
-    margin: 0;
-    width: 24px;
-    height: 24px;
-    text-align: center;
-    background-color: rgb(76, 76, 76);
-    border-radius: 50%;
-    line-height: 24px;
-}
-
-.players {
-    width: 100%;
-    padding: 2px;
-}
-
-.player-list {
-    padding: 0 5px;
-    height: 27px;
-    width: 100%;
-    background: #4c4c4c;
-    font-family: Andale Mono, monospace;
-    font-size: 14px;
-    color: rgb(213, 213, 213);
-}
-
-.s-button {
-    background-color: rgb(76, 76, 76);
-    width: 24px;
-    height: 24px;
-    padding: 0 5px;
-    border-bottom: 2px rgb(58, 57, 58) solid;
-    border-top: 2px rgb(58, 57, 58) solid;
-}
-
-.s-button div {
-    height: 24px;
-    width: 24px;
-    background-repeat: no-repeat;
-    background-position: top;
-    background-size: cover;
-    border-radius: 50%;
-    background-color: rgba(213, 213, 213, 0.9);
-    cursor: pointer;
-}
-
-.s-button.killed-button div {
-    background-image: url("/icon/killed.png");
-}
-
-.s-button.voted-button div {
-    background-image: url("/icon/voted.png");
-}
-
-.s-button.deleted-button div {
-    background-image: url("/icon/deleted.png");
-}
-
-.s-button.don-button div {
-    background-image: url("/icon/don.png");
-}
-
-.s-button.black-button div {
-    background-image: url("/icon/black.png");
-}
-
-.s-button.sher-button div {
-    background-image: url("/icon/sher.png");
-}
-
-.s-button.speaker-button div {
-    background-image: url("/icon/speaker.png");
-}
-
-.killed .s-button.killed-button div,
-.voted .s-button.voted-button div,
-.deleted .s-button.deleted-button div,
-.don .s-button.don-button div,
-.black .s-button.black-button div,
-.sher .s-button.sher-button div {
-    background-color: rgba(250, 170, 0, 1);
-}
-
-.speaker .s-button.speaker-button div {
-    background-color: rgba(85, 153, 255, 0.9);
-}
-
-button {
-    margin: 5px 0;
-    height: 24px;
-    width: 100%;
-    cursor: pointer;
-    font-family: Andale Mono, monospace;
-    font-size: 14px;
-    color: rgb(213, 213, 213);
-    background-color: rgb(31, 30, 31);
-    white-space: nowrap;
-}
-
-button,
-button:active,
-button:focus {
-    outline: none;
-}
-
-.binding button:active,
-.binding button:focus {
-    background-color: rgba(250, 170, 0, 1);
-}
-
-input[type="number"],
-textarea {
-    border: none;
-    outline: none;
-    background: #4c4c4c;
-    font-family: Andale Mono, monospace;
-    font-size: 14px;
-    color: rgb(213, 213, 213);
-    text-align: center;
-    width: 70px;
-    height: 24px;
     padding: 0;
 }
 
-.knobs,
-.layer {
+body {
+    font-family: 'Roboto Mono', monospace;
+    background-color: var(--main-bg-color);
+    color: var(--text-color);
+    padding: 10px;
+    min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.section {
+    background-color: var(--panel-bg-color);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.section-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+    font-weight: bold;
+    color: var(--highlight-color);
+}
+
+/* Header Controls */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.toggle-label {
+    flex-grow: 1;
+    font-size: 14px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
     position: absolute;
+    cursor: pointer;
     top: 0;
+    left: 0;
     right: 0;
     bottom: 0;
-    left: 0;
-}
-
-.button {
-    position: relative;
-    top: 50%;
-    width: 70px;
-    height: 24px;
-    overflow: visible;
-    padding: 3px 0;
-}
-
-.button.r,
-.button.r .layer {
+    background-color: var(--button-bg-color);
+    transition: .4s;
     border-radius: 24px;
 }
 
-.button.b2 {
-    border-radius: 2px;
-}
-
-.checkbox {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-    z-index: 3;
-}
-
-.knobs {
-    z-index: 2;
-}
-
-.layer {
-    width: 100%;
-    background: #4c4c4c;
-    transition: 0.3s ease all;
-    z-index: 1;
-}
-
-.button-1 .knobs:before {
-    content: 'Нет';
+.slider:before {
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 24px;
-    height: 14px;
-    font-family: Andale Mono, monospace;
-    font-size: 11px;
-    color: rgb(213, 213, 213);
-    text-align: center;
-    padding: 5px 0;
-    background-color: rgb(31, 30, 31);
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
     border-radius: 50%;
-    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
 }
 
-.button-1 .checkbox:checked + .knobs:before {
-    content: 'Да';
-    left: 43px;
-    background-color: rgba(250, 170, 0, 1);
-    color: rgb(31, 30, 31);
+input:checked + .slider {
+    background-color: var(--highlight-color);
 }
 
-.button-1 .checkbox:checked ~ .layer {
-    background-color: #fcfceb;
+input:checked + .slider:before {
+    transform: translateX(26px);
 }
 
-.button-1 .knobs,
-.button-1 .knobs:before,
-.button-1 .layer {
-    transition: 0.3s ease all;
+.text-input-container {
+    display: flex;
+    margin-top: 12px;
+}
+
+.text-input {
+    flex-grow: 1;
+    padding: 8px;
+    background-color: var(--secondary-bg-color);
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    font-family: 'Roboto Mono', monospace;
+    margin-right: 8px;
+}
+
+.text-input:focus {
+    outline: 2px solid var(--highlight-color);
+}
+
+.btn {
+    background-color: var(--button-bg-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--active-bg-color);
+}
+
+.btn-primary {
+    background-color: var(--highlight-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #d35400;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #219653;
+}
+
+/* Players Grid */
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.player-card {
+    background-color: var(--secondary-bg-color);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    position: relative;
+}
+
+.player-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.player-number {
+    width: 28px;
+    height: 28px;
+    background-color: var(--button-bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.player-name {
+    flex-grow: 1;
+    font-weight: bold;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-row {
+    display: flex;
+    gap: 8px;
+}
+
+.control-button {
+    flex: 1;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--button-bg-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.control-button.active {
+    background-color: var(--highlight-color);
+}
+
+.control-button.speaker.active {
+    background-color: #3498db;
+}
+
+.control-icon {
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-killed {
+    background-image: url("../icon/killed.png");
+}
+
+.icon-first-killed {
+    background-image: url("../icon/first-killed.png");
+}
+
+.icon-voted {
+    background-image: url("../icon/voted.png");
+}
+
+.icon-deleted {
+    background-image: url("../icon/deleted.png");
+}
+
+.icon-don {
+    background-image: url("../icon/hat.png");
+}
+
+.icon-black {
+    background-image: url("../icon/gun.png");
+}
+
+.icon-sher {
+    background-image: url("../icon/loupe.png");
+}
+
+.icon-speaker {
+    background-image: url("../icon/speaker.png");
+}
+
+.icon-heart {
+    background-image: url("../icon/heart.png");
+}
+
+/* Checks and Guess sections */
+.player-checks, .player-guess {
+    margin-top: 8px;
+    display: none;
+}
+
+.player-card.role-sher .player-checks,
+.player-card.role-don .player-checks,
+.player-card.status-first-killed .player-guess {
+    display: flex;
+    align-items: center;
+}
+
+.checks-title, .guess-title {
+    font-size: 14px;
+    margin-right: 8px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.checks-container, .guess-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex-grow: 1;
+}
+
+.player-select-container {
+    margin-left: auto;
+}
+
+.check-item, .guess-item {
+    border-radius: var(--border-radius);
+    padding: 2px 6px;
+    font-size: 12px;
+    background-color: var(--button-bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.check-item button, .guess-item button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #f5f5f5;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+.check-item button:hover, .guess-item button:hover {
+    opacity: 1;
+}
+
+.check-item.red {
+    background-color: var(--check-red-color);
+}
+
+.check-item.black {
+    background-color: var(--check-black-color);
+}
+
+.player-select {
+    padding: 2px 4px;
+    background-color: var(--secondary-bg-color);
+    border: 1px solid var(--button-bg-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Global Actions */
+.global-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.global-actions .btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 1200px) {
+    .players-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .players-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 10px;
+    }
+
+    .control-button {
+        height: 42px; /* Larger touch targets for mobile */
+    }
+
+    .global-actions {
+        flex-direction: column;
+    }
+
+    .global-actions .btn {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .player-checks, .player-guess {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .checks-title, .guess-title {
+        margin-bottom: 4px;
+        margin-right: 0;
+    }
+
+    .player-select-container {
+        margin-left: 0;
+        margin-top: 4px;
+        width: 100%;
+    }
+
+    .player-select {
+        width: 100%;
+    }
 }

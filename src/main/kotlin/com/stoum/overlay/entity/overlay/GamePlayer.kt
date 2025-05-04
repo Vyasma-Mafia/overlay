@@ -17,10 +17,10 @@ data class GamePlayer(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
     var nickname: String,
-    var place: Int = 0,
+    var place: Int = 1,
     var photoUrl: String? = null,
     var role: String? = null,
-    var status: Pair<String, String>? = null,
+    var status: String? = null,
     var fouls: Int? = 0,
     var techs: Int? = 0,
     var speaker: Boolean? = false,

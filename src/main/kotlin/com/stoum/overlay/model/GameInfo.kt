@@ -8,7 +8,7 @@ class GameInfo() {
         val nickname: String,
         val photoUrl: String,
         var role: String? = null,
-        var status: Pair<String, String>? = null,
+        var status: String? = null,
         var checks: MutableList<Map<String, String>>? = mutableListOf(),
         var stat: Map<String, Map<String, String>>? = mutableMapOf()
     ) {

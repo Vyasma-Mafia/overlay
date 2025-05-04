@@ -163,7 +163,7 @@ class PolemicaService(
                 game.players.forEach { player ->
                     Position.fromInt(player.place)?.let { position ->
                         player.status = kicked[position]?.let {
-                            Pair(if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed", "")
+                            if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed"
                         }
                         player.role = polemicaRoleToRole(polemicaGame.getRole(position))
                         val polemicaPlayer = polemicaGame.players?.find { it.position == position }
@@ -178,8 +178,8 @@ class PolemicaService(
                             val checks = polemicaGame.checks?.filter { it.role == Role.SHERIFF }?.sortedBy { it.night }
                             player.checks = checks?.map {
                                 mapOf(
-                                    "first" to polemicaRoleToRole(polemicaGame.getRole(it.player)),
-                                    "second" to it.player.value.toString()
+                                    "role" to polemicaRoleToRole(polemicaGame.getRole(it.player)),
+                                    "num" to it.player.value.toString()
                                 )
                             }?.toMutableList()
                         }
@@ -187,8 +187,8 @@ class PolemicaService(
                             val checks = polemicaGame.checks?.filter { it.role == Role.DON }?.sortedBy { it.night }
                             player.checks = checks?.map {
                                 mapOf(
-                                    "first" to polemicaRoleToRole(polemicaGame.getRole(it.player)),
-                                    "second" to it.player.value.toString()
+                                    "role" to polemicaRoleToRole(polemicaGame.getRole(it.player)),
+                                    "num" to it.player.value.toString()
                                 )
                             }?.toMutableList()
                         }
@@ -294,9 +294,9 @@ class PolemicaService(
 
     private fun polemicaGuessToGuess(guess: PolemicaGuess?): MutableList<Map<String, String>> {
         val guessList = mutableListOf<Map<String, String>>()
-        guess?.vice?.let { guessList.add(mapOf("first" to "vice", "second" to it.value.toString())) }
-        guess?.civs?.forEach { guessList.add(mapOf("first" to "red", "second" to it.value.toString())) }
-        guess?.mafs?.forEach { guessList.add(mapOf("first" to "black", "second" to it.value.toString())) }
+        guess?.vice?.let { guessList.add(mapOf("role" to "vice", "num" to it.value.toString())) }
+        guess?.civs?.forEach { guessList.add(mapOf("role" to "red", "num" to it.value.toString())) }
+        guess?.mafs?.forEach { guessList.add(mapOf("role" to "black", "num" to it.value.toString())) }
         return guessList
     }
 

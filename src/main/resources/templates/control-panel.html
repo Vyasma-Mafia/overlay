@@ -1,706 +1,619 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns="http://www.w3.org/1999/html">
-
+<html lang="ru">
 <head>
     <meta charset="utf-8">
-    <title>Панель </title>
-    <link rel="stylesheet" href="\css\style-panel.css">
-    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления</title>
+    <link rel="stylesheet" href="/css/style-panel.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
-<header>
-    <table style="width: 100%;">
-        <tr>
-            <td>
-                Показывать панель игроков
-            </td>
-            <td style="width: 80px">
-                <div class="button r button-1" id="button-panel">
-                    <input type="checkbox" class="checkbox" checked>
-                    <div class="knobs"></div>
-                    <div class="layer"></div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Показывать игровые роли
-            </td>
-            <td>
-                <div class="button r button-1" id="button-roles">
-                    <input type="checkbox" class="checkbox" checked>
-                    <div class="knobs"></div>
-                    <div class="layer"></div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Начать игру
-            </td>
-            <td>
-                <div class="button r button-1" id="button-started">
-                    <input type="checkbox" class="checkbox" checked>
-                    <div class="knobs"></div>
-                    <div class="layer"></div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Название игры
-            </td>
-            <td>
-                <input type="text" id="text-input" placeholder="Введите текст">
-                <div id="button-send-text">
-                    <button class="button button.r" style="width: auto">Отправить текст</button>
-                </div>
-            </td>
-        </tr>
-    </table>
-</header>
-<div class="main">
-    <table class="player-table">
-        <tr style="background-color: rgb(31,30,31);">
-            <td>
-                №
-            </td>
-            <td>
-                Никнейм
-            </td>
-            <td colspan="3">
-                Статус
-            </td>
-            <td></td>
-            <td colspan="3">
-                Роль
-            </td>
-            <td style="max-width: 5px;"></td>
-            <td></td>
-        </tr>
+<div class="container">
+    <h1>Панель управления</h1>
 
-        <tr class="player" id="player_1">
-            <td class="number">
-                <p>1</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_2">
-            <td class="number">
-                <p>2</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_3">
-            <td class="number">
-                <p>3</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_4">
-            <td class="number">
-                <p>4</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_5">
-            <td class="number">
-                <p>5</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_6">
-            <td class="number">
-                <p>6</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_7">
-            <td class="number">
-                <p>7</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_8">
-            <td class="number">
-                <p>8</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_9">
-            <td class="number">
-                <p>9</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
-        <tr class="player" id="player_10">
-            <td class="number">
-                <p>10</p>
-            </td>
-            <td class="players">
-                <select class="player-list"></select>
-            </td>
-            <td class="s-button killed-button">
-                <div onclick="changeStatus(this,'killed')"></div>
-            </td>
-            <td class="s-button voted-button">
-                <div onclick="changeStatus(this,'voted')"></div>
-            </td>
-            <td class="s-button deleted-button">
-                <div onclick="changeStatus(this,'deleted')"></div>
-            </td>
-            <td></td>
-            <td class="s-button don-button">
-                <div onclick="changeRole(this, 'don')"></div>
-            </td>
-            <td class="s-button black-button">
-                <div onclick="changeRole(this, 'black')"></div>
-            </td>
-            <td class="s-button sher-button">
-                <div onclick="changeRole(this, 'sher')"></div>
-            </td>
-            <td></td>
-            <td class="s-button speaker-button">
-                <div onclick="changeSpeaker(this)"></div>
-            </td>
-        </tr>
+    <div class="section">
+        <div class="section-title">Настройки</div>
 
-        <tr>
-            <td></td>
-            <td class="players">
-                <button onclick="sendAllData()">Отправить</button>
-            </td>
-            <td colspan="3">
-                <button onclick="clearStatus()">Сбросить</button>
-            </td>
-            <td></td>
-            <td colspan="3">
-                <button onclick="clearRole()">Сбросить</button>
-            </td>
-            <td></td>
-            <td class="binding">
-                <button alt="Следующая игра" onclick="nextGame()"> > </button>
-            </td>
-        </tr>
-    </table>
+        <div class="toggle-container">
+            <span class="toggle-label">Показывать панель игроков</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-panel" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-container">
+            <span class="toggle-label">Показывать игровые роли</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-roles" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-container">
+            <span class="toggle-label">Начать игру</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-started" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="text-input-container">
+            <input type="text" id="game-title" class="text-input" placeholder="Название игры">
+            <button id="send-title" class="btn btn-primary">Отправить</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Игроки</div>
+        <div class="players-grid" id="players-container">
+            <!-- Игроки будут добавлены через JavaScript -->
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Действия</div>
+        <div class="global-actions">
+            <button id="btn-reset-statuses" class="btn">Сбросить статусы</button>
+            <button id="btn-reset-roles" class="btn">Сбросить роли</button>
+            <button id="btn-next-game" class="btn btn-primary">Следующая игра</button>
+        </div>
+    </div>
 </div>
-<footer>
 
-</footer>
 <script>
-    function addPlayers(players) {
-        document.querySelectorAll('.player-list').forEach((element, index, array) => {
-            element.innerHTML = '';
-            players.forEach(player => {
-                element.add(new Option(player, player));
+    const id = '[[${id}]]';
+    document.addEventListener('DOMContentLoaded', function () {
+        const tournamentId = '[[${tournamentId}]]';
+        const gameNum = '[[${gameNum}]]';
+        const tableNum = '[[${tableNum}]]';
+        const phase = '[[${phase}]]';
+
+        // Генерация карточек игроков
+        const playersContainer = document.getElementById('players-container');
+        for (let i = 1; i <= 10; i++) {
+            const playerCard = createPlayerCard(i);
+            playersContainer.appendChild(playerCard);
+        }
+
+        // Подключение к EventSource
+        const socket = new EventSource(`/${id}/controlinfo`);
+
+        socket.addEventListener('message', function (event) {
+            console.log('Message from server:', event.data);
+            if (event.data.toString().startsWith('!')) {
+                let split = event.data.toString().split(/ (.*)/s);
+                switch (split[0]) {
+                    case '!gameinfo': {
+                        const gameInfo = JSON.parse(split[1]);
+                        updatePlayersData(gameInfo);
+                        updateGameSettings(gameInfo);
+                        populateNumberSelects();
+                        socket.close();
+                        break;
+                    }
+                }
+            }
+        });
+
+        // Настройка слушателей событий select для проверок и лучших ходов
+        document.querySelectorAll('.check-player-select').forEach(select => {
+            select.addEventListener('change', function () {
+                if (this.value) {
+                    const playerNum = this.dataset.playerNum;
+                    addCheck(playerNum, this.value);
+                    this.value = ''; // Сбросить после выбора
+                }
             });
         });
-    }
 
-    function setTable(playersOrdered) {
-        document.querySelectorAll('.player-list').forEach((element, index, array) => {
-            element.querySelectorAll(`option`).forEach(element => {
-                element.removeAttribute('selected');
-            });
-            element.querySelector(`[value="${playersOrdered[index]}"]`).setAttribute('selected', 'selected');
-        });
-        //sendAllData()
-    }
-
-    function setRoles(roles) {
-        let rolesList = roles.split(' ');
-        sherDivElement = document.querySelector(`.player#player_${rolesList[0]} td.sher-button div`);
-        changeRole(sherDivElement, 'sher', false);
-        rolesList.slice(1).forEach(slot => {
-            if (slot.toString().startsWith('*')) {
-                donDivElement = document.querySelector(`.player#player_${slot.toString().slice(1)} td.don-button div`);
-                changeRole(donDivElement, 'don', false);
-            } else {
-                blackDivElement = document.querySelector(`.player#player_${slot.toString()} td.black-button div`);
-                changeRole(blackDivElement, 'black', false);
-            }
-        });
-    }
-
-
-    let id = '[[${id}]]';
-    let tournamentId = '[[${tournamentId}]]';
-    let gameNum = '[[${gameNum}]]';
-    let tableNum = '[[${tableNum}]]';
-    let phase = '[[${phase}]]';
-
-    function nextGame() {
-        window.location.replace(`/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/tables/${nextGameInfo.tableNum}/games/${nextGameInfo.gameNum + 1}/control`);
-        fetch(`/${id}/next`, {
-            method: 'POST'
-        });
-    }
-
-    const socket = new EventSource(`/${id}/controlinfo`);
-
-
-/*    socket.addEventListener('open', function (event) {
-        socket.send('register control-panel');
-        console.log("Connected to gameinfo WS")
-    });*/
-    socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data);
-        if (event.data.toString().startsWith('!')) {
-            let split = event.data.toString().split(/ (.*)/s);
-            switch (split[0]) {
-                case '!gameinfo': {
-                    let playersOrdered = JSON.parse(split[1]).playersOrdered;
-                    addPlayers(playersOrdered);
-                    setTable(playersOrdered);
-                    socket.close();
-                    break;
-                }
-                case '!addplayers': {
-                    let players = event.data.split(' ').slice(1).join(' ');
-                    addPlayers(players);
-                    break;
-                }
-                case '!settable': {
-                    let playersOrdered = event.data.split(' ').slice(1).join(' ');
-                    setTable(playersOrdered);
-                    break;
-                }
-                case '!setroles': {
-                    clearRole();
-                    let roles = event.data.split(' ').slice(1).join(' ');
-                    setRoles(roles);
-                }
-            }
-        }
-    });
-
-    function changeStatus(object, status) {
-        element = object.parentElement.parentElement;
-        if (element.classList.contains(status)) {
-            element.classList.remove(status);
-            element.classList.remove('dead');
-        } else {
-            if (element.classList.contains('dead')) {
-                element.classList.remove('killed');
-                element.classList.remove('voted');
-                element.classList.remove('deleted');
-            } else {
-                element.classList.add('dead');
-            }
-            element.classList.add(status);
-        }
-        let playerNickname = element.querySelector('select option[selected]').text;
-        fetch(`/${id}/status`, {
-            method: 'POST',
-            body: `{"${playerNickname}" : ["","${status}"]}`,
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8'
-            }
-        });
-
-    }
-
-    function changeRole(object, role, forward = true) {
-        element = object.parentElement.parentElement;
-        let playerNickname;
-        if (element.classList.contains(role)) {
-            element.classList.remove(role);
-        } else {
-            element.classList.remove('don');
-            element.classList.remove('black');
-            element.classList.remove('sher');
-            element.classList.add(role);
-        }
-        //classes = element.id + '|' + element.classList.value;
-        playerNickname = element.querySelector('select option[selected]').text;
-        fetch(`/${id}/roles`, {
-            method: 'POST',
-            body: `{"${playerNickname}" : "${role}"}`,
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8'
-            }
-        });
-        //playerStatusChannel.postMessage(classes);
-    }
-
-    function changeSpeaker(object) {
-        element = object.parentElement.parentElement;
-        if (element.classList.contains('speaker')) {
-            element.classList.remove('speaker');
-        } else {
-            document.querySelectorAll('.player').forEach((item, index, array) => {
-                if (item.classList.contains('speaker')) {
-                    item.classList.remove('speaker');
-                    playerStatusChannel.postMessage(item.id + '|' + item.classList.value);
+        document.querySelectorAll('.guess-player-select').forEach(select => {
+            select.addEventListener('change', function () {
+                if (this.value) {
+                    const playerNum = this.dataset.playerNum;
+                    addGuess(playerNum, this.value);
+                    this.value = ''; // Сбросить после выбора
                 }
             });
-            element.classList.add('speaker');
-        }
-        classes = element.id + '|' + element.classList.value;
-        playerStatusChannel.postMessage(classes);
-    }
+        });
 
-    function clearStatus() {
-        document.querySelectorAll('.killed').forEach((item, index, array) => {
-            item.classList.remove('killed');
+        // Обработчики событий UI
+        document.getElementById('toggle-panel').addEventListener('change', function (e) {
+            fetch(`/${id}/visibleOverlay?value=${e.target.checked}`, {
+                method: 'POST'
+            });
         });
-        document.querySelectorAll('.voted').forEach((item, index, array) => {
-            item.classList.remove('voted');
+
+        document.getElementById('toggle-roles').addEventListener('change', function (e) {
+            fetch(`/${id}/visibleRoles?value=${e.target.checked}`, {
+                method: 'POST'
+            });
         });
-        document.querySelectorAll('.deleted').forEach((item, index, array) => {
-            item.classList.remove('deleted');
+
+        document.getElementById('toggle-started').addEventListener('change', function (e) {
+            fetch(`/${id}/started?value=${e.target.checked}`, {
+                method: 'POST'
+            });
         });
-        document.querySelectorAll('.dead').forEach((item, index, array) => {
-            item.classList.remove('dead');
+
+        document.getElementById('send-title').addEventListener('click', function () {
+            const title = document.getElementById('game-title').value.trim();
+            if (title) {
+                fetch(`/${id}/text?value=${encodeURIComponent(title)}`, {
+                    method: 'POST'
+                });
+            }
         });
-        document.querySelectorAll('.player').forEach((element, index, array) => {
+
+        document.getElementById('btn-reset-statuses').addEventListener('click', function () {
             fetch(`/${id}/resetStatuses`, {
                 method: 'POST'
             });
-            // player = element.id + '|' + element.classList.value;
-            // playerStatusChannel.postMessage(player);
+
+            // Сбросить UI статусы
+            document.querySelectorAll('.status-button.active').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Сбросить классы статусов из карточек
+            document.querySelectorAll('.player-card').forEach(card => {
+                card.classList.remove('status-killed', 'status-voted', 'status-deleted', 'status-first-killed');
+            });
+
+            // Очистить все контейнеры догадок
+            document.querySelectorAll('.guess-container').forEach(container => {
+                container.innerHTML = '';
+            });
+
+            // Показать все выпадающие списки
+            document.querySelectorAll('.guess-player-select').forEach(select => {
+                select.parentElement.classList.remove('hidden');
+            });
         });
-    }
 
-    function clearRole() {
-        document.querySelectorAll('.don').forEach((item, index, array) => {
-            item.classList.remove('don');
+        document.getElementById('btn-reset-roles').addEventListener('click', function () {
+            fetch(`/${id}/resetRoles`, {
+                method: 'POST'
+            });
+
+            // Сбросить UI роли
+            document.querySelectorAll('.role-button.active').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Сбросить классы ролей из карточек
+            document.querySelectorAll('.player-card').forEach(card => {
+                card.classList.remove('role-red', 'role-black', 'role-sher', 'role-don');
+            });
+
+            // Очистить все контейнеры проверок
+            document.querySelectorAll('.checks-container').forEach(container => {
+                container.innerHTML = '';
+            });
         });
-        document.querySelectorAll('.black').forEach((item, index, array) => {
-            item.classList.remove('black');
-        });
-        document.querySelectorAll('.sher').forEach((item, index, array) => {
-            item.classList.remove('sher');
-        });
-        document.querySelectorAll('.player').forEach((element, index, array) => {
-            player = element.id + '|' + element.classList.value;
-            //playerStatusChannel.postMessage(player);
-        });
 
-        fetch(`/${id}/resetRoles`, {
-            method: 'POST'
-        });
-        // socket.send('!setrole reset');
-    }
-
-    $('#button-panel').click(function () {
-        if ($('#button-panel').find('.checkbox')[0].checked) {
-            fetch(`/${id}/visibleOverlay?value=true`, {
+        document.getElementById('btn-next-game').addEventListener('click', function () {
+            fetch(`/${id}/next`, {
                 method: 'POST'
             });
-            //panelStatusChannel.postMessage('body|visible');
-        } else {
-            fetch(`/${id}/visibleOverlay?value=false`, {
-                method: 'POST'
-            });
-            //panelStatusChannel.postMessage('body|');
-        }
-    });
 
-
-    $('#button-roles').click(function () {
-        if ($('#button-roles').find('.checkbox')[0].checked) {
-            fetch(`/${id}/visibleRoles?value=true`, {
-                method: 'POST'
-            });
-            //panelStatusChannel.postMessage('footer|show-roles');
-        } else {
-            fetch(`/${id}/visibleRoles?value=false`, {
-                method: 'POST'
-            });
-            //panelStatusChannel.postMessage('footer|');
-        }
-    });
-
-    $('#button-started').click(function () {
-        if ($('#button-started').find('.checkbox')[0].checked) {
-            fetch(`/${id}/started?value=true`, {
-                method: 'POST'
-            });
-            //panelStatusChannel.postMessage('footer|show-roles');
-        } else {
-            fetch(`/${id}/started?value=false`, {
-                method: 'POST'
-            });
-            //panelStatusChannel.postMessage('footer|');
-        }
-    });
-
-    document.getElementById('button-send-text').addEventListener('click', function () {
-        const textInput = document.getElementById('text-input').value;
-
-        // Проверяем, что ввод не является пустым
-        if (textInput.trim() !== '') {
-            fetch(`/${id}/text?value=${encodeURIComponent(textInput)}`, {
-                method: 'POST'
-            }).then(response => {
-                if (response.ok) {
-                    alert('Текст успешно отправлен!');
-                } else {
-                    alert('Ошибка при отправке текста.');
-                }
-            }).catch(error => {
-                console.error('Ошибка:', error);
-                alert('Ошибка сети при отправке текста.');
-            });
-        } else {
-            alert('Пожалуйста, введите текст перед отправкой.');
-        }
-    });
-
-    $('select').on('change', function () {
-        player = $(this).parents('.player')[0].id + '|' + $(this).find(':selected').val();
-        playerRoleChannel.postMessage(player);
-    });
-
-    $('.binding').bind('keypress', function (e) {
-        console.log(e.keyCode);
-        if (e.keyCode == 48) {
-            document.getElementById('player_10').getElementsByClassName('speaker-button')[0].getElementsByTagName('div')[0].click();
-        }
-        let i = 1;
-        while (i < 10) {
-            if (e.keyCode == 48 + i) {
-                document.getElementById('player_' + i).getElementsByClassName('speaker-button')[0].getElementsByTagName('div')[0].click();
+            // Если есть следующая игра, перенаправить
+            if (tournamentId && gameNum && tableNum && phase) {
+                window.location.replace(`/polemica/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${parseInt(gameNum) + 1}/control`);
             }
-            i++;
+        });
+
+        function populateNumberSelects() {
+            document.querySelectorAll('.player-select').forEach(select => {
+                select.innerHTML = '';
+
+                // Добавить пустой вариант
+                const emptyOption = document.createElement('option');
+                emptyOption.value = '';
+                emptyOption.text = '-- Выбрать номер --';
+                select.appendChild(emptyOption);
+
+                // Добавить номера игроков
+                for (let i = 1; i <= 10; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.text = i;
+                    select.appendChild(option);
+                }
+            });
         }
 
+        // Вспомогательные функции
+        function createPlayerCard(playerNum) {
+            const card = document.createElement('div');
+            card.className = 'player-card';
+            card.dataset.playerNum = playerNum;
+
+            card.innerHTML = `
+                    <div class="player-header">
+                        <div class="player-number">${playerNum}</div>
+                        <div class="player-name" id="player-name-${playerNum}">Игрок ${playerNum}</div>
+                    </div>
+                    <div class="player-controls">
+                        <div class="control-row status-row">
+                            <div class="control-button status-button" data-status="first-killed" onclick="toggleStatus(this, ${playerNum}, 'first-killed')">
+                                <div class="control-icon icon-first-killed"></div>
+                            </div>
+                            <div class="control-button status-button" data-status="killed" onclick="toggleStatus(this, ${playerNum}, 'killed')">
+                                <div class="control-icon icon-killed"></div>
+                            </div>
+                            <div class="control-button status-button" data-status="voted" onclick="toggleStatus(this, ${playerNum}, 'voted')">
+                                <div class="control-icon icon-voted"></div>
+                            </div>
+                            <div class="control-button status-button" data-status="deleted" onclick="toggleStatus(this, ${playerNum}, 'deleted')">
+                                <div class="control-icon icon-deleted"></div>
+                            </div>
+                        </div>
+                        <div class="control-row role-row">
+                            <div class="control-button role-button" data-role="red" onclick="toggleRole(this, ${playerNum}, 'red')">
+                                <div class="control-icon icon-heart"></div>
+                            </div>
+                            <div class="control-button role-button" data-role="sher" onclick="toggleRole(this, ${playerNum}, 'sher')">
+                                <div class="control-icon icon-sher"></div>
+                            </div>
+                            <div class="control-button role-button" data-role="don" onclick="toggleRole(this, ${playerNum}, 'don')">
+                                <div class="control-icon icon-don"></div>
+                            </div>
+                            <div class="control-button role-button" data-role="black" onclick="toggleRole(this, ${playerNum}, 'black')">
+                                <div class="control-icon icon-black"></div>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-button speaker" onclick="toggleSpeaker(this, ${playerNum})">
+                                <div class="control-icon icon-speaker"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sheriff and Don Checks Section -->
+                    <div class="player-checks">
+                        <div class="checks-title">Проверки:</div>
+                        <div class="checks-container" id="checks-container-${playerNum}">
+                            <!-- Checks will be dynamically added here -->
+                        </div>
+                        <div class="player-select-container">
+                            <select class="player-select check-player-select" data-player-num="${playerNum}">
+                                <option value="">-- Выбрать номер --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- First Killed Guess Section -->
+                    <div class="player-guess">
+                        <div class="guess-title">Лучший ход:</div>
+                        <div class="guess-container" id="guess-container-${playerNum}">
+                            <!-- Guesses will be dynamically added here -->
+                        </div>
+                        <div class="player-select-container" id="guess-select-container-${playerNum}">
+                            <select class="player-select guess-player-select" data-player-num="${playerNum}">
+                                <option value="">-- Выбрать номер --</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+
+            return card;
+        }
+
+        function updatePlayersData(gameInfo) {
+            if (gameInfo.players && gameInfo.players.length > 0) {
+                // Обновить имена игроков и их статусы
+                gameInfo.players.forEach((player, index) => {
+                    if (index < 10) {
+                        const playerNum = index + 1;
+                        const nameElement = document.getElementById(`player-name-${playerNum}`);
+                        const playerCard = document.querySelector(`.player-card[data-player-num="${playerNum}"]`);
+
+                        if (nameElement) {
+                            nameElement.textContent = player.nickname;
+                            nameElement.dataset.nickname = player.nickname;
+                        }
+
+                        // Обновить роль
+                        if (player.role) {
+                            const roleBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .role-button[data-role="${player.role}"]`);
+                            if (roleBtn) roleBtn.classList.add('active');
+                            playerCard.classList.add(`role-${player.role}`);
+                        }
+
+                        // Обновить статус
+                        if (player.status && player.status[1]) {
+                            const statusBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .status-button[data-status="${player.status[1]}"]`);
+                            if (statusBtn) statusBtn.classList.add('active');
+                            playerCard.classList.add(`status-${player.status[1]}`);
+                        }
+
+                        // Обновить говорящего
+                        if (player.speaker) {
+                            const speakerBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .speaker`);
+                            if (speakerBtn) speakerBtn.classList.add('active');
+                        }
+
+                        // Обновить проверки (Checks)
+                        if (player.checks && player.checks.length > 0) {
+                            const checksContainer = document.getElementById(`checks-container-${playerNum}`);
+                            checksContainer.innerHTML = '';
+
+                            player.checks.forEach((check, checkIndex) => {
+                                const checkElement = document.createElement('div');
+                                checkElement.className = `check-item ${check.result || ''}`;
+
+                                // Проверка, содержит ли check информацию о номере игрока
+                                const displayText = check.num;
+
+                                checkElement.innerHTML = `
+                                        ${displayText}
+                                        <button onclick="removeCheck(${playerNum}, ${checkIndex})">×</button>
+                                    `;
+                                checksContainer.appendChild(checkElement);
+                            });
+                        }
+
+                        // Обновить лучший ход (Guess)
+                        if (player.guess && player.guess.length > 0) {
+                            const guessContainer = document.getElementById(`guess-container-${playerNum}`);
+                            const guessSelectContainer = document.getElementById(`guess-select-container-${playerNum}`);
+                            guessContainer.innerHTML = '';
+
+                            player.guess.forEach((guess, guessIndex) => {
+                                const guessElement = document.createElement('div');
+                                guessElement.className = 'guess-item';
+
+                                // Проверка, содержит ли guess информацию о номере игрока
+                                const displayText = guess.num;
+
+                                guessElement.innerHTML = `
+                                        ${displayText}
+                                        <button onclick="removeGuess(${playerNum}, ${guessIndex})">×</button>
+                                    `;
+                                guessContainer.appendChild(guessElement);
+                            });
+
+                            // Скрыть выпадающий список, если уже есть 3 догадки
+                            if (player.guess.length >= 3) {
+                                guessSelectContainer.classList.add('hidden');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateGameSettings(gameInfo) {
+            // Обновить настройки игры (чекбоксы)
+            if (gameInfo.visibleOverlay !== undefined) {
+                document.getElementById('toggle-panel').checked = gameInfo.visibleOverlay;
+            }
+
+            if (gameInfo.visibleRoles !== undefined) {
+                document.getElementById('toggle-roles').checked = gameInfo.visibleRoles;
+            }
+
+            if (gameInfo.started !== undefined) {
+                document.getElementById('toggle-started').checked = gameInfo.started;
+            }
+
+            // Обновить название игры
+            if (gameInfo.text) {
+                document.getElementById('game-title').value = gameInfo.text;
+            }
+        }
+
+        // Сделать функции глобальными, чтобы они были доступны из HTML
+        window.toggleStatus = toggleStatus;
+        window.toggleRole = toggleRole;
+        window.toggleSpeaker = toggleSpeaker;
+        window.addCheck = addCheck;
+        window.removeCheck = removeCheck;
+        window.addGuess = addGuess;
+        window.removeGuess = removeGuess;
     });
 
-    function sendAllData() {
-        document.querySelectorAll('.player').forEach((element, index, array) => {
-            item = element.querySelectorAll('.player-list')[0];
-            player = element.id + '|' + $(item[item.selectedIndex]).text();
+    // Функции для обработки кликов и взаимодействий
+    function toggleStatus(button, playerNum, status) {
+        // Найти все кнопки статусов для этого игрока и снять активацию
+        const playerCard = button.closest('.player-card');
+        playerCard.querySelectorAll('.status-button').forEach(btn => {
+            btn.classList.remove('active');
+            const statusType = btn.dataset.status;
+            playerCard.classList.remove(`status-${statusType}`);
+        });
+
+        // Активировать нажатую кнопку (если она не была активна)
+        const wasActive = button.classList.contains('active');
+        if (!wasActive) {
+            button.classList.add('active');
+            playerCard.classList.add(`status-${status}`);
+        }
+
+        // Получить никнейм игрока
+        const playerName = document.getElementById(`player-name-${playerNum}`).dataset.nickname;
+        if (!playerName) return;
+
+        // Отправить данные на сервер
+        fetch(`/${id}/status`, {
+            method: 'POST',
+            body: JSON.stringify({
+                [playerNum]: wasActive ? null : status
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
+
+    function toggleRole(button, playerNum, role) {
+        // Найти все кнопки ролей для этого игрока и снять активацию
+        const playerCard = button.closest('.player-card');
+        playerCard.querySelectorAll('.role-button').forEach(btn => {
+            btn.classList.remove('active');
+            const roleType = btn.dataset.role;
+            playerCard.classList.remove(`role-${roleType}`);
+        });
+
+        // Активировать нажатую кнопку (если она не была активна)
+        const wasActive = button.classList.contains('active');
+        if (!wasActive) {
+            button.classList.add('active');
+            playerCard.classList.add(`role-${role}`);
+        }
+
+        // Получить никнейм игрока
+        const playerName = document.getElementById(`player-name-${playerNum}`).dataset.nickname;
+        if (!playerName) return;
+
+        // Отправить данные на сервер
+        fetch(`/${id}/roles`, {
+            method: 'POST',
+            body: JSON.stringify({
+                [playerNum]: wasActive ? '' : role
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
+
+    function toggleSpeaker(button, playerNum) {
+        // Проверить, является ли кнопка уже активной
+        const isActive = button.classList.contains('active');
+
+        // Снять выделение со всех кнопок говорящих
+        document.querySelectorAll('.speaker.active').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Если кнопка была активна, оставляем её неактивной (выключаем микрофон)
+        // Если не была активна, активируем её
+        if (!isActive) {
+            button.classList.add('active');
+        }
+
+        // Получить данные для отправки - здесь нужен будет endpoint для настройки говорящего
+        // Пока используем обновление всей игры
+        fetch(`/${id}/setSpeaker${isActive ? '' : '?playerNum=' + playerNum}`, {
+            method: 'POST',
+        });
+    }
+
+    function addCheck(playerNum, targetPlayerNum) {
+        // Добавить визуальный элемент проверки
+        const checksContainer = document.getElementById(`checks-container-${playerNum}`
+        );
+        const checkElement = document.createElement('div');
+        checkElement.className = 'check-item'; // Без указания цвета - будет определен на сервере
+
+        // Получить индекс новой проверки
+        const checkIndex = checksContainer.children.length;
+
+        checkElement.innerHTML =
+            `
+            ${targetPlayerNum}
+        <button onclick="removeCheck(${playerNum}, ${checkIndex})">×</button>
+            `;
+        checksContainer.appendChild(checkElement);
+
+        // Отправить данные на сервер
+        // Теперь мы не указываем результат проверки (цвет) - его определит сервер
+        fetch(`/${id}/playerCheck`, {
+            method: 'POST',
+            body: JSON.stringify({
+                playerNum: playerNum,
+                targetPlayerNum: targetPlayerNum
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
+
+    function removeCheck(playerNum, checkIndex) {
+        // Удалить элемент проверки из интерфейса
+        const checksContainer = document.getElementById(
+            `checks-container-${playerNum}`
+        );
+        if (checksContainer.children[checkIndex]) {
+            checksContainer.removeChild(checksContainer.children[checkIndex]);
+        }
+
+        // Отправить данные на сервер
+        fetch(
+            `/${id}/removePlayerCheck`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    playerNum: playerNum,
+                    checkIndex: checkIndex
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+            }
+            }
+        )
+        ;
+    }
+
+    function addGuess(playerNum, targetPlayerNum) {
+        // Добавить визуальный элемент догадки
+        const guessContainer = document.getElementById(`guess-container-${playerNum}`);
+        const guessElement = document.createElement('div');
+        guessElement.className = 'guess-item';
+
+        // Получить индекс новой догадки
+        const guessIndex = guessContainer.children.length;
+
+        guessElement.innerHTML = `
+                ${targetPlayerNum}
+                <button onclick="removeGuess(${playerNum}, ${guessIndex})">×</button>
+            `;
+        guessContainer.appendChild(guessElement);
+
+        // Скрыть выпадающий список, если это была третья догадка
+        if (guessContainer.children.length >= 3) {
+            document.getElementById(`guess-select-container-${playerNum}`).classList.add('hidden');
+        }
+
+        // Отправить данные на сервер
+        fetch(`/${id}/playerGuess`, {
+            method: 'POST',
+            body: JSON.stringify({
+                playerNum: playerNum,
+                targetPlayerNum: targetPlayerNum
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
+
+    function removeGuess(playerNum, guessIndex) {
+        // Удалить элемент догадки из интерфейса
+        const guessContainer = document.getElementById(`guess-container-${playerNum}`);
+        if (guessContainer.children[guessIndex]) {
+            guessContainer.removeChild(guessContainer.children[guessIndex]);
+        }
+
+        // Показать выпадающий список, если осталось меньше 3 догадок
+        if (guessContainer.children.length < 3) {
+            document.getElementById(`guess-select-container-${playerNum}`).classList.remove('hidden');
+        }
+
+        // Отправить данные на сервер
+        fetch(`/${id}/removePlayerGuess`, {
+            method: 'POST',
+            body: JSON.stringify({
+                playerNickname: playerNum,
+                guessIndex: guessIndex
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
     }
 </script>
 </body>
-
 </html>

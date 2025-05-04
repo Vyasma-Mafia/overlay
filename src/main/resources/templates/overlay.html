@@ -359,11 +359,11 @@
             );
             //todo set status
             if (playerInfo.status) {
-                playerElement.classList.add('dead', playerInfo.status.first)
-                playerElement.querySelector('.status-text').innerHTML = playerInfo.status.second
+                playerElement.classList.add('dead', playerInfo.status);
             } else {
                 playerElement.classList.remove('dead')
                 playerElement.classList.remove('killed')
+                playerElement.classList.remove('first-killed');
                 playerElement.classList.remove('voted')
                 playerElement.classList.remove('removed')
             }
@@ -423,8 +423,8 @@
             //todo set checks
             const createNumberBadge = (check) => {
                 const badge = document.createElement('span');
-                badge.className = `number-badge ${check.first}`;
-                badge.textContent = check.second;
+                badge.className = `number-badge ${check.role}`;
+                badge.textContent = check.num;
                 return badge;
             };
 
@@ -441,8 +441,8 @@
             if (playerInfo.guess.length !== 0) {
                 playerInfo.guess.forEach((check, index) => {
                     checkElement = playerElement.querySelector(`.guess-${index + 1}`);
-                    checkElement.classList.add(check.first, 'visible');
-                    checkElement.querySelector('.guess-text').innerHTML = check.second;
+                    checkElement.classList.add(check.role, 'visible');
+                    checkElement.querySelector('.guess-text').innerHTML = check.num;
                 });
             } else {
                 playerElement.querySelectorAll('.guess').forEach((el) => {

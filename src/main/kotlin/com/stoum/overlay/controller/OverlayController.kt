@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import java.util.Locale
 import java.util.UUID
-import java.util.logging.Logger
 
 // Определение enum для типов сервисов
 enum class ServiceType {
@@ -139,7 +138,7 @@ class OverlayController(
         model.addAttribute("phase", phase)
         model.addAttribute("service", service.getPathValue())
 
-        Logger.getAnonymousLogger().info("${game?.id}")
+        getLogger().info("Control for ${game?.id}: ${service.name}, $tournamentId, $gameNum, $tableNum")
         return "control-panel"
     }
 
