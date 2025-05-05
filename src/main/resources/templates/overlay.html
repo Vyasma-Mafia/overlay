@@ -220,10 +220,11 @@
     let gameNum = "[[${gameNum}]]"
     let tableNum = "[[${tableNum}]]"
     let phase = '[[${phase}]]';
+    let service = '[[${service}]]';
 
     function nextGame(nextGameInfoString) {
         nextGameInfo = JSON.parse(nextGameInfoString);
-        let url = `/polemica/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/tables/${nextGameInfo.tableNum}/games/${nextGameInfo.gameNum}/overlay`;
+        let url = `/${service}/tournaments/${nextGameInfo.tournamentId}/phases/${nextGameInfo.phase}/tables/${nextGameInfo.tableNum}/games/${nextGameInfo.gameNum}/overlay`;
         console.log(`Window location to ${url}`);
         window.location.assign(url);
     }

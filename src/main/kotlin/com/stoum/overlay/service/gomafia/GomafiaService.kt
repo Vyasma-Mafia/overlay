@@ -32,6 +32,7 @@ class GomafiaService(
                 tournamentId = tournamentId,
                 gameNum = gameDto.gameNum,
                 tableNum = gameDto.tableNum,
+                phase = 0,
                 text = "${tournament.tournamentDto.title} | Стол ${gameDto.tableNum} | Игра ${gameDto.gameNum}"
             )
             gameDto.table.forEach { playerDto ->

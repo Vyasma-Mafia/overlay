@@ -73,6 +73,7 @@
         const gameNum = '[[${gameNum}]]';
         const tableNum = '[[${tableNum}]]';
         const phase = '[[${phase}]]';
+        const service = '[[${service}]]';
 
         // Генерация карточек игроков
         const playersContainer = document.getElementById('players-container');
@@ -216,7 +217,7 @@
 
             // Если есть следующая игра, перенаправить
             if (tournamentId && gameNum && tableNum && phase) {
-                window.location.replace(`/polemica/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${parseInt(gameNum) + 1}/control`);
+                window.location.replace(`/${service}/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${parseInt(gameNum) + 1}/control`);
             }
         });
 
