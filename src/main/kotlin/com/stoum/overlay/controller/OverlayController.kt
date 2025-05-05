@@ -108,7 +108,7 @@ class OverlayController(
                 PolemicaService.PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
             )
 
-            GameType.FSM -> gomafiaService.getGame(tournamentId, gameNum + 1, tableNum)
+            GameType.GOMAFIA -> gomafiaService.getGame(tournamentId, gameNum + 1, tableNum)
             GameType.CUSTOM -> null
         }
 

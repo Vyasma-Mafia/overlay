@@ -39,11 +39,12 @@ class PolemicaService(
 
     fun getOrTryCreateGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
         getLogger().info("Getting game tournamentId: $tournamentId, gameNum: $gameNum, tableNum: $tableNum, phase: $phase")
-        var game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+        var game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhaseAndType(
             tournamentId,
             gameNum,
             tableNum,
-            phase
+            phase,
+            GameType.POLEMICA
         )
         if (game == null) {
             game = tryCreateGame(tournamentId, gameNum, tableNum, phase)
@@ -59,11 +60,12 @@ class PolemicaService(
     private fun initTournament(tournamentId: Int) {
         polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
             val polemicaTournamentGame = PolemicaTournamentGame(tournamentId, tGame)
-            val game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+            val game = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhaseAndType(
                 tournamentId,
                 polemicaTournamentGame.gameNum,
                 polemicaTournamentGame.tableNum,
-                polemicaTournamentGame.phase
+                polemicaTournamentGame.phase,
+                GameType.POLEMICA
             )
             if (game == null) {
                 tryCreateGame(
@@ -278,11 +280,12 @@ class PolemicaService(
 
     fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame): Game? {
         with(polemicaTournamentGame) {
-            val nextGameNum = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+            val nextGameNum = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhaseAndType(
                 tournamentId,
                 gameNum + 1,
                 tableNum,
-                phase
+                phase,
+                GameType.POLEMICA
             )
             if (nextGameNum != null) {
                 return nextGameNum

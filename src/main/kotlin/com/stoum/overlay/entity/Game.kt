@@ -21,7 +21,7 @@ import java.util.UUID
 @Entity
 @Table(
     name = "game",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["tournamentId", "gameNum", "tableNum", "phase"])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["tournamentId", "gameNum", "tableNum", "phase", "type"])]
 )
 data class Game(
         @Id

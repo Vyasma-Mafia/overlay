@@ -28,7 +28,7 @@ class GomafiaService(
         tournament.games.filter { g -> g.gameNum!! >= startWithGameNum }.forEach { gameDto ->
             log.info("processing $gameDto")
             val game = Game(
-                type = GameType.FSM,
+                type = GameType.GOMAFIA,
                 tournamentId = tournamentId,
                 gameNum = gameDto.gameNum,
                 tableNum = gameDto.tableNum,
@@ -71,17 +71,24 @@ class GomafiaService(
     @Transactional
     fun getGame(tournamentId: Int, gameNum: Int, tableNum: Int): Game? {
         log.info("Getting game tournamentId: ${tournamentId}, gameNum: ${gameNum}, tableNum: $tableNum")
-        if (gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(
+        if (gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhaseAndType(
                 tournamentId,
                 gameNum,
                 tableNum,
-                null
+                0,
+                GameType.GOMAFIA
             ) == null
         ) {
             log.info("Game not found, initiating tournament")
             initTournament(tournamentId, gameNum)
         }
-        return gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhase(tournamentId, gameNum, tableNum, null)
+        return gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhaseAndType(
+            tournamentId,
+            gameNum,
+            tableNum,
+            0,
+            GameType.GOMAFIA
+        )
     }
 
     private fun userWithStatsToGamePlayer(us: UserWithStats, game: GameDto, player: Player): GamePlayer {
