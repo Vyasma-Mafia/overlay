@@ -2,9 +2,7 @@ package com.stoum.overlay.service.gomafia
 
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.Player
-import com.stoum.overlay.entity.PlayerPhoto
 import com.stoum.overlay.entity.enums.GameType
-import com.stoum.overlay.entity.enums.PhotoType
 import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.model.gomafia.GameDto
@@ -36,23 +34,23 @@ class GomafiaService(
                 text = "${tournament.tournamentDto.title} | Стол ${gameDto.tableNum} | Игра ${gameDto.gameNum}"
             )
             gameDto.table.forEach { playerDto ->
-                var player = playerRepository.findPlayerByNickname(playerDto.login)
-                if (player == null) {
-                    val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
-                    player = Player(
-                            nickname = u.user.login!!,
-                            stat = extractStat(u),
-                            //playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
-                            //todo remove hack for cup of BO
-                            playerPhotos = mutableListOf(PlayerPhoto(url = "/photo/${playerDto.login}.png", type = PhotoType.CUSTOM, description = "Custom photo"))
-                    )
-                    playerRepository.save(player)
-                }
-
-                if (player.playerPhotos.isEmpty()) {
-                    val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
-                    player.playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
-                }
+                // var player = playerRepository.findPlayerByNickname(playerDto.login)
+                // if (player == null) {
+                //     val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
+                //     player = Player(
+                //             nickname = u.user.login!!,
+                //             stat = extractStat(u),
+                //             //playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
+                //             //todo remove hack for cup of BO
+                //             playerPhotos = mutableListOf(PlayerPhoto(url = "/photo/${playerDto.login}.png", type = PhotoType.CUSTOM, description = "Custom photo"))
+                //     )
+                //     playerRepository.save(player)
+                // }
+                //
+                // if (player.playerPhotos.isEmpty()) {
+                //     val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
+                //     player.playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
+                // }
                 game.players.add(GamePlayer(
                         nickname = playerDto.login!!,
                     photoUrl = "https://storage.yandexcloud.net/mafia-photos/gomafia/${playerDto.id}.jpg",
@@ -60,7 +58,6 @@ class GomafiaService(
                         place = playerDto.place!!,
                         //status = "killed" to "$it",
                         checks = mutableListOf(),
-                        stat = player.stat
                 ))
             }
 

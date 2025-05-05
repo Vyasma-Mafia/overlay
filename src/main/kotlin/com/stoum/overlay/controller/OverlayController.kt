@@ -14,6 +14,7 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseBody
 import java.util.Locale
 import java.util.UUID
 
@@ -94,6 +95,7 @@ class OverlayController(
     }
 
     @PostMapping("/{id}/next")
+    @ResponseBody
     fun next(@PathVariable id: String, model: Model) {
         val game = gameRepository.findById(UUID.fromString(id))
         val gameData = with(game.get()) {
@@ -115,6 +117,7 @@ class OverlayController(
         if (nextGame != null) {
             emitterService.changeGame(id, nextGame)
         }
+        return
     }
 
     @RequestMapping("/{service}/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}/control")

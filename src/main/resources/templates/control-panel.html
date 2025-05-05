@@ -211,14 +211,17 @@
         });
 
         document.getElementById('btn-next-game').addEventListener('click', function () {
-            fetch(`/${id}/next`, {
+            var ans = fetch(`/${id}/next`, {
                 method: 'POST'
             });
 
-            // Если есть следующая игра, перенаправить
-            if (tournamentId && gameNum && tableNum && phase) {
-                window.location.replace(`/${service}/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${parseInt(gameNum) + 1}/control`);
-            }
+            ans.then(function (response) {
+                if (response.ok && service && tournamentId && gameNum && tableNum && phase) {
+                    window.location.replace(`/${service}/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${parseInt(gameNum) + 1}/control`);
+                }
+            });
+
+
         });
 
         function populateNumberSelects() {

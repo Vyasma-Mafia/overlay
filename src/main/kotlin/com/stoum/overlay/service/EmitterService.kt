@@ -38,7 +38,7 @@ class EmitterService(
 
 
     fun changeGame(gameId: String, game: Game) {
-        getLogger().info("Change ${gameId} to ${game.id} (${game.tournamentId}, ${game.phase}, ${game.tableNum}, ${game.gameNum})")
+        getLogger().info("Change ${gameId} to ${game.id} (${game.type}, ${game.tournamentId}, ${game.phase}, ${game.tableNum}, ${game.gameNum})")
         sendTo(gameId, "!nextgame ${objectMapper.writeValueAsString(game)}")
     }
 
