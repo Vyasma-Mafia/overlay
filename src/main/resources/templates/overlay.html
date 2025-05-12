@@ -433,7 +433,7 @@
             let isWin = (playerInfo.role === 'black' || playerInfo.role === 'don') && gameInfo.result === 'black'
                 || (playerInfo.role === 'red' || playerInfo.role === 'sher') && gameInfo.result === 'red';
             let scoreElement = playerElement.querySelector('.score');
-            if (playerInfo.score) {
+            if (playerInfo.score !== null) {
                 scoreElement.innerText = playerInfo.score;
                 if (isWin) {
                     scoreElement.classList.add('win');
