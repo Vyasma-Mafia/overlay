@@ -1,6 +1,7 @@
 package com.stoum.overlay.service.polemica
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.mafia.vyasma.polemica.library.client.GamePointsService
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGameResult
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
@@ -29,7 +30,8 @@ import java.util.concurrent.TimeUnit
 class PolemicaService(
     val polemicaClient: PolemicaClient,
     val gameRepository: GameRepository,
-    val emitterService: EmitterService
+    val emitterService: EmitterService,
+    val pointsService: GamePointsService
 ) {
     private val taskExecutorService = Executors.newSingleThreadScheduledExecutor()
     private val gameIdCache = Caffeine.newBuilder()
@@ -134,24 +136,21 @@ class PolemicaService(
                         .takeIf { it.size == 4 } ?: return@forEach
                 }
                 val tournamentGame = PolemicaTournamentGame(game)
-                val idO = gameIdCache.getIfPresent(tournamentGame)
-                var id: Long? = null
+                var idO = gameIdCache.getIfPresent(tournamentGame)
                 if (idO == null) {
                     polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
                         val polemicaTournamentGame = PolemicaTournamentGame(tournamentId, tGame)
                         if (polemicaTournamentGame == tournamentGame) {
-                            id = tGame.id
+                            idO = tGame.id
                         }
                         gameIdCache.put(polemicaTournamentGame, tGame.id)
                     }
-                } else {
-                    id = idO
                 }
-                if (id == null) return@forEach
+                val id = idO ?: return@forEach
                 val polemicaGame = polemicaClient.getGameFromCompetition(
                     PolemicaClient.PolemicaCompetitionGameId(
                         tournamentId.toLong(),
-                        id ?: 0L,
+                        id,
                         4
                     )
                 )
@@ -236,6 +235,7 @@ class PolemicaService(
                 if (polemicaGame.result != null) {
                     game.started = false
                     game.result = if (polemicaGame.result == PolemicaGameResult.RED_WIN) "red" else "black"
+                    getPoints(game, id);
                     saveAndEmitGame(game)
                     val nextGame = getNextGame(tournamentGame) ?: return@forEach
                     nextGame.started = true
@@ -255,6 +255,17 @@ class PolemicaService(
                 )
                 gameIdCache.invalidateAll()
             }
+        }
+    }
+
+    private fun getPoints(game: Game, polemicaGameId: Long) {
+        try {
+            val points = pointsService.fetchPlayerStats(polemicaGameId)
+            points.forEach { point ->
+                game.players.find { it.place == point.position }?.score = point.points
+            }
+        } catch (e: Exception) {
+            getLogger().warn("Error while fetching points for game ${game.id}: ${e.message}")
         }
     }
 

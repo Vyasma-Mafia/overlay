@@ -18,7 +18,6 @@ java {
 repositories {
     mavenCentral()
     mavenLocal()
-    maven { url 'https://jitpack.io' }
 }
 
 
@@ -43,7 +42,7 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
     // Polemica
-    implementation 'com.github.Vyasma-Mafia:polemica-library:1.6.0'
+    implementation 'io.github.mralex1810:polemica-library:1.7.0'
 
 
     // https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus
@@ -66,7 +65,7 @@ dependencies {
 }
 
 
-tasks.withType(KotlinCompile) {
+tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
         freeCompilerArgs += '-Xjsr305=strict'
         jvmTarget = '17'

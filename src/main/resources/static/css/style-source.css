@@ -1219,6 +1219,28 @@ body.stats-right.show-stats .stats-panel {
     background-image: url("https://s3.juicedev.ru/gomafia/club/logo/130/ava_1664368414.jpg");
 }
 
+.score {
+    position: absolute;
+    top: 0px;
+    font-size: x-large;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 3;
+    font-family: "Arial", sans-serif;
+    justify-content: center;
+    display: flex;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.score.win {
+    color: greenyellow;
+}
+
+.score.lose {
+    color: red;
+}
+
 /* Стили для панели результатов */
 .result-panel {
     position: fixed;

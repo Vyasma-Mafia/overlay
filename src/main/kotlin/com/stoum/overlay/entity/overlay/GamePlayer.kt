@@ -26,6 +26,7 @@ data class GamePlayer(
     var speaker: Boolean? = false,
     var voting: Boolean? = false,
     var clubIcon: String? = null,
+    var score: Double? = null,
     @Convert(converter = MapListConverter::class)
     var checks: MutableList<Map<String, String>>? = arrayListOf(),
     @Convert(converter = MapListConverter::class)
