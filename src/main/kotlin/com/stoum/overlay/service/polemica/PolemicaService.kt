@@ -235,7 +235,7 @@ class PolemicaService(
                 if (polemicaGame.result != null) {
                     game.started = false
                     game.result = if (polemicaGame.result == PolemicaGameResult.RED_WIN) "red" else "black"
-                    getPoints(game, id);
+                    schedulePoints(game, id)
                     saveAndEmitGame(game)
                     val nextGame = getNextGame(tournamentGame) ?: return@forEach
                     nextGame.started = true
@@ -354,6 +354,20 @@ class PolemicaService(
             taskExecutorService.schedule(
                 { emitterService.changeGame(gameId.toString(), nextGame) },
                 totalDelay,
+                TimeUnit.SECONDS
+            )
+        }
+    }
+
+    fun schedulePoints(game: Game, id: Long) {
+        val delays = longArrayOf(3, 5, 10, 15, 20, 30, 60)
+        for (delaySeconds in delays) {
+            taskExecutorService.schedule(
+                {
+                    getPoints(game, id);
+                    saveAndEmitGame(game)
+                },
+                delaySeconds,
                 TimeUnit.SECONDS
             )
         }
