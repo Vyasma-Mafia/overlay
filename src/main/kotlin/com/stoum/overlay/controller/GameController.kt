@@ -89,6 +89,17 @@ class GameController(
         emitterService.emitGame(game)
     }
 
+    @PostMapping("/{id}/visibleScores")
+    fun setVisibleScores(@PathVariable id: String, @RequestParam value: Boolean) {
+        val game = gameRepository.findById(UUID.fromString(id)).get()
+
+        game.visibleScores = value
+
+        gameRepository.save(game)
+
+        emitterService.emitGame(game)
+    }
+
     @PostMapping("/{id}/started")
     fun setStarted(@PathVariable id: String, @RequestParam value: Boolean) {
         val game = gameRepository.findById(UUID.fromString(id)).get()

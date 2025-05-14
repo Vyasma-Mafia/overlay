@@ -496,6 +496,15 @@
                 el.classList.remove('visible');
             });
         }
+        if (gameInfo.visibleScores !== false) {
+            document.querySelectorAll('.score').forEach(el => {
+                el.classList.add('visible');
+            });
+        } else {
+            document.querySelectorAll('.score').forEach(el => {
+                el.classList.remove('visible');
+            });
+        }
     }
 
 

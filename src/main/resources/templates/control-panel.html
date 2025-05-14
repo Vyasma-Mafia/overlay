@@ -31,6 +31,14 @@
         </div>
 
         <div class="toggle-container">
+            <span class="toggle-label">Показывать баллы игроков</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-scores" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-container">
             <span class="toggle-label">Начать игру</span>
             <label class="toggle-switch">
                 <input type="checkbox" id="toggle-started" checked>
@@ -132,6 +140,12 @@
 
         document.getElementById('toggle-roles').addEventListener('change', function (e) {
             fetch(`/${id}/visibleRoles?value=${e.target.checked}`, {
+                method: 'POST'
+            });
+        });
+
+        document.getElementById('toggle-scores').addEventListener('change', function (e) {
+            fetch(`/${id}/visibleScores?value=${e.target.checked}`, {
                 method: 'POST'
             });
         });
@@ -413,6 +427,10 @@
 
             if (gameInfo.visibleRoles !== undefined) {
                 document.getElementById('toggle-roles').checked = gameInfo.visibleRoles;
+            }
+
+            if (gameInfo.visibleScores !== undefined) {
+                document.getElementById('toggle-scores').checked = gameInfo.visibleScores;
             }
 
             if (gameInfo.started !== undefined) {

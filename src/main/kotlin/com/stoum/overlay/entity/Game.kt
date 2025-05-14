@@ -40,6 +40,7 @@ data class Game(
     var started: Boolean? = null,
     var visibleOverlay: Boolean? = true,
     var visibleRoles: Boolean? = true,
+    var visibleScores: Boolean? = true,
     var text: String? = null,
     var result: String? = null,
     var delay: Int = 0
