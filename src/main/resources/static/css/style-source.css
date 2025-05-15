@@ -1220,6 +1220,7 @@ body.stats-right.show-stats .stats-panel {
 }
 
 .score {
+    visibility: hidden;
     position: absolute;
     top: 0px;
     font-size: x-large;
