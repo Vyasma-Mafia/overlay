@@ -5,6 +5,7 @@ import com.github.mafia.vyasma.polemica.library.client.GamePointsService
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGameResult
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
+import com.github.mafia.vyasma.polemica.library.model.game.PolemicaPlayer
 import com.github.mafia.vyasma.polemica.library.model.game.Position
 import com.github.mafia.vyasma.polemica.library.model.game.Role
 import com.github.mafia.vyasma.polemica.library.model.game.StageType
@@ -105,7 +106,7 @@ class PolemicaService(
                 id = null,
                 nickname = it.username,
                 place = it.position.value,
-                photoUrl = "https://storage.yandexcloud.net/mafia-photos/${it.player}.jpg",
+                photoUrl = polemicaPhotoUrl(it),
                 role = "red",
                 checks = arrayListOf(),
                 guess = arrayListOf(),
@@ -127,6 +128,9 @@ class PolemicaService(
         )
         return gameRepository.save(game)
     }
+
+    private fun polemicaPhotoUrl(it: PolemicaPlayer?) =
+        "https://storage.yandexcloud.net/mafia-photos/${it?.player?.id}.jpg"
 
     fun crawl() {
         gameRepository.findGameByTypeAndStarted(GameType.POLEMICA, true).forEach { game ->
@@ -166,8 +170,7 @@ class PolemicaService(
                         player.role = polemicaRoleToRole(polemicaGame.getRole(position))
                         val polemicaPlayer = polemicaGame.players?.find { it.position == position }
                         player.nickname = polemicaPlayer?.username.toString()
-                        player.photoUrl =
-                            "https://storage.yandexcloud.net/mafia-photos/${polemicaPlayer?.player?.id ?: "null"}.jpg"
+                        player.photoUrl = polemicaPhotoUrl(polemicaPlayer)
                         player.fouls = polemicaPlayer?.fouls?.size
                         player.techs = polemicaPlayer?.techs?.size
                         player.guess =

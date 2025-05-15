@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong
 class EmitterService(
     val gameRepository: GameRepository
 ) {
-    val ERRORS_TO_EXCLUDE = 10L
+    val ERRORS_TO_EXCLUDE = 3L
 
     val objectMapper = ObjectMapper()
 

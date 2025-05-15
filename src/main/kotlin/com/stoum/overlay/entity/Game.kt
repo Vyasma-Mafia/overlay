@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
+import jakarta.persistence.Version
 import java.util.UUID
 
 @Entity
@@ -43,7 +44,10 @@ data class Game(
     var visibleScores: Boolean? = true,
     var text: String? = null,
     var result: String? = null,
-    var delay: Int = 0
+    var delay: Int = 0,
+
+    @Version
+    private var version: Long? = 0
 ) {
 
     @Transient
