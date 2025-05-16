@@ -650,7 +650,7 @@
         fetch(`/${id}/removePlayerGuess`, {
             method: 'POST',
             body: JSON.stringify({
-                playerNickname: playerNum,
+                playerNum: playerNum,
                 guessIndex: guessIndex
             }),
             headers: {
