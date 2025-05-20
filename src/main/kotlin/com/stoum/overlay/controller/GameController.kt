@@ -138,7 +138,7 @@ class GameController(
         @PathVariable id: String,
         @RequestBody request: PlayerChecksRequest
     ): ResponseEntity<Void> {
-        log.info("Setting player checks for player ${request.playerNum} with targets: ${request.targetPlayerNums}")
+        log.info("Setting player checks in ${id} for player ${request.playerNum} with targets: ${request.targetPlayerNums}")
         return findGameAndDo(id) { game ->
             val player = game.getPlayerByPlace(request.playerNum)
             val newChecks = mutableListOf<Map<String, String>>()
@@ -166,7 +166,7 @@ class GameController(
         @PathVariable id: String,
         @RequestBody request: PlayerGuessesRequest
     ): ResponseEntity<Void> {
-        log.info("Setting player guesses for player ${request.playerNum} with targets: ${request.targetPlayerNums}")
+        log.info("Setting player guesses in ${id} for player ${request.playerNum} with targets: ${request.targetPlayerNums}")
         return findGameAndDo(id) { game ->
             val player = game.getPlayerByPlace(request.playerNum)
             val newGuesses = mutableListOf<Map<String, String>>()
