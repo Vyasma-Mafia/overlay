@@ -34,7 +34,7 @@ class PolemicaService(
     val emitterService: EmitterService,
     val pointsService: GamePointsService
 ) {
-    private val taskExecutorService = Executors.newSingleThreadScheduledExecutor()
+    private val taskExecutorService = Executors.newScheduledThreadPool(4)
     private val gameIdCache = Caffeine.newBuilder()
         .expireAfterWrite(10, TimeUnit.MINUTES)
         .maximumSize(1024)
@@ -261,14 +261,15 @@ class PolemicaService(
         }
     }
 
-    private fun getPoints(game: Game, polemicaGameId: Long) {
+    private fun getPoints(gameId: UUID, polemicaGameId: Long) {
         try {
             val points = pointsService.fetchPlayerStats(polemicaGameId)
+            val game = gameRepository.getReferenceById(gameId)
             points.forEach { point ->
                 game.players.find { it.place == point.position }?.score = point.points
             }
         } catch (e: Exception) {
-            getLogger().warn("Error while fetching points for game ${game.id}: ${e.message}")
+            getLogger().warn("Error while fetching points for game ${gameId}: ${e.message}")
         }
     }
 
@@ -362,12 +363,12 @@ class PolemicaService(
         }
     }
 
-    fun schedulePoints(game: Game, id: Long) {
-        val delays = longArrayOf(3, 5, 10, 15, 20, 30, 60)
+    fun schedulePoints(game: Game, polemicaId: Long) {
+        val delays = longArrayOf(0, 1, 3, 5, 10, 15, 20, 30, 60)
         for (delaySeconds in delays) {
             taskExecutorService.schedule(
                 {
-                    getPoints(game, id);
+                    game.id?.let { getPoints(it, polemicaId) }
                     saveAndEmitGame(game)
                 },
                 delaySeconds,
