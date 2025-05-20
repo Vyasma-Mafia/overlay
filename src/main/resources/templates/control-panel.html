@@ -6,6 +6,12 @@
     <title>Панель управления</title>
     <link rel="stylesheet" href="/css/style-panel.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Дополнительные стили для скрытия элементов */
+        .hidden-by-toggle {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -22,7 +28,7 @@
             </label>
         </div>
 
-        <div class="toggle-container">
+        <div class="toggle-container" id="toggle-roles-container">
             <span class="toggle-label">Показывать игровые роли</span>
             <label class="toggle-switch">
                 <input type="checkbox" id="toggle-roles" checked>
@@ -69,6 +75,7 @@
         <div class="global-actions">
             <button id="btn-reset-statuses" class="btn">Сбросить статусы</button>
             <button id="btn-reset-roles" class="btn">Сбросить роли</button>
+            <button id="btn-toggle-details" class="btn">Скрыть детали игроков</button> <!-- REQ 4: New Button -->
             <button id="btn-next-game" class="btn btn-primary">Следующая игра</button>
         </div>
     </div>
@@ -76,12 +83,23 @@
 
 <script>
     const id = '[[${id}]]';
+    // REQ 3: Client-side store for checks and guesses
+    const playerSpecificData = {};
+
     document.addEventListener('DOMContentLoaded', function () {
         const tournamentId = '[[${tournamentId}]]';
         const gameNum = '[[${gameNum}]]';
         const tableNum = '[[${tableNum}]]';
         const phase = '[[${phase}]]';
         const service = '[[${service}]]';
+
+        // Инициализация хранилища для каждого игрока
+        for (let i = 1; i <= 10; i++) {
+            playerSpecificData[i] = {
+                checks: [],
+                guesses: []
+            };
+        }
 
         // Генерация карточек игроков
         const playersContainer = document.getElementById('players-container');
@@ -102,20 +120,21 @@
                         const gameInfo = JSON.parse(split[1]);
                         updatePlayersData(gameInfo);
                         updateGameSettings(gameInfo);
-                        populateNumberSelects();
-                        socket.close();
+                        populateNumberSelects(); // Populate after data is loaded.
+                        // socket.close(); // Consider if you really want to close it or keep it for live updates
                         break;
                     }
                 }
             }
         });
 
-        // Настройка слушателей событий select для проверок и лучших ходов
+        // REQ 3: Настройка слушателей событий select для проверок и лучших ходов
         document.querySelectorAll('.check-player-select').forEach(select => {
             select.addEventListener('change', function () {
                 if (this.value) {
-                    const playerNum = this.dataset.playerNum;
-                    addCheck(playerNum, this.value);
+                    const playerNum = parseInt(this.dataset.playerNum);
+                    const targetPlayerNum = parseInt(this.value);
+                    handlePlayerCheckAdd(playerNum, targetPlayerNum);
                     this.value = ''; // Сбросить после выбора
                 }
             });
@@ -124,220 +143,285 @@
         document.querySelectorAll('.guess-player-select').forEach(select => {
             select.addEventListener('change', function () {
                 if (this.value) {
-                    const playerNum = this.dataset.playerNum;
-                    addGuess(playerNum, this.value);
+                    const playerNum = parseInt(this.dataset.playerNum);
+                    const targetPlayerNum = parseInt(this.value);
+                    // REQ 3: Allow more than 3 guesses if needed, or keep limit client-side
+                    if (playerSpecificData[playerNum] && playerSpecificData[playerNum].guesses.length < 3) {
+                        handlePlayerGuessAdd(playerNum, targetPlayerNum);
+                    } else if (!playerSpecificData[playerNum] || !playerSpecificData[playerNum].guesses) {
+                        handlePlayerGuessAdd(playerNum, targetPlayerNum); // first guess
+                    } else {
+                        alert('Можно указать не более 3-х лучших ходов.');
+                    }
                     this.value = ''; // Сбросить после выбора
                 }
             });
         });
 
-        // Обработчики событий UI
-        document.getElementById('toggle-panel').addEventListener('change', function (e) {
-            fetch(`/${id}/visibleOverlay?value=${e.target.checked}`, {
-                method: 'POST'
-            });
-        });
-
-        document.getElementById('toggle-roles').addEventListener('change', function (e) {
-            fetch(`/${id}/visibleRoles?value=${e.target.checked}`, {
-                method: 'POST'
-            });
-        });
-
-        document.getElementById('toggle-scores').addEventListener('change', function (e) {
-            fetch(`/${id}/visibleScores?value=${e.target.checked}`, {
-                method: 'POST'
-            });
-        });
-
-        document.getElementById('toggle-started').addEventListener('change', function (e) {
-            fetch(`/${id}/started?value=${e.target.checked}`, {
-                method: 'POST'
-            });
-        });
-
-        document.getElementById('send-title').addEventListener('click', function () {
-            const title = document.getElementById('game-title').value.trim();
-            if (title) {
-                fetch(`/${id}/text?value=${encodeURIComponent(title)}`, {
-                    method: 'POST'
-                });
+        // --- REQ 1: Обработчики событий UI с проверкой ответа от бэкенда ---
+        document.getElementById('toggle-panel').addEventListener('change', async function (e) {
+            const originalValue = !e.target.checked;
+            try {
+                const response = await fetch(`/${id}/visibleOverlay?value=${e.target.checked}`, {method: 'POST'});
+                if (!response.ok) {
+                    e.target.checked = originalValue;
+                    alert('Ошибка: не удалось изменить видимость панели. Статус: ' + response.status);
+                }
+            } catch (error) {
+                e.target.checked = originalValue;
+                alert('Сетевая ошибка при изменении видимости панели.');
+                console.error('Error toggle-panel:', error);
             }
         });
 
-        document.getElementById('send-delay').addEventListener('click', function () {
-            const delayValue = document.getElementById('game-delay').value.trim();
+        document.getElementById('toggle-roles').addEventListener('change', async function (e) {
+            const originalValue = !e.target.checked;
+            try {
+                const response = await fetch(`/${id}/visibleRoles?value=${e.target.checked}`, {method: 'POST'});
+                if (!response.ok) {
+                    e.target.checked = originalValue;
+                    alert('Ошибка: не удалось изменить видимость ролей. Статус: ' + response.status);
+                }
+            } catch (error) {
+                e.target.checked = originalValue;
+                alert('Сетевая ошибка при изменении видимости ролей.');
+                console.error('Error toggle-roles:', error);
+            }
+        });
+
+        document.getElementById('toggle-scores').addEventListener('change', async function (e) {
+            const originalValue = !e.target.checked;
+            try {
+                const response = await fetch(`/${id}/visibleScores?value=${e.target.checked}`, {method: 'POST'});
+                if (!response.ok) {
+                    e.target.checked = originalValue;
+                    alert('Ошибка: не удалось изменить видимость баллов. Статус: ' + response.status);
+                }
+            } catch (error) {
+                e.target.checked = originalValue;
+                alert('Сетевая ошибка при изменении видимости баллов.');
+                console.error('Error toggle-scores:', error);
+            }
+        });
+
+        document.getElementById('toggle-started').addEventListener('change', async function (e) {
+            const originalValue = !e.target.checked;
+            try {
+                const response = await fetch(`/${id}/started?value=${e.target.checked}`, {method: 'POST'});
+                if (!response.ok) {
+                    e.target.checked = originalValue;
+                    alert('Ошибка: не удалось изменить статус игры. Статус: ' + response.status);
+                }
+            } catch (error) {
+                e.target.checked = originalValue;
+                alert('Сетевая ошибка при изменении статуса игры.');
+                console.error('Error toggle-started:', error);
+            }
+        });
+
+        document.getElementById('send-title').addEventListener('click', async function () {
+            const titleInput = document.getElementById('game-title');
+            const title = titleInput.value.trim();
+            if (title) {
+                try {
+                    const response = await fetch(`/${id}/text?value=${encodeURIComponent(title)}`, {method: 'POST'});
+                    if (!response.ok) {
+                        alert('Ошибка: не удалось отправить название игры. Статус: ' + response.status);
+                    } else {
+                        // titleInput.value = ''; // Опционально: очистить поле при успехе
+                        alert('Название игры отправлено.');
+                    }
+                } catch (error) {
+                    alert('Сетевая ошибка при отправке названия игры.');
+                    console.error('Error send-title:', error);
+                }
+            }
+        });
+
+        document.getElementById('send-delay').addEventListener('click', async function () {
+            const delayInput = document.getElementById('game-delay');
+            const delayValue = delayInput.value.trim();
             if (delayValue && !isNaN(delayValue)) {
-                fetch(`/${id}/delay?value=${encodeURIComponent(delayValue)}`, {
-                    method: 'POST'
-                });
+                try {
+                    const response = await fetch(`/${id}/delay?value=${encodeURIComponent(delayValue)}`, {method: 'POST'});
+                    if (!response.ok) {
+                        alert('Ошибка: не удалось установить задержку. Статус: ' + response.status);
+                    } else {
+                        // delayInput.value = ''; // Опционально: очистить поле при успехе
+                        alert('Задержка установлена.');
+                    }
+                } catch (error) {
+                    alert('Сетевая ошибка при установке задержки.');
+                    console.error('Error send-delay:', error);
+                }
             } else {
                 alert('Пожалуйста, введите корректное числовое значение задержки.');
             }
         });
 
-
-        document.getElementById('btn-reset-statuses').addEventListener('click', function () {
-            fetch(`/${id}/resetStatuses`, {
-                method: 'POST'
-            });
-
-            // Сбросить UI статусы
-            document.querySelectorAll('.status-button.active').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Сбросить классы статусов из карточек
-            document.querySelectorAll('.player-card').forEach(card => {
-                card.classList.remove('status-killed', 'status-voted', 'status-deleted', 'status-first-killed');
-            });
-
-            // Очистить все контейнеры догадок
-            document.querySelectorAll('.guess-container').forEach(container => {
-                container.innerHTML = '';
-            });
-
-            // Показать все выпадающие списки
-            document.querySelectorAll('.guess-player-select').forEach(select => {
-                select.parentElement.classList.remove('hidden');
-            });
-        });
-
-        document.getElementById('btn-reset-roles').addEventListener('click', function () {
-            fetch(`/${id}/resetRoles`, {
-                method: 'POST'
-            });
-
-            // Сбросить UI роли
-            document.querySelectorAll('.role-button.active').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Сбросить классы ролей из карточек
-            document.querySelectorAll('.player-card').forEach(card => {
-                card.classList.remove('role-red', 'role-black', 'role-sher', 'role-don');
-            });
-
-            // Очистить все контейнеры проверок
-            document.querySelectorAll('.checks-container').forEach(container => {
-                container.innerHTML = '';
-            });
-        });
-
-        document.getElementById('btn-next-game').addEventListener('click', function () {
-            var ans = fetch(`/${id}/next`, {
-                method: 'POST'
-            });
-
-            ans.then(function (response) {
-                if (response.ok && service && tournamentId && gameNum && tableNum && phase) {
-                    window.location.replace(`/${service}/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${parseInt(gameNum) + 1}/control`);
+        document.getElementById('btn-reset-statuses').addEventListener('click', async function () {
+            try {
+                const response = await fetch(`/${id}/resetStatuses`, {method: 'POST'});
+                if (!response.ok) {
+                    alert('Ошибка: не удалось сбросить статусы. Статус: ' + response.status);
+                    return; // Не обновлять UI если ошибка
                 }
-            });
-
-
+                // Сбросить UI статусы
+                document.querySelectorAll('.status-button.active').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.player-card').forEach(card => {
+                    card.classList.remove('status-killed', 'status-voted', 'status-deleted', 'status-first-killed');
+                });
+                // REQ 3: Clear client-side guesses data and UI for all players
+                for (let i = 1; i <= 10; i++) {
+                    if (playerSpecificData[i]) playerSpecificData[i].guesses = [];
+                    renderPlayerGuesses(i);
+                }
+                alert('Статусы и лучшие ходы сброшены.');
+            } catch (error) {
+                alert('Сетевая ошибка при сбросе статусов.');
+                console.error('Error btn-reset-statuses:', error);
+            }
         });
+
+        document.getElementById('btn-reset-roles').addEventListener('click', async function () {
+            try {
+                const response = await fetch(`/${id}/resetRoles`, {method: 'POST'});
+                if (!response.ok) {
+                    alert('Ошибка: не удалось сбросить роли. Статус: ' + response.status);
+                    return; // Не обновлять UI если ошибка
+                }
+                // Сбросить UI роли
+                document.querySelectorAll('.role-button.active').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.player-card').forEach(card => {
+                    card.classList.remove('role-red', 'role-black', 'role-sher', 'role-don');
+                });
+                // REQ 3: Clear client-side checks data and UI for all players
+                for (let i = 1; i <= 10; i++) {
+                    if (playerSpecificData[i]) playerSpecificData[i].checks = [];
+                    renderPlayerChecks(i);
+                }
+                alert('Роли и проверки сброшены.');
+            } catch (error) {
+                alert('Сетевая ошибка при сбросе ролей.');
+                console.error('Error btn-reset-roles:', error);
+            }
+        });
+
+        document.getElementById('btn-next-game').addEventListener('click', async function () {
+            try {
+                const response = await fetch(`/${id}/next`, {method: 'POST'});
+                if (response.ok) {
+                    if (service && tournamentId && gameNum && tableNum && phase) {
+                        window.location.replace(`/${service}/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${parseInt(gameNum) + 1}/control`);
+                    } else {
+                        alert('Данные для перехода на следующую игру неполные.');
+                    }
+                } else {
+                    alert('Ошибка при переходе на следующую игру. Статус: ' + response.status);
+                }
+            } catch (error) {
+                alert('Сетевая ошибка при переходе на следующую игру.');
+                console.error('Error btn-next-game:', error);
+            }
+        });
+
+        // REQ 4: Кнопка скрытия/показа деталей
+        document.getElementById('btn-toggle-details').addEventListener('click', function () {
+            const rolesToggleContainer = document.getElementById('toggle-roles-container');
+            const playerCardElements = document.querySelectorAll('.player-card');
+            const isCurrentlyHidden = rolesToggleContainer.classList.contains('hidden-by-toggle');
+
+            if (isCurrentlyHidden) {
+                rolesToggleContainer.classList.remove('hidden-by-toggle');
+                playerCardElements.forEach(card => {
+                    card.querySelector('.role-row')?.classList.remove('hidden-by-toggle');
+                    card.querySelector('.player-checks')?.classList.remove('hidden-by-toggle');
+                    card.querySelector('.player-guess')?.classList.remove('hidden-by-toggle');
+                });
+                this.textContent = 'Скрыть детали игроков';
+            } else {
+                rolesToggleContainer.classList.add('hidden-by-toggle');
+                playerCardElements.forEach(card => {
+                    card.querySelector('.role-row')?.classList.add('hidden-by-toggle');
+                    card.querySelector('.player-checks')?.classList.add('hidden-by-toggle');
+                    card.querySelector('.player-guess')?.classList.add('hidden-by-toggle');
+                });
+                this.textContent = 'Показать детали игроков';
+            }
+        });
+
 
         function populateNumberSelects() {
             document.querySelectorAll('.player-select').forEach(select => {
-                select.innerHTML = '';
+                const currentValue = select.value; // Сохраняем текущее значение, если есть
+                select.innerHTML = ''; // Очищаем
 
-                // Добавить пустой вариант
                 const emptyOption = document.createElement('option');
                 emptyOption.value = '';
-                emptyOption.text = '-- Выбрать номер --';
+                emptyOption.text = '-- Выбрать --'; // Короче
                 select.appendChild(emptyOption);
 
-                // Добавить номера игроков
                 for (let i = 1; i <= 10; i++) {
                     const option = document.createElement('option');
                     option.value = i;
                     option.text = i;
                     select.appendChild(option);
                 }
+                select.value = currentValue; // Восстанавливаем значение, если оно было осмысленным
             });
         }
 
-        // Вспомогательные функции
         function createPlayerCard(playerNum) {
             const card = document.createElement('div');
             card.className = 'player-card';
             card.dataset.playerNum = playerNum;
 
+            // Проверки и лучший ход теперь будут рендериться функциями renderPlayerChecks/renderPlayerGuesses
+            // <div className="control-row">
+            //     <div className="control-button speaker" onClick="toggleSpeaker(this, ${playerNum})">
+            //         <div className="control-icon icon-speaker"></div>
+            //     </div>
+            // </div>;
             card.innerHTML = `
-                    <div class="player-header">
-                        <div class="player-number">${playerNum}</div>
-                        <div class="player-name" id="player-name-${playerNum}">Игрок ${playerNum}</div>
+                <div class="player-header">
+                    <div class="player-number">${playerNum}</div>
+                    <div class="player-name" id="player-name-${playerNum}">Игрок ${playerNum}</div>
+                </div>
+                <div class="player-controls">
+                    <div class="control-row status-row">
+                        <div class="control-button status-button" data-status="first-killed" onclick="toggleStatus(this, ${playerNum}, 'first-killed')"><div class="control-icon icon-first-killed"></div></div>
+                        <div class="control-button status-button" data-status="killed" onclick="toggleStatus(this, ${playerNum}, 'killed')"><div class="control-icon icon-killed"></div></div>
+                        <div class="control-button status-button" data-status="voted" onclick="toggleStatus(this, ${playerNum}, 'voted')"><div class="control-icon icon-voted"></div></div>
+                        <div class="control-button status-button" data-status="deleted" onclick="toggleStatus(this, ${playerNum}, 'deleted')"><div class="control-icon icon-deleted"></div></div>
                     </div>
-                    <div class="player-controls">
-                        <div class="control-row status-row">
-                            <div class="control-button status-button" data-status="first-killed" onclick="toggleStatus(this, ${playerNum}, 'first-killed')">
-                                <div class="control-icon icon-first-killed"></div>
-                            </div>
-                            <div class="control-button status-button" data-status="killed" onclick="toggleStatus(this, ${playerNum}, 'killed')">
-                                <div class="control-icon icon-killed"></div>
-                            </div>
-                            <div class="control-button status-button" data-status="voted" onclick="toggleStatus(this, ${playerNum}, 'voted')">
-                                <div class="control-icon icon-voted"></div>
-                            </div>
-                            <div class="control-button status-button" data-status="deleted" onclick="toggleStatus(this, ${playerNum}, 'deleted')">
-                                <div class="control-icon icon-deleted"></div>
-                            </div>
-                        </div>
-                        <div class="control-row role-row">
-                            <div class="control-button role-button" data-role="red" onclick="toggleRole(this, ${playerNum}, 'red')">
-                                <div class="control-icon icon-heart"></div>
-                            </div>
-                            <div class="control-button role-button" data-role="sher" onclick="toggleRole(this, ${playerNum}, 'sher')">
-                                <div class="control-icon icon-sher"></div>
-                            </div>
-                            <div class="control-button role-button" data-role="don" onclick="toggleRole(this, ${playerNum}, 'don')">
-                                <div class="control-icon icon-don"></div>
-                            </div>
-                            <div class="control-button role-button" data-role="black" onclick="toggleRole(this, ${playerNum}, 'black')">
-                                <div class="control-icon icon-black"></div>
-                            </div>
-                        </div>
-                        <div class="control-row">
-                            <div class="control-button speaker" onclick="toggleSpeaker(this, ${playerNum})">
-                                <div class="control-icon icon-speaker"></div>
-                            </div>
-                        </div>
+                    <div class="control-row role-row">
+                        <div class="control-button role-button" data-role="red" onclick="toggleRole(this, ${playerNum}, 'red')"><div class="control-icon icon-heart"></div></div>
+                        <div class="control-button role-button" data-role="sher" onclick="toggleRole(this, ${playerNum}, 'sher')"><div class="control-icon icon-sher"></div></div>
+                        <div class="control-button role-button" data-role="don" onclick="toggleRole(this, ${playerNum}, 'don')"><div class="control-icon icon-don"></div></div>
+                        <div class="control-button role-button" data-role="black" onclick="toggleRole(this, ${playerNum}, 'black')"><div class="control-icon icon-black"></div></div>
                     </div>
 
-                    <!-- Sheriff and Don Checks Section -->
-                    <div class="player-checks">
-                        <div class="checks-title">Проверки:</div>
-                        <div class="checks-container" id="checks-container-${playerNum}">
-                            <!-- Checks will be dynamically added here -->
-                        </div>
-                        <div class="player-select-container">
-                            <select class="player-select check-player-select" data-player-num="${playerNum}">
-                                <option value="">-- Выбрать номер --</option>
-                            </select>
-                        </div>
+                </div>
+                <div class="player-checks">
+                    <div class="checks-title">Проверки:</div>
+                    <div class="checks-container" id="checks-container-${playerNum}"></div>
+                    <div class="player-select-container">
+                        <select class="player-select check-player-select" data-player-num="${playerNum}"></select>
                     </div>
-
-                    <!-- First Killed Guess Section -->
-                    <div class="player-guess">
-                        <div class="guess-title">Лучший ход:</div>
-                        <div class="guess-container" id="guess-container-${playerNum}">
-                            <!-- Guesses will be dynamically added here -->
-                        </div>
-                        <div class="player-select-container" id="guess-select-container-${playerNum}">
-                            <select class="player-select guess-player-select" data-player-num="${playerNum}">
-                                <option value="">-- Выбрать номер --</option>
-                            </select>
-                        </div>
+                </div>
+                <div class="player-guess">
+                    <div class="guess-title">Лучший ход:</div>
+                    <div class="guess-container" id="guess-container-${playerNum}"></div>
+                    <div class="player-select-container" id="guess-select-container-${playerNum}">
+                        <select class="player-select guess-player-select" data-player-num="${playerNum}"></select>
                     </div>
-                `;
-
+                </div>
+            `;
             return card;
         }
 
         function updatePlayersData(gameInfo) {
             if (gameInfo.players && gameInfo.players.length > 0) {
-                // Обновить имена игроков и их статусы
                 gameInfo.players.forEach((player, index) => {
                     if (index < 10) {
                         const playerNum = index + 1;
@@ -346,318 +430,311 @@
 
                         if (nameElement) {
                             nameElement.textContent = player.nickname;
-                            nameElement.dataset.nickname = player.nickname;
+                            nameElement.dataset.nickname = player.nickname; // Важно для toggleStatus/Role
                         }
 
-                        // Обновить роль
+                        // Сброс активных кнопок и классов перед обновлением
+                        playerCard.querySelectorAll('.role-button.active, .status-button.active, .speaker.active')
+                            .forEach(btn => btn.classList.remove('active'));
+                        playerCard.className = 'player-card'; // Сброс классов роли/статуса с карточки
+
                         if (player.role) {
-                            const roleBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .role-button[data-role="${player.role}"]`);
+                            const roleBtn = playerCard.querySelector(`.role-button[data-role="${player.role}"]`);
                             if (roleBtn) roleBtn.classList.add('active');
                             playerCard.classList.add(`role-${player.role}`);
                         }
-
-                        // Обновить статус
                         if (player.status) {
-                            const statusBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .status-button[data-status="${player.status}"]`);
+                            const statusBtn = playerCard.querySelector(`.status-button[data-status="${player.status}"]`);
                             if (statusBtn) statusBtn.classList.add('active');
                             playerCard.classList.add(`status-${player.status}`);
                         }
-
-                        // Обновить говорящего
                         if (player.speaker) {
-                            const speakerBtn = document.querySelector(`.player-card[data-player-num="${playerNum}"] .speaker`);
+                            const speakerBtn = playerCard.querySelector(`.speaker`);
                             if (speakerBtn) speakerBtn.classList.add('active');
                         }
 
-                        // Обновить проверки (Checks)
-                        if (player.checks && player.checks.length > 0) {
-                            const checksContainer = document.getElementById(`checks-container-${playerNum}`);
-                            checksContainer.innerHTML = '';
-
-                            player.checks.forEach((check, checkIndex) => {
-                                const checkElement = document.createElement('div');
-                                checkElement.className = `check-item ${check.result || ''}`;
-
-                                // Проверка, содержит ли check информацию о номере игрока
-                                const displayText = check.num;
-
-                                checkElement.innerHTML = `
-                                        ${displayText}
-                                        <button onclick="removeCheck(${playerNum}, ${checkIndex})">×</button>
-                                    `;
-                                checksContainer.appendChild(checkElement);
-                            });
-                        }
-
-                        // Обновить лучший ход (Guess)
-                        if (player.guess && player.guess.length > 0) {
-                            const guessContainer = document.getElementById(`guess-container-${playerNum}`);
-                            const guessSelectContainer = document.getElementById(`guess-select-container-${playerNum}`);
-                            guessContainer.innerHTML = '';
-
-                            player.guess.forEach((guess, guessIndex) => {
-                                const guessElement = document.createElement('div');
-                                guessElement.className = 'guess-item';
-
-                                // Проверка, содержит ли guess информацию о номере игрока
-                                const displayText = guess.num;
-
-                                guessElement.innerHTML = `
-                                        ${displayText}
-                                        <button onclick="removeGuess(${playerNum}, ${guessIndex})">×</button>
-                                    `;
-                                guessContainer.appendChild(guessElement);
-                            });
-
-                            // Скрыть выпадающий список, если уже есть 3 догадки
-                            if (player.guess.length >= 3) {
-                                guessSelectContainer.classList.add('hidden');
-                            }
-                        }
+                        // REQ 3: Update client-side store and re-render checks/guesses
+                        playerSpecificData[playerNum].checks = Array.isArray(player.checks) ? [...player.checks] : [];
+                        playerSpecificData[playerNum].guesses = Array.isArray(player.guess) ? [...player.guess] : [];
+                        renderPlayerChecks(playerNum);
+                        renderPlayerGuesses(playerNum);
                     }
                 });
             }
         }
 
         function updateGameSettings(gameInfo) {
-            // Обновить настройки игры (чекбоксы)
-            if (gameInfo.visibleOverlay !== undefined) {
-                document.getElementById('toggle-panel').checked = gameInfo.visibleOverlay;
-            }
-
-            if (gameInfo.visibleRoles !== undefined) {
-                document.getElementById('toggle-roles').checked = gameInfo.visibleRoles;
-            }
-
-            if (gameInfo.visibleScores !== undefined) {
-                document.getElementById('toggle-scores').checked = gameInfo.visibleScores;
-            }
-
-            if (gameInfo.started !== undefined) {
-                document.getElementById('toggle-started').checked = gameInfo.started;
-            }
-
-            // Обновить название игры
-            if (gameInfo.text) {
-                document.getElementById('game-title').value = gameInfo.text;
-            }
-
-            if (gameInfo.delay !== undefined) {
-                document.getElementById('game-delay').value = gameInfo.delay;
-            }
-
+            if (gameInfo.visibleOverlay !== undefined) document.getElementById('toggle-panel').checked = gameInfo.visibleOverlay;
+            if (gameInfo.visibleRoles !== undefined) document.getElementById('toggle-roles').checked = gameInfo.visibleRoles;
+            if (gameInfo.visibleScores !== undefined) document.getElementById('toggle-scores').checked = gameInfo.visibleScores;
+            if (gameInfo.started !== undefined) document.getElementById('toggle-started').checked = gameInfo.started;
+            if (gameInfo.text) document.getElementById('game-title').value = gameInfo.text;
+            if (gameInfo.delay !== undefined) document.getElementById('game-delay').value = gameInfo.delay;
         }
 
-        // Сделать функции глобальными, чтобы они были доступны из HTML
+        // Глобализация для HTML onclick
         window.toggleStatus = toggleStatus;
         window.toggleRole = toggleRole;
         window.toggleSpeaker = toggleSpeaker;
-        window.addCheck = addCheck;
-        window.removeCheck = removeCheck;
-        window.addGuess = addGuess;
-        window.removeGuess = removeGuess;
-    });
+        // REQ 3: Глобализация новых обработчиков для onclick
+        window.handlePlayerCheckRemove = handlePlayerCheckRemove;
+        window.handlePlayerGuessRemove = handlePlayerGuessRemove;
+    }); // Конец DOMContentLoaded
 
-    // Функции для обработки кликов и взаимодействий
-    function toggleStatus(button, playerNum, status) {
-        // Найти все кнопки статусов для этого игрока и снять активацию
+    // --- Функции взаимодействия с UI и бэкендом ---
+
+    async function toggleStatus(button, playerNum, status) {
         const playerCard = button.closest('.player-card');
-        playerCard.querySelectorAll('.status-button').forEach(btn => {
-            btn.classList.remove('active');
-            const statusType = btn.dataset.status;
-            playerCard.classList.remove(`status-${statusType}`);
-        });
-
-        // Активировать нажатую кнопку (если она не была активна)
         const wasActive = button.classList.contains('active');
-        if (!wasActive) {
-            button.classList.add('active');
-            playerCard.classList.add(`status-${status}`);
+        const currentActiveStatusButton = playerCard.querySelector('.status-button.active');
+
+        // Определяем, какой статус нужно отправить на бэкенд
+        let statusToSend = status;
+        if (wasActive) { // Если кнопка уже была активна (повторное нажатие)
+            statusToSend = null; // Отправляем null для сброса
         }
 
-        // Получить никнейм игрока
         const playerName = document.getElementById(`player-name-${playerNum}`).dataset.nickname;
-        if (!playerName) return;
-
-        // Отправить данные на сервер
-        fetch(`/${id}/status`, {
-            method: 'POST',
-            body: JSON.stringify({
-                [playerNum]: wasActive ? null : status
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-    }
-
-    function toggleRole(button, playerNum, role) {
-        // Найти все кнопки ролей для этого игрока и снять активацию
-        const playerCard = button.closest('.player-card');
-        playerCard.querySelectorAll('.role-button').forEach(btn => {
-            btn.classList.remove('active');
-            const roleType = btn.dataset.role;
-            playerCard.classList.remove(`role-${roleType}`);
-        });
-
-        // Активировать нажатую кнопку (если она не была активна)
-        const wasActive = button.classList.contains('active');
-        if (!wasActive) {
-            button.classList.add('active');
-            playerCard.classList.add(`role-${role}`);
+        if (!playerName) { // Проверка, чтобы не отправлять для пустых игроков
+            console.warn(`Player ${playerNum} has no nickname. Status change aborted.`);
+            return;
         }
 
-        // Получить никнейм игрока
-        const playerName = document.getElementById(`player-name-${playerNum}`).dataset.nickname;
-        if (!playerName) return;
+        try {
+            const response = await fetch(`/${id}/status`, {
+                method: 'POST',
+                body: JSON.stringify({[playerNum]: statusToSend}),
+                headers: {'Content-Type': 'application/json'}
+            });
 
-        // Отправить данные на сервер
-        fetch(`/${id}/roles`, {
-            method: 'POST',
-            body: JSON.stringify({
-                [playerNum]: wasActive ? '' : role
-            }),
-            headers: {
-                'Content-Type': 'application/json'
+            if (!response.ok) {
+                alert(`Ошибка обновления статуса для игрока ${playerNum}. Статус: ${response.status}`);
+                return; // Не меняем UI, если бэкенд вернул ошибку
             }
-        });
+
+            // Обновляем UI только после успешного ответа
+            // Снимаем активность со всех кнопок статуса
+            playerCard.querySelectorAll('.status-button').forEach(btn => {
+                btn.classList.remove('active');
+                playerCard.classList.remove(`status-${btn.dataset.status}`);
+            });
+
+            if (!wasActive) { // Если кнопка не была активна, активируем ее
+                button.classList.add('active');
+                playerCard.classList.add(`status-${status}`);
+            }
+            // Если была активна (wasActive = true), то класс active уже снят, и новый не добавляется - статус сброшен.
+
+        } catch (error) {
+            alert(`Сетевая ошибка при обновлении статуса для игрока ${playerNum}.`);
+            console.error('Error toggleStatus:', error);
+        }
     }
 
-    function toggleSpeaker(button, playerNum) {
-        // Проверить, является ли кнопка уже активной
+    async function toggleRole(button, playerNum, role) {
+        const playerCard = button.closest('.player-card');
+        const wasActive = button.classList.contains('active');
+        let roleToSend = role;
+        if (wasActive) {
+            roleToSend = ''; // Пустая строка для сброса роли
+        }
+
+        const playerName = document.getElementById(`player-name-${playerNum}`).dataset.nickname;
+        if (!playerName) {
+            console.warn(`Player ${playerNum} has no nickname. Role change aborted.`);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/${id}/roles`, {
+                method: 'POST',
+                body: JSON.stringify({[playerNum]: roleToSend}),
+                headers: {'Content-Type': 'application/json'}
+            });
+
+            if (!response.ok) {
+                alert(`Ошибка обновления роли для игрока ${playerNum}. Статус: ${response.status}`);
+                return;
+            }
+
+            playerCard.querySelectorAll('.role-button').forEach(btn => {
+                btn.classList.remove('active');
+                playerCard.classList.remove(`role-${btn.dataset.role}`);
+            });
+            if (!wasActive) {
+                button.classList.add('active');
+                playerCard.classList.add(`role-${role}`);
+            }
+        } catch (error) {
+            alert(`Сетевая ошибка при обновлении роли для игрока ${playerNum}.`);
+            console.error('Error toggleRole:', error);
+        }
+    }
+
+    async function toggleSpeaker(button, playerNum) {
         const isActive = button.classList.contains('active');
+        const playerNumberToSend = isActive ? '' : `?playerNum=${playerNum}`; // Если активен, отключаем (пустой), иначе включаем
 
-        // Снять выделение со всех кнопок говорящих
-        document.querySelectorAll('.speaker.active').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        // Если кнопка была активна, оставляем её неактивной (выключаем микрофон)
-        // Если не была активна, активируем её
-        if (!isActive) {
-            button.classList.add('active');
-        }
-
-        // Получить данные для отправки - здесь нужен будет endpoint для настройки говорящего
-        // Пока используем обновление всей игры
-        fetch(`/${id}/setSpeaker${isActive ? '' : '?playerNum=' + playerNum}`, {
-            method: 'POST',
-        });
-    }
-
-    function addCheck(playerNum, targetPlayerNum) {
-        // Добавить визуальный элемент проверки
-        const checksContainer = document.getElementById(`checks-container-${playerNum}`
-        );
-        const checkElement = document.createElement('div');
-        checkElement.className = 'check-item'; // Без указания цвета - будет определен на сервере
-
-        // Получить индекс новой проверки
-        const checkIndex = checksContainer.children.length;
-
-        checkElement.innerHTML =
-            `
-            ${targetPlayerNum}
-        <button onclick="removeCheck(${playerNum}, ${checkIndex})">×</button>
-            `;
-        checksContainer.appendChild(checkElement);
-
-        // Отправить данные на сервер
-        // Теперь мы не указываем результат проверки (цвет) - его определит сервер
-        fetch(`/${id}/playerCheck`, {
-            method: 'POST',
-            body: JSON.stringify({
-                playerNum: playerNum,
-                targetPlayerNum: targetPlayerNum
-            }),
-            headers: {
-                'Content-Type': 'application/json'
+        try {
+            const response = await fetch(`/${id}/setSpeaker${playerNumberToSend}`, {method: 'POST'});
+            if (!response.ok) {
+                alert(`Ошибка установки говорящего. Статус: ${response.status}`);
+                return;
             }
+
+            document.querySelectorAll('.speaker.active').forEach(btn => btn.classList.remove('active'));
+            if (!isActive) {
+                button.classList.add('active');
+            }
+        } catch (error) {
+            alert('Сетевая ошибка при установке говорящего.');
+            console.error('Error toggleSpeaker:', error);
+        }
+    }
+
+    // --- REQ 3: Функции для проверок (Checks) ---
+    function renderPlayerChecks(playerNum) {
+        const checksContainer = document.getElementById(`checks-container-${playerNum}`);
+        if (!checksContainer) return;
+        checksContainer.innerHTML = ''; // Очищаем перед рендерингом
+
+        const checks = playerSpecificData[playerNum]?.checks || [];
+        checks.forEach((check, index) => {
+            const checkElement = document.createElement('div');
+            // Предполагаем, что 'check' это объект {num: X, result: 'red'/'black'/undefined}
+            // или просто номер, если результат еще не известен
+            const checkNum = typeof check === 'object' ? check.num : check;
+            const checkResult = typeof check === 'object' ? check.result || '' : '';
+
+            checkElement.className = `check-item ${checkResult}`;
+            checkElement.innerHTML = `${checkNum} <button onclick="handlePlayerCheckRemove(${playerNum}, ${index})">×</button>`;
+            checksContainer.appendChild(checkElement);
         });
     }
 
-    function removeCheck(playerNum, checkIndex) {
-        // Удалить элемент проверки из интерфейса
-        const checksContainer = document.getElementById(
-            `checks-container-${playerNum}`
-        );
-        if (checksContainer.children[checkIndex]) {
-            checksContainer.removeChild(checksContainer.children[checkIndex]);
+    async function handlePlayerCheckAdd(playerNum, targetPlayerNum) {
+        if (!playerSpecificData[playerNum]) {
+            playerSpecificData[playerNum] = {
+                checks: [],
+                guesses: []
+            };
         }
+        // Добавляем объект, чтобы потом сервер мог добавить 'result'
+        playerSpecificData[playerNum].checks.push({num: targetPlayerNum});
+        renderPlayerChecks(playerNum); // Обновляем UI немедленно
+        await sendPlayerChecksToServer(playerNum);
+    }
 
-        // Отправить данные на сервер
-        fetch(
-            `/${id}/removePlayerCheck`, {
+    async function handlePlayerCheckRemove(playerNum, checkIndex) {
+        if (playerSpecificData[playerNum] && playerSpecificData[playerNum].checks[checkIndex]) {
+            playerSpecificData[playerNum].checks.splice(checkIndex, 1);
+            renderPlayerChecks(playerNum);
+            await sendPlayerChecksToServer(playerNum);
+        }
+    }
+
+    async function sendPlayerChecksToServer(playerNum) {
+        const checksForServer = playerSpecificData[playerNum].checks.map(chk => (typeof chk === 'object' ? chk.num : chk));
+
+        try {
+            // Убедитесь, что этот эндпоинт (`/setPlayerChecks`) ожидает массив номеров или объектов
+            const response = await fetch(`/${id}/setPlayerChecks`, {
                 method: 'POST',
                 body: JSON.stringify({
                     playerNum: playerNum,
-                    checkIndex: checkIndex
+                    targetPlayerNums: checksForServer
                 }),
-                headers: {
-                    'Content-Type': 'application/json'
+                headers: {'Content-Type': 'application/json'}
+            });
+            if (!response.ok) {
+                alert(`Ошибка сохранения проверок для игрока ${playerNum}. Статус: ${response.status}. Рекомендуется обновить страницу.`);
+                // Здесь можно добавить логику отката или повторной загрузки gameInfo
             }
-            }
-        )
-        ;
+            // Можно ожидать обновленный gameInfo или только список проверок в ответе,
+            // и обновить playerSpecificData[playerNum].checks и перерисовать, если сервер вернул данные с результатами.
+            // Например, если сервер возвращает { checks: [{num: X, result: 'red'}, ...] }
+            // const updatedData = await response.json();
+            // if (updatedData && updatedData.checks) {
+            //    playerSpecificData[playerNum].checks = updatedData.checks;
+            //    renderPlayerChecks(playerNum);
+            // }
+
+        } catch (error) {
+            alert(`Сетевая ошибка при сохранении проверок для игрока ${playerNum}.`);
+            console.error('Error sendPlayerChecksToServer:', error);
+        }
     }
 
-    function addGuess(playerNum, targetPlayerNum) {
-        // Добавить визуальный элемент догадки
+    // --- REQ 3: Функции для лучших ходов (Guesses) ---
+    function renderPlayerGuesses(playerNum) {
         const guessContainer = document.getElementById(`guess-container-${playerNum}`);
-        const guessElement = document.createElement('div');
-        guessElement.className = 'guess-item';
+        const guessSelectContainer = document.getElementById(`guess-select-container-${playerNum}`);
+        if (!guessContainer || !guessSelectContainer) return;
 
-        // Получить индекс новой догадки
-        const guessIndex = guessContainer.children.length;
-
-        guessElement.innerHTML = `
-                ${targetPlayerNum}
-                <button onclick="removeGuess(${playerNum}, ${guessIndex})">×</button>
-            `;
-        guessContainer.appendChild(guessElement);
-
-        // Скрыть выпадающий список, если это была третья догадка
-        if (guessContainer.children.length >= 3) {
-            document.getElementById(`guess-select-container-${playerNum}`).classList.add('hidden');
-        }
-
-        // Отправить данные на сервер
-        fetch(`/${id}/playerGuess`, {
-            method: 'POST',
-            body: JSON.stringify({
-                playerNum: playerNum,
-                targetPlayerNum: targetPlayerNum
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        guessContainer.innerHTML = '';
+        const guesses = playerSpecificData[playerNum]?.guesses || [];
+        guesses.forEach((guess, index) => {
+            const guessElement = document.createElement('div');
+            guessElement.className = 'guess-item';
+            // Предполагаем, что 'guess' это объект {num: X} или просто номер
+            const guessNum = typeof guess === 'object' ? guess.num : guess;
+            guessElement.innerHTML = `${guessNum} <button onclick="handlePlayerGuessRemove(${playerNum}, ${index})">×</button>`;
+            guessContainer.appendChild(guessElement);
         });
+
+        if (guesses.length >= 3) {
+            guessSelectContainer.classList.add('hidden');
+        } else {
+            guessSelectContainer.classList.remove('hidden');
+        }
     }
 
-    function removeGuess(playerNum, guessIndex) {
-        // Удалить элемент догадки из интерфейса
-        const guessContainer = document.getElementById(`guess-container-${playerNum}`);
-        if (guessContainer.children[guessIndex]) {
-            guessContainer.removeChild(guessContainer.children[guessIndex]);
+    async function handlePlayerGuessAdd(playerNum, targetPlayerNum) {
+        if (!playerSpecificData[playerNum]) {
+            playerSpecificData[playerNum] = {
+                checks: [],
+                guesses: []
+            };
         }
-
-        // Показать выпадающий список, если осталось меньше 3 догадок
-        if (guessContainer.children.length < 3) {
-            document.getElementById(`guess-select-container-${playerNum}`).classList.remove('hidden');
+        if (playerSpecificData[playerNum].guesses.length < 3) {
+            playerSpecificData[playerNum].guesses.push({num: targetPlayerNum}); // Добавляем как объект
+            renderPlayerGuesses(playerNum);
+            await sendPlayerGuessesToServer(playerNum);
+        } else {
+            alert('Можно указать не более 3-х лучших ходов.');
         }
-
-        // Отправить данные на сервер
-        fetch(`/${id}/removePlayerGuess`, {
-            method: 'POST',
-            body: JSON.stringify({
-                playerNum: playerNum,
-                guessIndex: guessIndex
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
     }
+
+    async function handlePlayerGuessRemove(playerNum, guessIndex) {
+        if (playerSpecificData[playerNum] && playerSpecificData[playerNum].guesses[guessIndex]) {
+            playerSpecificData[playerNum].guesses.splice(guessIndex, 1);
+            renderPlayerGuesses(playerNum);
+            await sendPlayerGuessesToServer(playerNum);
+        }
+    }
+
+    async function sendPlayerGuessesToServer(playerNum) {
+        const guessesForServer = playerSpecificData[playerNum].guesses.map(g => (typeof g === 'object' ? g.num : g));
+        try {
+            // Убедитесь, что этот эндпоинт (`/setPlayerGuesses`) ожидает массив номеров или объектов
+            const response = await fetch(`/${id}/setPlayerGuesses`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    playerNum: playerNum,
+                    targetPlayerNums: guessesForServer
+                }),
+                headers: {'Content-Type': 'application/json'}
+            });
+            if (!response.ok) {
+                alert(`Ошибка сохранения лучших ходов для игрока ${playerNum}. Статус: ${response.status}. Рекомендуется обновить страницу.`);
+            }
+            // Аналогично проверкам, можно обновить данные с сервера, если он их возвращает.
+        } catch (error) {
+            alert(`Сетевая ошибка при сохранении лучших ходов для игрока ${playerNum}.`);
+            console.error('Error sendPlayerGuessesToServer:', error);
+        }
+    }
+
 </script>
 </body>
 </html>
