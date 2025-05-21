@@ -275,7 +275,12 @@ class PolemicaService(
 
     private fun saveAndEmitGame(game: Game) {
         // Сохраняем игру в репозиторий
-        gameRepository.save(game)
+        try {
+            gameRepository.save(game)
+        } catch (e: Exception) {
+            getLogger().warn("Error while saving game ${game.id}: ${e.message}")
+            throw e
+        }
 
         // Получаем задержку из свойства game
         val delaySeconds = game.delay
