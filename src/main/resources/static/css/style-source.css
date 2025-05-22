@@ -1239,8 +1239,13 @@ body.stats-right.show-stats .stats-panel {
 }
 
 .score.lose {
-    color: red;
+    color: orange;
 }
+
+.score.lose.minus {
+    color: orangered;
+}
+
 
 /* Стили для панели результатов */
 .result-panel {

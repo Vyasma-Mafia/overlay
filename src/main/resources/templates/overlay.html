@@ -440,10 +440,14 @@
                 } else {
                     scoreElement.classList.add('lose');
                 }
+                if (playerInfo.score < 0) {
+                    scoreElement.classList.add('minus');
+                }
             } else {
                 scoreElement.innerText = '';
                 scoreElement.classList.remove('win');
                 scoreElement.classList.remove('lose');
+                scoreElement.classList.remove('minus');
             }
 
             //todo set checks
