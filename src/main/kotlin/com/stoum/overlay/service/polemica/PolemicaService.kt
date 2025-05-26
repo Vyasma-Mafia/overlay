@@ -265,7 +265,7 @@ class PolemicaService(
         try {
             val points = pointsService.fetchPlayerStats(polemicaGameId)
             points.forEach { point ->
-                game.players.find { it.place == point.position }?.score = point.points
+                game.players.find { it.place == point.position }?.score = Math.round(point.points * 1000) / 1000.0;
             }
         } catch (e: Exception) {
             getLogger().warn("Error while fetching points for game ${game.id}: ${e.message}")
