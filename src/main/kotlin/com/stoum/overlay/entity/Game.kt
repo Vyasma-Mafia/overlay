@@ -45,6 +45,7 @@ data class Game(
     var text: String? = null,
     var result: String? = null,
     var delay: Int = 0,
+    var autoNextGame: Boolean? = true,
 
     @Version
     private var version: Long? = 0

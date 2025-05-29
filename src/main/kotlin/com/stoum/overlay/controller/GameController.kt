@@ -107,6 +107,11 @@ class GameController(
         return findGameAndDo(id) { game -> game.delay = value }
     }
 
+    @PostMapping("/{id}/autoNextGame")
+    fun setAutoNextGame(@PathVariable id: String, @RequestParam value: Boolean): ResponseEntity<Void> {
+        return findGameAndDo(id) { game -> game.autoNextGame = value }
+    }
+
     @PostMapping("/{id}/resetStatuses")
     fun resetStatuses(@PathVariable id: String): ResponseEntity<Void> {
         return findGameAndDo(id) { game ->

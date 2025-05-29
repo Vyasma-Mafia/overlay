@@ -45,9 +45,17 @@
         </div>
 
         <div class="toggle-container">
-            <span class="toggle-label">Начать игру</span>
+            <span class="toggle-label">Считывать ход игры</span>
             <label class="toggle-switch">
                 <input type="checkbox" id="toggle-started" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-container">
+            <span class="toggle-label">Автоматически переключать на следующую игру</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-auto-next-game" checked>
                 <span class="slider"></span>
             </label>
         </div>
@@ -216,6 +224,21 @@
                 e.target.checked = originalValue;
                 alert('Сетевая ошибка при изменении статуса игры.');
                 console.error('Error toggle-started:', error);
+            }
+        });
+
+        document.getElementById('toggle-auto-next-game').addEventListener('change', async function (e) {
+            const originalValue = !e.target.checked;
+            try {
+                const response = await fetch(`/${id}/autoNextGame?value=${e.target.checked}`, {method: 'POST'});
+                if (!response.ok) {
+                    e.target.checked = originalValue;
+                    alert('Ошибка: не удалось изменить статус игры. Статус: ' + response.status);
+                }
+            } catch (error) {
+                e.target.checked = originalValue;
+                alert('Сетевая ошибка при изменении статуса игры.');
+                console.error('Error toggle-auto-next-game:', error);
             }
         });
 
@@ -468,6 +491,7 @@
             if (gameInfo.visibleRoles !== undefined) document.getElementById('toggle-roles').checked = gameInfo.visibleRoles;
             if (gameInfo.visibleScores !== undefined) document.getElementById('toggle-scores').checked = gameInfo.visibleScores;
             if (gameInfo.started !== undefined) document.getElementById('toggle-started').checked = gameInfo.started;
+            if (gameInfo.autoNextGame !== undefined) document.getElementById('toggle-auto-next-game').checked = gameInfo.autoNextGame;
             if (gameInfo.text) document.getElementById('game-title').value = gameInfo.text;
             if (gameInfo.delay !== undefined) document.getElementById('game-delay').value = gameInfo.delay;
         }

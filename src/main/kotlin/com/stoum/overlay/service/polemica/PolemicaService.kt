@@ -243,7 +243,9 @@ class PolemicaService(
                     val nextGame = getNextGame(tournamentGame) ?: return@forEach
                     nextGame.started = true
                     gameRepository.save(nextGame)
-                    scheduleNextGameTasks(game.id, nextGame)
+                    if (game.autoNextGame != false) {
+                        scheduleNextGameTasks(game.id, nextGame)
+                    }
                     return@forEach
                 }
                 if (!emitterService.hasEmittersForGame(game.id.toString())) {
