@@ -85,8 +85,52 @@
             <button id="btn-reset-roles" class="btn">Сбросить роли</button>
             <button id="btn-toggle-details" class="btn">Скрыть детали игроков</button> <!-- REQ 4: New Button -->
             <button id="btn-next-game" class="btn btn-primary">Следующая игра</button>
+            <button id="btn-change-game" class="btn">Сменить игру</button>
         </div>
     </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ СМЕНЫ ИГРЫ -->
+    <div id="change-game-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Выбор игры для перехода</h2>
+                <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-filters">
+                    <div class="filter-group">
+                        <label for="search-tournament-id">Турнир ID</label>
+                        <input type="number" id="search-tournament-id" class="text-input" placeholder="ID">
+                    </div>
+                    <div class="filter-group">
+                        <label for="search-game-num">Игра №</label>
+                        <input type="number" id="search-game-num" class="text-input" placeholder="№">
+                    </div>
+                    <div class="filter-group">
+                        <label for="search-table-num">Стол №</label>
+                        <input type="number" id="search-table-num" class="text-input" placeholder="№">
+                    </div>
+                </div>
+                <div id="game-results-list">
+                    <!-- Результаты поиска будут здесь -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="toggle-container">
+                    <label for="change-game-real-switch" class="toggle-label">Переключить оверлей</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="change-game-real-switch" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button id="change-game-cancel-btn" class="btn">Отмена</button>
+                    <button id="change-game-confirm-btn" class="btn btn-primary">Перейти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -391,6 +435,158 @@
                     select.appendChild(option);
                 }
                 select.value = currentValue; // Восстанавливаем значение, если оно было осмысленным
+            });
+
+
+            // --- ЛОГИКА МОДАЛЬНОГО ОКНА СМЕНЫ ИГРЫ (ОБНОВЛЕННАЯ ВЕРСИЯ) ---
+
+            const changeGameModal = document.getElementById('change-game-modal');
+            const btnChangeGame = document.getElementById('btn-change-game');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const changeGameCancelBtn = document.getElementById('change-game-cancel-btn');
+            const changeGameConfirmBtn = document.getElementById('change-game-confirm-btn');
+            const realSwitchCheckbox = document.getElementById('change-game-real-switch');
+            const resultsList = document.getElementById('game-results-list');
+
+            // Новые инпуты для поиска
+            const searchTournamentIdInput = document.getElementById('search-tournament-id');
+            const searchGameNumInput = document.getElementById('search-game-num');
+            const searchTableNumInput = document.getElementById('search-table-num');
+            const searchInputs = [searchTournamentIdInput, searchGameNumInput, searchTableNumInput];
+
+            let selectedGameData = null;
+            let debounceTimer;
+
+            async function openModal() {
+                // 1. Очищаем предыдущий выбор и поля, кроме фильтров
+                resultsList.innerHTML = '<div class="game-result-item">Загрузка...</div>';
+                selectedGameData = null;
+
+                // 2. Получаем текущие параметры игры из глобальных переменных
+                const currentTournamentId = '[[${tournamentId}]]';
+                const currentTableNum = '[[${tableNum}]]';
+
+                // 3. Предзаполняем фильтры значениями ТЕКУЩЕЙ игры
+                searchTournamentIdInput.value = currentTournamentId || '';
+                searchTableNumInput.value = currentTableNum || '';
+                searchGameNumInput.value = ''; // Поле "Игра №" оставляем пустым для более широкого поиска
+
+                // Показываем модальное окно
+                changeGameModal.classList.add('visible');
+
+                // 4. Сразу же запускаем поиск по предзаполненным фильтрам
+                await executeSearch();
+            }
+
+            function closeModal() {
+                changeGameModal.classList.remove('visible');
+                resultsList.innerHTML = '';
+                selectedGameData = null;
+                searchInputs.forEach(input => input.value = ''); // Очищаем все поля
+            }
+
+            btnChangeGame.addEventListener('click', openModal);
+            modalCloseBtn.addEventListener('click', closeModal);
+            changeGameCancelBtn.addEventListener('click', closeModal);
+            changeGameModal.addEventListener('click', (e) => {
+                if (e.target === changeGameModal) closeModal();
+            });
+
+// Слушаем изменения в любом из полей поиска
+            searchInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(executeSearch, 300); // Задержка 300мс
+                });
+            });
+
+            async function executeSearch() {
+                const params = new URLSearchParams();
+
+                const tournamentId = searchTournamentIdInput.value.trim();
+                const gameNum = searchGameNumInput.value.trim();
+                const tableNum = searchTableNumInput.value.trim();
+
+                if (tournamentId) params.append('tournamentId', tournamentId);
+                if (gameNum) params.append('gameNum', gameNum);
+                if (tableNum) params.append('tableNum', tableNum);
+
+                // Если все поля пустые, не делаем запрос, а просто очищаем список
+                if (!params.toString()) {
+                    resultsList.innerHTML = '';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/games/search?${params.toString()}`);
+                    if (!response.ok) throw new Error('Search request failed');
+                    const games = await response.json();
+                    renderSearchResults(games);
+                } catch (error) {
+                    console.error('Search error:', error);
+                    resultsList.innerHTML = '<div class="game-result-item">Ошибка поиска</div>';
+                }
+            }
+
+
+            function renderSearchResults(games) {
+                resultsList.innerHTML = '';
+                selectedGameData = null; // Сбрасываем выбор при новом поиске
+
+                if (games.length === 0) {
+                    resultsList.innerHTML = '<div class="game-result-item">Ничего не найдено</div>';
+                    return;
+                }
+
+                games.forEach(game => {
+                    const item = document.createElement('div');
+                    item.className = 'game-result-item';
+                    item.textContent = game.displayText; // Используем готовый текст из DTO
+                    item.dataset.game = JSON.stringify(game);
+
+                    item.addEventListener('click', () => {
+                        resultsList.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+                        item.classList.add('selected');
+                        selectedGameData = game;
+                    });
+                    resultsList.appendChild(item);
+                });
+            }
+
+            changeGameConfirmBtn.addEventListener('click', async () => {
+                if (!selectedGameData) {
+                    alert('Пожалуйста, выберите игру из списка.');
+                    return;
+                }
+
+                const shouldSwitchOverlay = realSwitchCheckbox.checked;
+                const fromGameId = id; // Глобальная переменная id текущей игры
+                const toGameId = selectedGameData.id;
+
+                if (shouldSwitchOverlay) {
+                    try {
+                        const formData = new URLSearchParams();
+                        formData.append('from', fromGameId);
+                        formData.append('to', toGameId);
+
+                        const response = await fetch('/games/change_game', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        if (!response.ok) {
+                            alert('Ошибка при переключении оверлея: ' + response.statusText);
+                            return;
+                        }
+                    } catch (error) {
+                        alert('Сетевая ошибка при переключении оверлея.');
+                        console.error('Change game error:', error);
+                        return;
+                    }
+                }
+
+                const service = '[[${service}]]';
+                const newUrl = `/${service}/tournaments/${selectedGameData.tournamentId}/phases/${selectedGameData.phase}/tables/${selectedGameData.tableNum}/games/${selectedGameData.gameNum}/control`;
+                window.location.href = newUrl;
             });
         }
 

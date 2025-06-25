@@ -369,6 +369,142 @@ input:checked + .slider:before {
     min-width: 120px;
 }
 
+/* Стили для модального окна выбора игры (вставить внутрь <style>) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: var(--panel-bg-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s;
+}
+
+.modal-overlay.visible .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 18px;
+    color: var(--highlight-color);
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#game-search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: var(--secondary-bg-color);
+    border: 1px solid var(--button-bg-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    font-family: 'Roboto Mono', monospace;
+}
+
+#game-results-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--button-bg-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+
+.game-result-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--secondary-bg-color);
+}
+
+.game-result-item:last-child {
+    border-bottom: none;
+}
+
+.game-result-item:hover {
+    background-color: var(--secondary-bg-color);
+}
+
+.game-result-item.selected {
+    background-color: var(--highlight-color);
+    color: white;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Стили для фильтров поиска в модальном окне */
+.search-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 100px; /* чтобы не становились слишком узкими */
+}
+
+.filter-group label {
+    font-size: 12px;
+    color: #ccc;
+}
+
+.filter-group .text-input {
+    width: 100%;
+    margin-right: 0; /* убираем правый отступ от базового стиля */
+    padding: 8px; /* делаем чуть компактнее */
+}
+
 /* Mobile Optimizations */
 @media (max-width: 1200px) {
     .players-grid {
