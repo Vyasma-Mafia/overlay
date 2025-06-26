@@ -211,6 +211,10 @@
 <div class="numbers-panel">
     <div class="numbers-content">
         <div class="numbers-row">
+            <img src="/icon/palec_white.png" alt="👍" style="max-width: 100%;height: auto; max-height: 40px;">
+            <span id="vote-candidates"></span>
+        </div>
+        <div class="numbers-row">
             <span>Дон:</span>
             <span id="don-checks"></span>
         </div>
@@ -311,6 +315,13 @@
         }
     }
 
+    function createNumberBadge(role, num) {
+        const badge = document.createElement('span');
+        badge.className = `number-badge ${role}`;
+        badge.textContent = num;
+        return badge;
+    }
+
     function parseGameInfo(gameInfoString) {
         gameInfo = JSON.parse(gameInfoString)
         players = gameInfo.players
@@ -347,6 +358,15 @@
 
 
         document.getElementById('current-game-text').innerText = gameInfo.text;
+
+        const voteCandidatesContainer = document.getElementById('vote-candidates');
+        voteCandidatesContainer.textContent = '';
+        gameInfo.voteCandidates.forEach((candidate) => {
+            voteCandidatesContainer.append(createNumberBadge(
+                gameInfo.visibleRoles === true ? candidate.role : 'red',
+                candidate.num
+            ));
+        });
 
         const donChecksContainer = document.getElementById('don-checks');
         const sherChecksContainer = document.getElementById('sher-checks');
@@ -451,20 +471,15 @@
             }
 
             //todo set checks
-            const createNumberBadge = (check) => {
-                const badge = document.createElement('span');
-                badge.className = `number-badge ${check.role}`;
-                badge.textContent = check.num;
-                return badge;
-            };
+
 
             // Если у вас есть условие для разделения данных на дон и шериф
             if (playerInfo.role === 'don') {
                 donChecksContainer.textContent = '';
-                playerInfo.checks.map(check => donChecksContainer.append(createNumberBadge(check)));
+                playerInfo.checks.map(check => donChecksContainer.append(createNumberBadge(check.role, check.num)));
             } else if (playerInfo.role === 'sher') {
                 sherChecksContainer.textContent = '';
-                playerInfo.checks.map(check => sherChecksContainer.append(createNumberBadge(check)));
+                playerInfo.checks.map(check => sherChecksContainer.append(createNumberBadge(check.role, check.num)));
             }
 
             // set guess

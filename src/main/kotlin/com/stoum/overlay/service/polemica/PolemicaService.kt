@@ -13,6 +13,7 @@ import com.github.mafia.vyasma.polemica.library.utils.KickReason
 import com.github.mafia.vyasma.polemica.library.utils.getFirstKilled
 import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
 import com.github.mafia.vyasma.polemica.library.utils.getRole
+import com.github.mafia.vyasma.polemica.library.utils.getVoteCandidatesOrder
 import com.github.mafia.vyasma.polemica.library.utils.getVotingParticipants
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
@@ -232,7 +233,21 @@ class PolemicaService(
                     // Пометка игроков, участвующих в голосовании
                     val votingPlaces = votingParticipants.map { it.value }
                     game.players.filter { it.place in votingPlaces }.forEach { it.voting = true }
+
+                    if (stage.day >= 1) {
+                        game.voteCandidates = polemicaGame.getVoteCandidatesOrder(stage.day)
+                            .filter { votingParticipants.contains(it) }
+                            .map {
+                                mapOf(
+                                    "role" to polemicaRoleToRole(polemicaGame.getRole(it)),
+                                    "num" to it.value.toString()
+                                )
+                            }.toMutableList()
+                    }
+
+
                 }
+
 
 
                 if (polemicaGame.result != null) {
@@ -247,6 +262,9 @@ class PolemicaService(
                         scheduleNextGameTasks(game.id, nextGame)
                     }
                     return@forEach
+                } else if (game.result != null) {
+                    game.result = null
+                    game.players.forEach { it.score = null }
                 }
                 if (!emitterService.hasEmittersForGame(game.id.toString())) {
                     game.started = false

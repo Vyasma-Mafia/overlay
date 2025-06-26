@@ -1,9 +1,11 @@
 package com.stoum.overlay.entity
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.stoum.overlay.entity.converters.MapListConverter
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -46,6 +48,8 @@ data class Game(
     var result: String? = null,
     var delay: Int = 0,
     var autoNextGame: Boolean? = true,
+    @Convert(converter = MapListConverter::class)
+    var voteCandidates: MutableList<Map<String, String>>? = arrayListOf(),
 
     @Version
     private var version: Long? = 0
