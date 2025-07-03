@@ -6,4 +6,6 @@ import java.util.UUID
 
 interface PlayerRepository : JpaRepository<Player, UUID> {
     fun findPlayerByNickname(nickname: String?): Player?
+    fun findPlayerByPolemicaId(polemicaId: Long): Player?
+    fun findPlayerByGomafiaId(gomafiaId: Long): Player?
 }

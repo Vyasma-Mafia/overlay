@@ -30,7 +30,7 @@ enum class ServiceType {
     companion object {
         // Метод для получения ServiceType из строки пути
         fun fromPathValue(value: String): ServiceType {
-            return entries.find { it.getPathValue() == value.toLowerCase() }
+            return entries.find { it.getPathValue() == value.lowercase() }
                 ?: throw IllegalArgumentException("Unknown service type: $value")
         }
     }

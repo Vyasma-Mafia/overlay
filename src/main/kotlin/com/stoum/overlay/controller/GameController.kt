@@ -6,6 +6,7 @@ import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.model.GameInfo
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
+import com.stoum.overlay.service.PlayerPhotoService
 import org.hibernate.validator.constraints.Range
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,6 +24,7 @@ import kotlin.jvm.optionals.getOrNull
 class GameController(
     val emitterService: EmitterService,
     val gameRepository: GameRepository,
+    val photoService: PlayerPhotoService
 ) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
@@ -55,10 +57,23 @@ class GameController(
     fun setRole(@PathVariable id: String, @RequestBody roles: Map<Int, String>): ResponseEntity<Void> {
         return findGameAndDo(id) { game ->
             roles.forEach { (playerNum, role) ->
-                game.getPlayerByPlace(playerNum).role = if (role.isBlank()) null else role
+                game.getPlayerByPlace(playerNum).role = role.ifBlank { null }
             }
+            updateGamePhotos(game)
         }
     }
+
+    private fun updateGamePhotos(game: Game) {
+        val tournamentId = game.tournamentId ?: return
+        game.players.filter { it.customPhoto != true }.forEach { player ->
+            val sourcePlayerId = player.sourcePlayerId ?: return@forEach
+            player.photoUrl = photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
+                sourcePlayerId, game.type,
+                tournamentId.toLong(), player.role
+            )
+        }
+    }
+
 
     @PostMapping("/{id}/status")
     fun setStatus(@PathVariable id: String, @RequestBody status: Map<Int, String?>): ResponseEntity<Void> {

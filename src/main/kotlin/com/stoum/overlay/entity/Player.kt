@@ -20,6 +20,8 @@ data class Player(
         @GeneratedValue(strategy = GenerationType.UUID)
         var id: UUID? = null,
         var nickname: String,
+        var polemicaId: Long? = null,
+        var gomafiaId: Long? = null,
         @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
         @JoinColumn(name = "player_id")
         var playerPhotos: MutableList<PlayerPhoto> = mutableListOf(),

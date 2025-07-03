@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.21'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.21'
-    id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.21'
+    id 'org.jetbrains.kotlin.jvm' version "2.1.10"
+    id 'org.jetbrains.kotlin.plugin.spring' version "2.1.10"
+    id 'org.jetbrains.kotlin.plugin.jpa' version "2.1.10"
 }
 
 group = 'com.stoum'
@@ -43,6 +43,9 @@ dependencies {
 
     // Polemica
     implementation 'io.github.mralex1810:polemica-library:1.7.3'
+
+    // https://mvnrepository.com/artifact/aws.sdk.kotlin/s3
+    implementation("aws.sdk.kotlin:s3:1.4.74")
 
 
     // https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus

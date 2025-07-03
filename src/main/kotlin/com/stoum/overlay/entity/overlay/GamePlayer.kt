@@ -33,6 +33,8 @@ data class GamePlayer(
     var guess: MutableList<Map<String, String>>? = arrayListOf(),
     @Convert(converter = MapMapConverter::class)
     var stat: MutableMap<String, Map<String, String>>? = hashMapOf(),
+    var customPhoto: Boolean? = null,
+    var sourcePlayerId: Long? = null
 /*    @JoinColumn(name = "game", referencedColumnName = "id")
     var gameId: UUID*/
 )

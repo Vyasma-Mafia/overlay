@@ -1,14 +1,14 @@
 package com.stoum.overlay.service.gomafia
 
 import com.stoum.overlay.entity.Game
-import com.stoum.overlay.entity.Player
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
-import com.stoum.overlay.model.gomafia.GameDto
 import com.stoum.overlay.model.gomafia.UserWithStats
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.repository.PlayerRepository
+import com.stoum.overlay.service.DEFAULT_PHOTO_URL
+import com.stoum.overlay.service.PlayerPhotoService
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
@@ -17,6 +17,7 @@ class GomafiaService(
         val gameRepository: GameRepository,
         val gomafiaRestClient: GomafiaRestClient,
         val playerRepository: PlayerRepository,
+    val photoService: PlayerPhotoService
 ) {
     val log = this.getLogger()
 
@@ -34,30 +35,22 @@ class GomafiaService(
                 text = "${tournament.tournamentDto.title} | Стол ${gameDto.tableNum} | Игра ${gameDto.gameNum}"
             )
             gameDto.table.forEach { playerDto ->
-                // var player = playerRepository.findPlayerByNickname(playerDto.login)
-                // if (player == null) {
-                //     val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
-                //     player = Player(
-                //             nickname = u.user.login!!,
-                //             stat = extractStat(u),
-                //             //playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
-                //             //todo remove hack for cup of BO
-                //             playerPhotos = mutableListOf(PlayerPhoto(url = "/photo/${playerDto.login}.png", type = PhotoType.CUSTOM, description = "Custom photo"))
-                //     )
-                //     playerRepository.save(player)
-                // }
-                //
-                // if (player.playerPhotos.isEmpty()) {
-                //     val u = gomafiaRestClient.getUserWithStats(playerDto.id!!)
-                //     player.playerPhotos = mutableListOf(PlayerPhoto(url = u.user.avatar_link, type = PhotoType.GOMAFIA, description = "Gomafia photo"))
-                // }
+                val playerPhotoUrl = playerDto.id?.let { playerId ->
+                    photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
+                        playerId = playerId.toLong(),
+                        tournamentType = GameType.GOMAFIA,
+                        tournamentId = tournamentId.toLong(),
+                        role = "red"
+                    )
+                } ?: DEFAULT_PHOTO_URL
                 game.players.add(GamePlayer(
-                        nickname = playerDto.login!!,
-                    photoUrl = "https://storage.yandexcloud.net/mafia-photos/gomafia/${playerDto.id}.jpg",
-                        role = "red",
-                        place = playerDto.place!!,
-                        //status = "killed" to "$it",
-                        checks = mutableListOf(),
+                    nickname = playerDto.login!!,
+                    photoUrl = playerPhotoUrl,
+                    role = "red",
+                    place = playerDto.place!!,
+                    checks = mutableListOf(),
+                    customPhoto = false,
+                    sourcePlayerId = playerDto.id?.toLong()
                 ))
             }
 
@@ -86,27 +79,6 @@ class GomafiaService(
             0,
             GameType.GOMAFIA
         )
-    }
-
-    private fun userWithStatsToGamePlayer(us: UserWithStats, game: GameDto, player: Player): GamePlayer {
-        val gamePlayer = GamePlayer(
-                nickname = us.user.login!!,
-                photoUrl = us.user.avatar_link,
-                role = "red",
-                place = game.table.first { p -> p.login == us.user.login }.place!!,
-                //status = "killed" to "$it",
-                checks = mutableListOf(),
-                stat = mutableMapOf(
-                        "red" to mapOf("first" to "${us.stats.winRate!!.red!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.red["per_game"]}"),
-                        "black" to mapOf("first" to "${us.stats.winRate!!.mafia!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.black["per_game"]}"),
-                        "sher" to mapOf("first" to "${us.stats.winRate!!.sheriff!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.sheriff["per_game"]}"),
-                        "don" to mapOf("first" to "${us.stats.winRate!!.don!!.win!!.percent}%", "second" to "${us.stats.advancedPoints!!.black["per_game"]}"),
-                        "header" to mapOf("first" to "${us.stats.winRate!!.totalWins!!.percent}%", "second" to "${us.stats.advancedPoints!!.points10Games}")
-                )
-                //gameId = game.id!!
-        )
-
-        return gamePlayer
     }
 
     private fun extractStat(us: UserWithStats): MutableMap<String, Map<String, String>> {

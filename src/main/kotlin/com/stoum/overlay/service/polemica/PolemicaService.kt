@@ -5,7 +5,6 @@ import com.github.mafia.vyasma.polemica.library.client.GamePointsService
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGameResult
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
-import com.github.mafia.vyasma.polemica.library.model.game.PolemicaPlayer
 import com.github.mafia.vyasma.polemica.library.model.game.Position
 import com.github.mafia.vyasma.polemica.library.model.game.Role
 import com.github.mafia.vyasma.polemica.library.model.game.StageType
@@ -20,7 +19,9 @@ import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
+import com.stoum.overlay.service.DEFAULT_PHOTO_URL
 import com.stoum.overlay.service.EmitterService
+import com.stoum.overlay.service.PlayerPhotoService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -33,7 +34,8 @@ class PolemicaService(
     val polemicaClient: PolemicaClient,
     val gameRepository: GameRepository,
     val emitterService: EmitterService,
-    val pointsService: GamePointsService
+    val pointsService: GamePointsService,
+    val photoService: PlayerPhotoService
 ) {
     private val taskExecutorService = Executors.newScheduledThreadPool(4)
     private val gameIdCache = Caffeine.newBuilder()
@@ -103,15 +105,25 @@ class PolemicaService(
             )
         )
         val players = polemicaGame.players?.sortedBy { it.position.value }?.map {
+            val photoUrl = it.player?.id?.let { playerId ->
+                photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
+                    playerId = playerId,
+                    tournamentType = GameType.POLEMICA,
+                    tournamentId = polemicaTournamentGame.tournamentId.toLong(),
+                    role = polemicaRoleToRole(Role.PEACE)
+                )
+            } ?: DEFAULT_PHOTO_URL
             GamePlayer(
                 id = null,
                 nickname = it.username,
                 place = it.position.value,
-                photoUrl = polemicaPhotoUrl(it),
+                photoUrl = photoUrl,
                 role = "red",
                 checks = arrayListOf(),
                 guess = arrayListOf(),
-                stat = mutableMapOf()
+                stat = mutableMapOf(),
+                customPhoto = false,
+                sourcePlayerId = it.player?.id
             )
         }?.toMutableList() ?: mutableListOf()
         val game = Game(
@@ -129,9 +141,6 @@ class PolemicaService(
         )
         return gameRepository.save(game)
     }
-
-    private fun polemicaPhotoUrl(it: PolemicaPlayer?) =
-        "https://storage.yandexcloud.net/mafia-photos/${it?.player?.id}.jpg"
 
     fun crawl() {
         gameRepository.findGameByTypeAndStarted(GameType.POLEMICA, true).forEach { game ->
@@ -170,13 +179,21 @@ class PolemicaService(
                         }
                         player.role = polemicaRoleToRole(polemicaGame.getRole(position))
                         val polemicaPlayer = polemicaGame.players?.find { it.position == position }
+                        val playerPhotoUrl = polemicaPlayer?.player?.id?.let { playerId ->
+                            photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
+                                playerId = playerId,
+                                tournamentType = GameType.POLEMICA,
+                                tournamentId = tournamentId.toLong(),
+                                role = polemicaRoleToRole(Role.PEACE)
+                            )
+                        } ?: DEFAULT_PHOTO_URL
                         player.nickname = polemicaPlayer?.username.toString()
-                        player.photoUrl = polemicaPhotoUrl(polemicaPlayer)
+                        player.photoUrl = playerPhotoUrl
                         player.fouls = polemicaPlayer?.fouls?.size
                         player.techs = polemicaPlayer?.techs?.size
                         player.guess =
                             polemicaGuessToGuess(polemicaGame.players!!.find { it.position == position }?.guess)
-                        if (player.role == "sher") {
+                        if (player.role == polemicaRoleToRole(Role.SHERIFF)) {
                             val checks = polemicaGame.checks?.filter { it.role == Role.SHERIFF }?.sortedBy { it.night }
                             player.checks = checks?.map {
                                 mapOf(

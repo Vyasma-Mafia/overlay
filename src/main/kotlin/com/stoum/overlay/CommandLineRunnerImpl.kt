@@ -8,19 +8,16 @@ import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
-@ConditionalOnProperty(
-    value = ["app.development", "app.crawlScheduler.enable"],
-    havingValue = "true"
-)
+@Profile("dev")
 class CommandLineRunnerImpl(
         val emitterService: EmitterService,
         val gameRepository: GameRepository,
         val gamePlayerRepository: GamePlayerRepository,
-        val gomafiaRestClient: GomafiaRestClient
+    val gomafiaRestClient: GomafiaRestClient
 ) : CommandLineRunner {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
