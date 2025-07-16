@@ -705,13 +705,13 @@ body.stats-right.show-stats .stats-panel {
     color: #ff4d4d;
 }
 
-/* Убираем все возможные конфликтующие стили */
-.numbers-row:nth-child(3) .number-badge,
-.numbers-row:nth-child(4) .number-badge,
-.number-badge[data-role],
-.don-checks .number-badge[data-sher="true"] {
-    color: initial;
-}
+/*!* Убираем все возможные конфликтующие стили *!*/
+/*.numbers-row:nth-child(3) .number-badge,*/
+/*.numbers-row:nth-child(4) .number-badge,*/
+/*.number-badge[data-role],*/
+/*.don-checks .number-badge[data-sher="true"] {*/
+/*    color: initial;*/
+/*}*/
 
 .fact-panel {
     top: 20px;
@@ -1073,7 +1073,6 @@ body.stats-right.show-stats .stats-panel {
     gap: 8px;
     align-items: center;
     position: relative;
-
 }
 
 .numbers-row span {
@@ -1373,4 +1372,9 @@ body.stats-right.show-stats .stats-panel {
     color: #ffffff;
 }
 
+.vote-order-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 36px;
+}
 

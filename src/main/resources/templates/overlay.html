@@ -209,16 +209,16 @@
 </div>
 
 <div class="numbers-panel">
-    <div class="numbers-content">
-        <div class="numbers-row">
+    <div class="numbers-content" id="numbers-panel-content">
+        <div class="numbers-row visible" id="vote-candidates-row">
             <img src="/icon/palec_white.png" alt="👍" style="max-width: 100%;height: auto; max-height: 36px;">
             <span id="vote-candidates"></span>
         </div>
-        <div class="numbers-row">
+        <div class="numbers-row visible">
             <span>Дон:</span>
             <span id="don-checks"></span>
         </div>
-        <div class="numbers-row">
+        <div class="numbers-row visible">
             <span>Шериф:</span>
             <span id="sher-checks"></span>
         </div>
@@ -359,14 +359,42 @@
 
         document.getElementById('current-game-text').innerText = gameInfo.text;
 
-        const voteCandidatesContainer = document.getElementById('vote-candidates');
-        voteCandidatesContainer.textContent = '';
-        gameInfo.voteCandidates.forEach((candidate) => {
-            voteCandidatesContainer.append(createNumberBadge(
-                gameInfo.visibleRoles === true ? candidate.role : 'red',
-                candidate.num
-            ));
-        });
+        const numberPanelContent = document.getElementById('numbers-panel-content');
+        const voteCandidatesRow = document.getElementById('vote-candidates-row');
+        if (gameInfo.voteCandidates.length !== 0) {
+            if (voteCandidatesRow === null) {
+                const img = document.createElement('img');
+                img.src = '/icon/palec_white.png';
+                img.classList.add('vote-order-img');
+                img.alt = '👍';
+                const voteCandidatesContainer = document.createElement('span');
+                voteCandidatesContainer.id = 'vote-candidates';
+
+                const voteCandidatesRow = document.createElement('div');
+                voteCandidatesRow.id = 'vote-candidates-row';
+                voteCandidatesRow.classList.add('numbers-row');
+                voteCandidatesRow.append(img);
+                voteCandidatesRow.append(voteCandidatesContainer);
+
+                numberPanelContent.insertBefore(
+                    voteCandidatesRow,
+                    numberPanelContent.firstChild
+                );
+            }
+            let voteCandidatesContainer = document.getElementById('vote-candidates');
+            voteCandidatesContainer.innerHTML = '';
+            gameInfo.voteCandidates.forEach((candidate) => {
+                voteCandidatesContainer.append(createNumberBadge(
+                    gameInfo.visibleRoles === true ? candidate.role : 'red',
+                    candidate.num
+                ));
+            });
+        } else {
+            if (voteCandidatesRow !== null) {
+                numberPanelContent.removeChild(voteCandidatesRow);
+            }
+        }
+
 
         const donChecksContainer = document.getElementById('don-checks');
         const sherChecksContainer = document.getElementById('sher-checks');
