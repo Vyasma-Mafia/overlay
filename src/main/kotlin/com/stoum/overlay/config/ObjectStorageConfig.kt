@@ -6,7 +6,11 @@ import aws.smithy.kotlin.runtime.net.url.Url
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.validation.annotation.Validated
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.s3.S3AsyncClient
 import software.amazon.awssdk.transfer.s3.S3TransferManager
+import java.net.URI
 import kotlin.time.Duration.Companion.seconds
 
 @Validated
@@ -36,7 +40,18 @@ data class ObjectStorageConfig(
 
     @Bean
     fun s3TransferManager(s3Client: S3Client): S3TransferManager {
-        return S3TransferManager.create()
+        val s3AsyncClient = S3AsyncClient.builder().region(Region.of(this@ObjectStorageConfig.region))
+            .credentialsProvider(
+                software.amazon.awssdk.auth.credentials.StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(
+                        this@ObjectStorageConfig.accessKeyId,
+                        this@ObjectStorageConfig.secretAccessKey
+                    )
+                )
+            )
+            .endpointOverride(URI.create(this@ObjectStorageConfig.endpoint))
+            .build()
+        return S3TransferManager.builder().s3Client(s3AsyncClient).build()
     }
 
 
