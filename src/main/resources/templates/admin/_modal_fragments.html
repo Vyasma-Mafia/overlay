@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ РЕДАКТИРОВАНИЯ ID -->
+<div class="modal fade" id="editIdsModal" tabindex="-1" aria-labelledby="editIdsModalLabel" aria-hidden="true"
+        th:fragment="edit-ids-modal(player)">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="update-ids-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editIdsModalLabel">Редактировать ID</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="gomafiaId" class="form-label">Gomafia ID</label>
+                        <input type="number" id="gomafiaId" name="gomafiaId" class="form-control"
+                                th:value="${player.gomafiaId}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="polemicaId" class="form-label">Polemica ID</label>
+                        <input type="number" id="polemicaId" name="polemicaId" class="form-control"
+                                th:value="${player.polemicaId}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ЗАГРУЗКИ НОВОГО ФОТО -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel"
+        aria-hidden="true" th:fragment="upload-photo-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="upload-photo-form" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadPhotoModalLabel">Загрузить новое фото</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="photoType" class="form-label">Тип фото</label>
+                        <select id="photoType" name="photoType" class="form-select" required>
+                            <option th:each="type : ${T(com.stoum.overlay.entity.enums.PhotoType).values()}"
+                                    th:value="${type}"
+                                    th:text="${type}"></option>
+                        </select>
+                    </div>
+                    <p class="text-muted small mt-3">Для фото, привязанного к турниру, заполните поля ниже.</p>
+                    <div class="mb-3">
+                        <label for="tournamentType" class="form-label">Источник турнира</label>
+                        <select id="tournamentType" name="tournamentType" class="form-select">
+                            <option value="">-- Без турнира --</option>
+                            <option th:each="type : ${T(com.stoum.overlay.entity.enums.GameType).values()}"
+                                    th:value="${type}"
+                                    th:text="${type}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tournamentId" class="form-label">ID турнира</label>
+                        <input type="number" id="tournamentId" name="tournamentId" class="form-control">
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="photoFile" class="form-label">Файл изображения</label>
+                        <input type="file" id="photoFile" name="photo" class="form-control" accept="image/*"
+                                required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-success">Загрузить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

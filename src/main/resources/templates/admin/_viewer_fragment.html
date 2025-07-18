@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ===================================================================== -->
+<!--                         ФРАГМЕНТЫ И МОДАЛЬНЫЕ ОКНА                      -->
+<!-- ===================================================================== -->
+<!-- Файл: admin/_viewer_fragment.html -->
+<div th:fragment="photo-viewer-fragment (photoUrls, context)">
+    <div class="player-card__image-wrapper">
+
+        <!-- Уникальный ID для этого вьюера -->
+        <th:block th:with="viewerId=${'viewer-' + #strings.randomAlphanumeric(8)}">
+
+            <!-- Сохраняем контекст (турнир) в data-атрибутах родителя -->
+            <div class="photo-viewer-context"
+                    th:attr="data-player-id=${context['playerId']},
+                          data-tournament-type=${context['tournamentType'] ?: ''},
+                          data-tournament-id=${context['tournamentId'] ?: ''},
+                          data-viewer-id=${viewerId}">
+
+                <!-- Контейнер, содержимое которого будет меняться через JS -->
+                <div class="photo-display-container">
+                    <!-- Если для ТЕКУЩЕЙ (MAIN) роли есть фото, показываем его -->
+                    <th:block th:if="${photoUrls['MAIN']}">
+                        <img th:src="${photoUrls['MAIN']}" class="player-card__image" alt="Фото игрока">
+                        <button class="replace-photo-btn" th:onclick="|openFileDialog('${viewerId}')|"
+                                title="Заменить фото">
+                            <i class="fa-solid fa-sync-alt fa-lg"></i>
+                        </button>
+                    </th:block>
+
+                    <!-- Иначе (если для MAIN фото нет), показываем dropzone -->
+                    <th:block th:unless="${photoUrls[T(com.stoum.overlay.entity.enums.PhotoType).MAIN]}">
+                        <div class="dropzone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div class="dropzone-text">Перетащите фото или кликните для загрузки</div>
+                        </div>
+                    </th:block>
+                </div>
+                <!-- Скрытый input для файлов, один на вьюер -->
+                <input type="file" th:id="${viewerId + '-file-input'}" class="d-none" accept="image/*"
+                        th:attr="onchange=|handleFileSelect(event, '${viewerId}')|">
+            </div>
+        </th:block>
+    </div>
+
+    <div class="player-card__content pb-3">
+        <div class="role-indicators">
+            <div th:each="roleEntry : ${photoUrls}"
+                    class="role-indicator"
+                    th:classappend="${' ' + roleEntry.key.name() + (roleEntry.value != null ? ' available' : '')}"
+                    th:title="${roleEntry.key.name()}"
+                    th:attr="data-photo-url=${roleEntry.value ?: ''}"
+                    th:data-photo-type="${roleEntry.key.name()}">
+                <!-- onclick теперь будет обрабатываться через делегирование -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:fragment="photo-viewer-fragment-code" th:inline="javascript">
+    function openFileDialog(viewerId) {
+        document.getElementById(viewerId + '-file-input').click();
+    }
+
+    function handleFileSelect(event, viewerId) {
+        const file = event.target.files[0];
+        if (file) {
+            uploadFile(file, viewerId);
+        }
+    }
+
+    function handleDragOver(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.classList.add('drag-over');
+    }
+
+    function handleDragLeave(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleDrop(event, viewerId) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.currentTarget.classList.remove('drag-over');
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            uploadFile(file, viewerId);
+        }
+    }
+
+    /**
+     * Основная функция загрузки файла.
+     * @param {File} file - Файл для загрузки.
+     * @param {string} viewerId - Уникальный ID фото-вьюера.
+     */
+    function uploadFile(file, viewerId) {
+        // Находим родительский контейнер с data-атрибутами
+        const viewerContext = document.querySelector(`[data-viewer-id="${viewerId}"]`);
+        if (!viewerContext) {
+            console.error('Не найден контекст вьюера для ID:', viewerId);
+            return;
+        }
+
+        // Собираем данные для запроса из контекста
+        const playerId = viewerContext.dataset.playerId;
+        const tournamentType = viewerContext.dataset.tournamentType;
+        const tournamentId = viewerContext.dataset.tournamentId;
+
+        // Определяем активную роль
+        const activeIndicator = viewerContext.closest('.photo-viewer-container')
+            .querySelector('.role-indicator.active');
+        const photoType = activeIndicator ? activeIndicator.dataset.photoType : 'MAIN';
+
+        // Создаем FormData
+        const formData = new FormData();
+        formData.append('photo', file);
+        formData.append('photoType', photoType);
+        if (tournamentType) formData.append('tournamentType', tournamentType);
+        if (tournamentId) formData.append('tournamentId', tournamentId);
+
+        // Отправляем запрос (как и раньше, но с новыми данными)
+        fetch(`/admin/photos/players/${playerId}/photos`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => {
+                if (res.ok) {
+                    alert(`Фото для роли ${photoType} успешно загружено!`);
+                    location.reload(); // Перезагружаем для обновления всех данных
+                } else {
+                    res.text().then(text => alert(`Ошибка загрузки: ${text}`));
+                }
+            })
+            .catch(err => {
+                console.error('Upload Error:', err);
+                alert('Сетевая ошибка при загрузке фото.');
+            });
+    }
+
+
+    // ======== ЛОГИКА УПРАВЛЕНИЯ ИНТЕРФЕЙСОМ ========
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Делегирование для кликов по индикаторам
+        document.body.addEventListener('click', (event) => {
+            const indicator = event.target.closest('.role-indicator');
+            if (!indicator) return;
+
+            const viewerContainer = indicator.closest('.photo-viewer-container');
+            if (!viewerContainer) return;
+
+            const viewerContext = viewerContainer.querySelector('.photo-viewer-context');
+            if (!viewerContext) return;
+
+            // Находим контейнер для отображения фото
+            const displayContainer = viewerContainer.querySelector('.photo-display-container');
+            if (!displayContainer) return;
+
+            // Обновляем активный индикатор
+            viewerContainer.querySelectorAll('.role-indicator').forEach(el => el.classList.remove('active'));
+            indicator.classList.add('active');
+
+            // Получаем URL из data-атрибута
+            const photoUrl = indicator.dataset.photoUrl;
+            const viewerId = viewerContext.dataset.viewerId;
+
+            // Решаем, что показать: фото или dropzone
+            if (photoUrl) {
+                displayContainer.innerHTML = `
+                <img src="${photoUrl}" class="player-card__image" alt="Фото игрока">
+                <button class="replace-photo-btn" onclick="openFileDialog('${viewerId}')" title="Заменить фото">
+                    <i class="fa-solid fa-sync-alt fa-lg"></i>
+                </button>
+            `;
+            } else {
+                displayContainer.innerHTML = `
+                <div class="dropzone"
+                     ondragover="handleDragOver(event)"
+                     ondragleave="handleDragLeave(event)"
+                     ondrop="handleDrop(event, '${viewerId}')"
+                     onclick="openFileDialog('${viewerId}')">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div class="dropzone-text">Перетащите фото или кликните</div>
+                </div>
+            `;
+            }
+        });
+
+        // Инициализация активных индикаторов для ВСЕХ вьюеров на странице
+        document.querySelectorAll('.photo-viewer-container').forEach(container => {
+            const mainIndicator = container.querySelector('.role-indicator.MAIN');
+            if (mainIndicator) {
+                mainIndicator.click();
+                // mainIndicator.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+        th:with="pageTitle='Выбор турнира'"
+        th:insert="~{admin/layout :: ~{}}"> <!-- Используем layout -->
+
+<body>
+<div class="page-content"> <!-- Контент страницы -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fa-solid fa-trophy me-2"></i>Турниры</h1>
+    </div>
+
+    <!-- Форма для фильтрации -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form th:action="@{/admin/photos/tournaments}" method="get"
+                    class="d-flex flex-wrap gap-3 align-items-center">
+                <div class="flex-grow-1">
+                    <label for="source" class="form-label fw-bold">Источник</label>
+                    <select id="source" name="source" class="form-select" onchange="this.form.submit()">
+                        <option th:each="s : ${allSources}"
+                                th:value="${s}"
+                                th:text="${s.name()}"
+                                th:selected="${s == currentSource}"></option>
+                    </select>
+                </div>
+                <div class="flex-grow-1">
+                    <label for="query" class="form-label fw-bold">Поиск по названию</label>
+                    <input type="text" id="query" name="query" class="form-control"
+                            placeholder="Например, 'Кубок Москвы'" th:value="${query}">
+                </div>
+                <div class="align-self-end">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-search me-1"></i> Искать
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Сетка карточек турниров -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-6 row-cols-xxl-8 g-4">
+        <div th:each="t : ${tournaments}" class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold" th:text="${t.title}">Название турнира</h5>
+                    <p class="card-text mb-1">
+                        <i class="fa-solid fa-location-dot me-2 text-muted"></i>
+                        <span th:text="${t.location}">Место проведения</span>
+                    </p>
+                    <p class="card-text">
+                        <i class="fa-solid fa-calendar-alt me-2 text-muted"></i>
+                        <small class="text-muted" th:text="${t.dates}">Даты</small>
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-top-0 pb-3">
+                    <a th:href="@{/admin/photos/tournaments/{source}/{id}(source=${t.source}, id=${t.id})}"
+                            class="btn btn-outline-primary w-100">
+                        <i class="fa-solid fa-users me-2"></i>Участники
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(tournaments)}" class="col-12">
+            <div class="alert alert-info text-center">Турниры не найдены.</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

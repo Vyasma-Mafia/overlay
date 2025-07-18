@@ -16,7 +16,7 @@ import java.util.UUID
 @RestController("admin")
 class AdminController(
     val emitterService: EmitterService,
-    val gameRepository: GameRepository,
+    val gameRepository: GameRepository
 ) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 

@@ -12,7 +12,7 @@ group = 'com.stoum'
 version = ''
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = '21'
 }
 
 repositories {
@@ -43,10 +43,13 @@ dependencies {
 
     // Polemica
     implementation 'io.github.mralex1810:polemica-library:1.7.3'
+    // Gomafia
+    implementation("io.github.mralex1810:gomafia-library:1.0.0")
 
     // https://mvnrepository.com/artifact/aws.sdk.kotlin/s3
     implementation("aws.sdk.kotlin:s3:1.4.74")
-
+    // https://mvnrepository.com/artifact/software.amazon.awssdk/s3-transfer-manager
+    implementation 'software.amazon.awssdk:s3-transfer-manager:2.31.63'
 
     // https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus
     implementation 'io.micrometer:micrometer-registry-prometheus:1.14.2'
@@ -71,7 +74,7 @@ dependencies {
 tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
         freeCompilerArgs += '-Xjsr305=strict'
-        jvmTarget = '17'
+        jvmTarget = '21'
     }
 }
 

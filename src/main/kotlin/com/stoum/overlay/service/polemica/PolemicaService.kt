@@ -184,7 +184,7 @@ class PolemicaService(
                                 playerId = playerId,
                                 tournamentType = GameType.POLEMICA,
                                 tournamentId = tournamentId.toLong(),
-                                role = polemicaRoleToRole(Role.PEACE)
+                                role = if (game.visibleRoles == true) player.role else null
                             )
                         } ?: DEFAULT_PHOTO_URL
                         player.nickname = polemicaPlayer?.username.toString()

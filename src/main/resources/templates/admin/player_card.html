@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Карточка игрока: ' + ${view.player.nickname}">Панель управления</title>
+
+    <!-- Ссылки на CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/style-admin.css"> <!-- Предполагая, что вы создали этот файл -->
+</head>
+<body>
+<div class="container-fluid main-container">
+    <!-- Основной контент страницы -->
+    <div class="page-content">
+        <!-- ======== ОСНОВНАЯ ИНФОРМАЦИЯ И ГЛОБАЛЬНОЕ ФОТО ======== -->
+        <div class="row g-4 mb-5">
+            <!-- Левая колонка: информация об игроке -->
+            <div class="col-md-6">
+                <div class="d-flex align-items-center mb-3">
+                    <h1 class="mb-0"><i class="fa-solid fa-user-pen me-2"></i><span
+                            th:text="${view.player.nickname}"></span></h1>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Профили в системах</h5>
+                    <!-- Кнопка "Карандаш" для открытия модального окна редактирования ID -->
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#editIdsModal">
+                        <i class="fa-solid fa-pencil me-1"></i> Редактировать
+                    </button>
+                </div>
+
+                <p class="mt-3">
+                    <strong>Gomafia ID:</strong>
+                    <span th:if="${view.player.gomafiaId}"><a
+                            th:href="'https://gomafia.pro/stats/' + ${view.player.gomafiaId}"
+                            th:text="${view.player.gomafiaId}" target="_blank"></a></span>
+                    <span th:unless="${view.player.gomafiaId}" class="text-muted">Не указан</span>
+                </p>
+                <p>
+                    <strong>Polemica ID:</strong>
+                    <span th:if="${view.player.polemicaId}"><a
+                            th:href="'https://polemicagame.com/profile/' + ${view.player.polemicaId}"
+                            th:text="${view.player.polemicaId}" target="_blank"></a></span>
+                    <span th:unless="${view.player.polemicaId}" class="text-muted">Не указан</span>
+                </p>
+
+                <hr>
+                <!-- Кнопка для открытия модального окна загрузки фото -->
+                <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal"
+                        data-bs-target="#uploadPhotoModal">
+                    <i class="fa-solid fa-upload me-2"></i> Загрузить новое фото
+                </button>
+            </div>
+
+            <!-- Правая колонка: основной фото-вьюер -->
+            <div class="col-md-6 d-flex justify-content-center">
+                <div class="photo-viewer-container" style="max-width: 160px; width: 100%;">
+                    <h5 class="text-center mb-3">Основное фото</h5>
+                    <!-- Передаем контекст: только ID игрока, т.к. это глобальные фото -->
+                    <div th:replace="~{admin/_viewer_fragment :: photo-viewer-fragment(
+                            photoUrls=${view.globalPhotoUrls},
+                            context=${ {playerId: view.player.id} }
+                         )}"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Цикл по турнирным фото -->
+        <div class="player-cards-grid mt-3">
+            <div th:each="tPhoto : ${view.tournamentPhotos}" class="photo-viewer-container">
+                <div class="player-card">
+                    <div class="card-header fw-bold text-center" th:text="${tPhoto.tournamentTitle}"></div>
+                    <div th:replace="~{admin/_viewer_fragment :: photo-viewer-fragment(
+                            photoUrls=${tPhoto.photoUrls},
+                            context=${ {playerId: view.player.id,
+                                    tournamentType: tPhoto.tournamentSource,
+                                    tournamentId: tPhoto.tournamentId
+                            } }
+                         )}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- =========================================================== -->
+<!--         ВСТАВЛЯЕМ ВСЕ МОДАЛЬНЫЕ ОКНА В КОНЕЦ BODY           -->
+<!-- =========================================================== -->
+<!-- Используем th:replace, чтобы не создавать лишний div-обертку -->
+<th:block th:replace="~{admin/_modal_fragments :: edit-ids-modal(player=${view.player})}"></th:block>
+<th:block th:replace="~{admin/_modal_fragments :: upload-photo-modal}"></th:block>
+
+
+<!-- =========================================================== -->
+<!--                         СКРИПТЫ                             -->
+<!-- =========================================================== -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const playerId = [[${view.player.id}]];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Обработчик формы обновления ID
+        document.getElementById('update-ids-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch(`/admin/photos/players/${playerId}/ids`, {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            }).then(res => {
+                if (res.ok) {
+                    alert('ID успешно обновлены!');
+                    location.reload();
+                } else {
+                    alert('Ошибка обновления ID.');
+                }
+            });
+        });
+
+        // Обработчик формы загрузки фото
+        document.getElementById('upload-photo-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch(`/admin/photos/players/${playerId}/photos`, {
+                method: 'POST',
+                body: formData
+            }).then(res => {
+                if (res.ok) {
+                    alert('Фото успешно загружено!');
+                    location.reload();
+                } else {
+                    alert('Ошибка загрузки фото.');
+                }
+            });
+        });
+    });
+
+    /*]]>*/
+</script>
+<th:block th:replace="~{admin/_viewer_fragment :: photo-viewer-fragment-code}"></th:block>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+</html>
