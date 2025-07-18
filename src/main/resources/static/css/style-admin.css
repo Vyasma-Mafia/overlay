@@ -114,8 +114,8 @@ body {
 }
 
 .player-card__image {
-    width: 100%;
-    height: 100%;
+    width: 160px;
+    height: 220px;
     object-fit: cover; /* Изображение будет кадрироваться, сохраняя пропорции */
 }
 
