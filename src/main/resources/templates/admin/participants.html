@@ -23,6 +23,19 @@
         </div>
         <h4 class="text-muted mb-4" th:text="${source} + ' / ID: ' + ${tournamentId}">Источник и ID</h4>
 
+        <!-- Overlay Control Toggle -->
+        <div class="mb-4 d-flex align-items-center">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch"
+                        id="overlayToggle" th:checked="${overlayEnabled}">
+                <label class="form-check-label" for="overlayToggle">Плашки включены</label>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary ms-3" data-bs-toggle="modal"
+                    data-bs-target="#passwordModal" id="settingsButton">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+
         <!-- Родительский контейнер, на который мы повесим обработчик -->
         <div class="player-cards-grid">
             <div th:each="p : ${participants}" class="player-card">
@@ -57,5 +70,89 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+<!-- Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordModalLabel">Настройки Overlay</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="passwordInput" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="passwordInput">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="overlayEnabledCheck">
+                    <label class="form-check-label" for="overlayEnabledCheck">
+                        Overlay включен
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="saveSettingsButton">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize the toggle state
+    const source = '[[${source}]]';
+    const tournamentId = '[[${tournamentId}]]';
+
+    // Fetch current overlay settings on page load
+    fetch(`/admin/photos/tournaments/${source}/${tournamentId}/overlay-settings`)
+        .then(response => response.json())
+        .then(settings => {
+            document.getElementById('overlayToggle').checked = settings.overlayEnabled;
+        });
+
+    // Handle toggle switch change
+    document.getElementById('overlayToggle').addEventListener('change', function () {
+        // Show the password modal when toggling
+        const modal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        // Pre-fill the modal with the current toggle state
+        document.getElementById('overlayEnabledCheck').checked = this.checked;
+        modal.show();
+    });
+
+    // Handle save button in modal
+    document.getElementById('saveSettingsButton').addEventListener('click', function () {
+        const password = document.getElementById('passwordInput').value;
+        const enabled = document.getElementById('overlayEnabledCheck').checked;
+
+        fetch(`/admin/photos/tournaments/${source}/${tournamentId}/overlay-settings`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `password=${encodeURIComponent(password)}&enabled=${enabled}`
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Ошибка при сохранении настроек');
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update the toggle state
+                    document.getElementById('overlayToggle').checked = data.overlayEnabled;
+                    // Close the modal
+                    bootstrap.Modal.getInstance(document.getElementById('passwordModal')).hide();
+                    alert('Настройки успешно сохранены');
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(error => {
+                alert(`Ошибка: ${error.message}`);
+            });
+    });
+</script>
 </body>
 </html>

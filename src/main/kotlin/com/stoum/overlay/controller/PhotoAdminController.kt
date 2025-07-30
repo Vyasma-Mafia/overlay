@@ -6,6 +6,7 @@ import com.stoum.overlay.entity.enums.PhotoType
 import com.stoum.overlay.repository.PlayerRepository
 import com.stoum.overlay.service.PlayerPhotoService
 import com.stoum.overlay.service.PlayerService
+import com.stoum.overlay.service.TournamentOverlayService
 import com.stoum.overlay.service.TournamentService
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
@@ -29,7 +31,8 @@ class PhotoAdminController(
     private val tournamentService: TournamentService,
     private val playerService: PlayerService,
     private val playerRepository: PlayerRepository,
-    val playerPhotoService: PlayerPhotoService
+    private val playerPhotoService: PlayerPhotoService,
+    private val tournamentOverlayService: TournamentOverlayService
 ) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
@@ -140,6 +143,52 @@ class PhotoAdminController(
             log.error("S3 upload exception", e)
             return ResponseEntity.status(500).body(null)
         }
+    }
+
+    @PostMapping("/tournaments/{source}/{tournamentId}/overlay-settings")
+    @ResponseBody
+    fun updateOverlaySettings(
+        @PathVariable source: String,
+        @PathVariable tournamentId: Long,
+        @RequestParam password: String,
+        @RequestParam enabled: Boolean
+    ): ResponseEntity<Map<String, Any>> {
+        try {
+            val settings =
+                tournamentOverlayService.toggleOverlay(GameType.valueOf(source), tournamentId, password, enabled)
+            return ResponseEntity.ok().body(
+                mapOf(
+                    "status" to "success",
+                    "gameType" to settings.gameType.name,
+                    "tournamentId" to settings.tournamentId,
+                    "overlayEnabled" to settings.overlayEnabled
+                )
+            )
+        } catch (e: Exception) {
+            return ResponseEntity.badRequest().body(
+                mapOf(
+                    "status" to "error",
+                    "message" to e.message.toString()
+                )
+            )
+        }
+    }
+
+    @GetMapping("/tournaments/{source}/{tournamentId}/overlay-settings")
+    @ResponseBody
+    fun getOverlaySettings(
+        @PathVariable source: String,
+        @PathVariable tournamentId: Long
+    ): ResponseEntity<Map<String, Any>> {
+        val settings = tournamentOverlayService.getSettings(GameType.valueOf(source), tournamentId)
+        return ResponseEntity.ok().body(
+            mapOf(
+                "gameType" to settings.gameType.name,
+                "tournamentId" to settings.tournamentId.toString(),
+                "overlayEnabled" to settings.overlayEnabled.toString(),
+                "updatedAt" to settings.updatedAt.toString()
+            )
+        )
     }
 }
 

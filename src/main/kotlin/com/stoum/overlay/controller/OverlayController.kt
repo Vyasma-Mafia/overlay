@@ -5,6 +5,7 @@ import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.getLogger
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
+import com.stoum.overlay.service.TournamentOverlayService
 import com.stoum.overlay.service.gomafia.GomafiaService
 import com.stoum.overlay.service.polemica.PolemicaService
 import org.springframework.core.convert.converter.Converter
@@ -49,7 +50,8 @@ class OverlayController(
     val gameRepository: GameRepository,
     val emitterService: EmitterService,
     val polemicaService: PolemicaService,
-    val gomafiaService: GomafiaService
+    val gomafiaService: GomafiaService,
+    val tournamentOverlayService: TournamentOverlayService
 ) {
     @RequestMapping("/{id}/overlay")
     fun overlay(@PathVariable id: String, model: Model): String? {
@@ -66,6 +68,15 @@ class OverlayController(
         @PathVariable gameNum: Int,
         model: Model,
     ): String? {
+        // Check if tournament has overlay enabled
+        if (!tournamentOverlayService.getSettings(
+                GameType.valueOf(service.name),
+                tournamentId.toLong()
+            ).overlayEnabled
+        ) {
+            return "overlay-disabled"
+        }
+
         val game = when (service) {
             ServiceType.POLEMICA -> getOrCreatePolemicaGame(tournamentId, gameNum, tableNum, phase)
             ServiceType.GOMAFIA -> getOrCreateGomafiaGame(tournamentId, gameNum, tableNum, phase)
