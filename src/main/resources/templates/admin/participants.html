@@ -48,9 +48,16 @@
                              } }
                          )}"></div>
                     <a th:href="@{/admin/photos/players/{id}(id=${p.player.id})}"
-                            class="player-card__name"
-                            th:text="${p.player.nickname}">
-                        Никнейм
+                            class="player-card__name">
+                        <span th:text="${p.player.nickname}" style="color: black;">Никнейм</span>
+                        <span th:if="${source == 'POLEMICA' and p.player.polemicaId != null}"
+                                th:text="'#' + ${p.player.polemicaId}"
+                                style="color: gray; font-size: 0.9em;">
+                        </span>
+                        <span th:if="${source == 'GOMAFIA' and p.player.gomafiaId != null}"
+                                th:text="'#' + ${p.player.gomafiaId}"
+                                style="color: gray; font-size: 0.9em;">
+                        </span>
                     </a>
                 </div>
             </div>

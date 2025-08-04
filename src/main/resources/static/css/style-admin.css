@@ -132,11 +132,15 @@ body {
     font-weight: bold;
     font-size: 1rem;
     word-break: break-word;
-    color: #333;
     text-decoration: none;
+    display: block;
 }
 
 .player-card__name:hover {
+    text-decoration: none;
+}
+
+.player-card__name:hover span:first-child {
     color: #0d6efd;
 }
 
