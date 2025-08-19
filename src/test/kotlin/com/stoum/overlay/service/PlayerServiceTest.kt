@@ -1,11 +1,16 @@
 package com.stoum.overlay.service
 
+import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.stoum.overlay.entity.Player
 import com.stoum.overlay.repository.PlayerRepository
+import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -18,8 +23,8 @@ class PlayerServiceTest {
     @BeforeEach
     fun setup() {
         playerRepository = mockk()
-        val gomafiaRestClient = mockk(relaxed = true)
-        val polemicaClient = mockk(relaxed = true)
+        val gomafiaRestClient: GomafiaRestClient = mockk(relaxed = true)
+        val polemicaClient: PolemicaClient = mockk(relaxed = true)
         playerService = PlayerService(playerRepository, gomafiaRestClient, polemicaClient)
     }
 
