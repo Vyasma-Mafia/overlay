@@ -36,7 +36,14 @@ h1 {
 }
 
 .game-info {
-    display: none; /* Скрыл информацию о номере игрока сверху */
+    margin-bottom: 15px;
+}
+
+.game-title {
+    font-size: 20px;
+    color: #f39c12;
+    font-weight: bold;
+    text-align: center;
 }
 
 .timer {
@@ -178,6 +185,67 @@ h1 {
     font-weight: bold;
 }
 
+.player-info-static {
+    position: absolute;
+    top: 130px;
+    left: 70%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    pointer-events: none; /* Позволяет кликать через этот элемент на карточку */
+}
+
+.player-photo {
+    width: 160px;
+    height: 220px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.player-photo.has-photo {
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.player-nickname {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    max-width: 280px;
+    word-wrap: break-word;
+    margin-bottom: 20px;
+}
+
+.card-icon {
+    margin-top: 40px;
+}
+
+.front-icon {
+    margin-top: 80px;
+}
+
+.role-name {
+    margin-top: 20px;
+}
+
+.btn.export {
+    background-color: #8e44ad;
+}
+
+.btn.export:hover {
+    background-color: #9b59b6;
+}
+
 .controls {
     display: flex;
     justify-content: center;
@@ -270,6 +338,28 @@ h1 {
         height: 60px;
         font-size: 32px;
     }
+
+    .player-info-static {
+        scale: 0.9;
+    }
+
+    .player-photo {
+        width: 160px;
+        height: 220px;
+    }
+
+    .player-nickname {
+        font-size: 20px;
+        max-width: 250px;
+    }
+
+    .front-icon {
+        margin-top: 60px;
+    }
+
+    .card-icon {
+        margin-top: 30px;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -308,6 +398,28 @@ h1 {
         width: 50px;
         height: 50px;
         font-size: 28px;
+    }
+
+    .player-info-static {
+        scale: 0.75;
+    }
+
+    .player-photo {
+        width: 160px;
+        height: 220px;
+    }
+
+    .player-nickname {
+        font-size: 18px;
+        max-width: 200px;
+    }
+
+    .front-icon {
+        margin-top: 50px;
+    }
+
+    .card-icon {
+        margin-top: 20px;
     }
 }
 

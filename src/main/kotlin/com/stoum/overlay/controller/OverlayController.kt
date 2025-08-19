@@ -156,6 +156,50 @@ class OverlayController(
         return "control-panel"
     }
 
+    @RequestMapping("/{service}/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}/roleselector")
+    fun roleSelector(
+        @PathVariable service: ServiceType,
+        @PathVariable tournamentId: Int,
+        @PathVariable phase: Int,
+        @PathVariable tableNum: Int,
+        @PathVariable gameNum: Int,
+        model: Model,
+    ): String? {
+        // Check if tournament has overlay enabled
+        if (!tournamentOverlayService.getSettings(
+                GameType.valueOf(service.name),
+                tournamentId.toLong()
+            ).overlayEnabled
+        ) {
+            return "overlay-disabled"
+        }
+
+        val game = when (service) {
+            ServiceType.POLEMICA -> getOrCreatePolemicaGame(tournamentId, gameNum, tableNum, phase)
+            ServiceType.GOMAFIA -> getOrCreateGomafiaGame(tournamentId, gameNum, tableNum, phase)
+        }
+
+        model.addAttribute("id", game?.id)
+        model.addAttribute("tournamentId", tournamentId)
+        model.addAttribute("gameNum", gameNum)
+        model.addAttribute("tableNum", tableNum)
+        model.addAttribute("phase", phase)
+        model.addAttribute("service", service.getPathValue())
+
+        // Передаем данные игроков напрямую в модель
+        if (game != null) {
+            model.addAttribute("gameTitle", game.text ?: "Игра $gameNum")
+            model.addAttribute("players", game.players.sortedBy { it.place })
+        } else {
+            model.addAttribute("gameTitle", "Игра $gameNum")
+            model.addAttribute("players", emptyList<Any>())
+        }
+
+        getLogger().info("Role selector for ${game?.id}: ${service.name}, $tournamentId, $gameNum, $tableNum")
+
+        return "role-selector-game"
+    }
+
     private fun getOrCreatePolemicaGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
         return polemicaService.getOrTryCreateGame(tournamentId, gameNum, tableNum, phase)
     }

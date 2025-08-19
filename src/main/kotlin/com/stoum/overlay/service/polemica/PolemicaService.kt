@@ -3,6 +3,7 @@ package com.stoum.overlay.service.polemica
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.mafia.vyasma.polemica.library.client.GamePointsService
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
+import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGame
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGameResult
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
 import com.github.mafia.vyasma.polemica.library.model.game.Position
@@ -61,6 +62,23 @@ class PolemicaService(
             gameRepository.save(game)
         }
         return game
+    }
+
+    fun getPolemicaGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): PolemicaGame? {
+        val tournamentGame = PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
+        polemicaClient.getGamesFromCompetition(tournamentId.toLong()).forEach { tGame ->
+            val polemicaTournamentGame = PolemicaTournamentGame(tournamentId, tGame)
+            if (polemicaTournamentGame == tournamentGame) {
+                return polemicaClient.getGameFromCompetition(
+                    PolemicaClient.PolemicaCompetitionGameId(
+                        polemicaTournamentGame.tournamentId.toLong(),
+                        tGame.id,
+                        4
+                    )
+                )
+            }
+        }
+        return null
     }
 
     private fun initTournament(tournamentId: Int) {
@@ -382,6 +400,14 @@ class PolemicaService(
         Role.DON -> "don"
         Role.SHERIFF -> "sher"
         Role.PEACE -> "red"
+    }
+
+    fun roleToPolemicaRole(role: String?) = when (role) {
+        "black" -> Role.MAFIA
+        "don" -> Role.DON
+        "sher" -> Role.SHERIFF
+        "red" -> Role.PEACE
+        else -> Role.PEACE
     }
 
     fun polemicaColorToString(isBlack: Boolean) = if (isBlack) "black" else "red"

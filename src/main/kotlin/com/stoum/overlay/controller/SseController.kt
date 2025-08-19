@@ -79,4 +79,29 @@ class SseController(
         }
         return null
     }
+
+    @GetMapping("/{id}/roleselectorinfo")
+    fun roleSelector(@PathVariable id: String?): SseEmitter? {
+        getLogger().info("got role selector request for sse $id")
+        if (id != null) {
+            val emitter = SseEmitter()
+            emitterService.registerEmitter(id, emitter)
+
+            emitter.send(
+                event()
+                    .name("message")
+                    .reconnectTime(5000L)
+                    .data("Registered role selector with id $id")
+            )
+            return emitter.also {
+                runBlocking {
+                    launch {
+                        delay(1000L)
+                        emitterService.emitGame(id)
+                    }
+                }
+            }
+        }
+        return null
+    }
 }
