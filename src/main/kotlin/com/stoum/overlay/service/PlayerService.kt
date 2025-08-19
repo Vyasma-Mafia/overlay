@@ -129,4 +129,71 @@ class PlayerService(
             else -> "Кастомный турнир #${id}"
         }
     }
+
+    // Поиск игроков по запросу
+    fun searchPlayers(query: String): List<Player> {
+        if (query.isBlank()) return emptyList()
+
+        val polemicaId = query.toLongOrNull()
+        val gomafiaId = query.toLongOrNull()
+
+        return playerRepository.searchPlayers(query, polemicaId, gomafiaId)
+    }
+
+    // Проверка уникальности ID перед обновлением
+    data class DuplicateCheckResult(
+        val hasDuplicates: Boolean,
+        val duplicatePolemicaPlayer: Player? = null,
+        val duplicateGomafiaPlayer: Player? = null
+    )
+
+    fun checkForDuplicateIds(playerId: UUID, polemicaId: Long?, gomafiaId: Long?): DuplicateCheckResult {
+        var duplicatePolemicaPlayer: Player? = null
+        var duplicateGomafiaPlayer: Player? = null
+
+        if (polemicaId != null) {
+            duplicatePolemicaPlayer = playerRepository.findByPolemicaIdAndIdNot(polemicaId, playerId)
+        }
+
+        if (gomafiaId != null) {
+            duplicateGomafiaPlayer = playerRepository.findByGomafiaIdAndIdNot(gomafiaId, playerId)
+        }
+
+        return DuplicateCheckResult(
+            hasDuplicates = duplicatePolemicaPlayer != null || duplicateGomafiaPlayer != null,
+            duplicatePolemicaPlayer = duplicatePolemicaPlayer,
+            duplicateGomafiaPlayer = duplicateGomafiaPlayer
+        )
+    }
+
+    // Объединение профилей игроков
+    @Transactional
+    fun mergePlayers(primaryPlayerId: UUID, secondaryPlayerId: UUID): Player {
+        val primaryPlayer = playerRepository.findById(primaryPlayerId)
+            .orElseThrow { RuntimeException("Primary player not found") }
+        val secondaryPlayer = playerRepository.findById(secondaryPlayerId)
+            .orElseThrow { RuntimeException("Secondary player not found") }
+
+        // Переносим ID из вторичного профиля, если у основного их нет
+        if (primaryPlayer.polemicaId == null && secondaryPlayer.polemicaId != null) {
+            primaryPlayer.polemicaId = secondaryPlayer.polemicaId
+        }
+        if (primaryPlayer.gomafiaId == null && secondaryPlayer.gomafiaId != null) {
+            primaryPlayer.gomafiaId = secondaryPlayer.gomafiaId
+        }
+
+        // Переносим все фотографии из вторичного профиля
+        secondaryPlayer.playerPhotos.forEach { photo ->
+            photo.id = null // Сбрасываем ID для создания новой записи
+            primaryPlayer.playerPhotos.add(photo)
+        }
+
+        // Сохраняем изменения в основном профиле
+        val updatedPrimaryPlayer = playerRepository.save(primaryPlayer)
+
+        // Удаляем вторичный профиль
+        playerRepository.delete(secondaryPlayer)
+
+        return updatedPrimaryPlayer
+    }
 }

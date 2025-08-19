@@ -97,6 +97,7 @@
 <!-- Используем th:replace, чтобы не создавать лишний div-обертку -->
 <th:block th:replace="~{admin/_modal_fragments :: edit-ids-modal(player=${view.player})}"></th:block>
 <th:block th:replace="~{admin/_modal_fragments :: upload-photo-modal}"></th:block>
+<th:block th:replace="~{admin/_modal_fragments :: merge-profiles-modal}"></th:block>
 
 
 <!-- =========================================================== -->
@@ -107,20 +108,131 @@
     const playerId = [[${view.player.id}]];
 
     document.addEventListener('DOMContentLoaded', () => {
+        let selectedMergeOption = null;
+        let duplicatePlayerId = null;
+        
         // Обработчик формы обновления ID
         document.getElementById('update-ids-form').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);
+
             fetch(`/admin/photos/players/${playerId}/ids`, {
                 method: 'POST',
                 body: new URLSearchParams(formData)
-            }).then(res => {
-                if (res.ok) {
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
                     alert('ID успешно обновлены!');
                     location.reload();
+                    } else if (data.status === 'duplicate_found') {
+                        // Показываем модальное окно с дубликатами
+                        showDuplicatesModal(data);
                 } else {
-                    alert('Ошибка обновления ID.');
-                }
+                        alert('Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(err => {
+                    alert('Ошибка обновления ID: ' + err.message);
+                });
+        });
+
+        // Функция для отображения модального окна с дубликатами
+        function showDuplicatesModal(data) {
+            const duplicatesContainer = document.getElementById('duplicateProfiles');
+            duplicatesContainer.innerHTML = '';
+
+            // Добавляем карточку текущего профиля
+            const currentCard = createProfileCard('Текущий профиль', {
+                id: playerId,
+                nickname: [[${view.player.nickname}]],
+                polemicaId: [[${view.player.polemicaId}]],
+                gomafiaId: [[${view.player.gomafiaId}]]
+            }, true);
+            duplicatesContainer.appendChild(currentCard);
+
+            // Добавляем карточки дубликатов
+            if (data.duplicatePolemicaPlayer) {
+                const card = createProfileCard('Найден по Polemica ID', data.duplicatePolemicaPlayer, false);
+                duplicatesContainer.appendChild(card);
+                duplicatePlayerId = data.duplicatePolemicaPlayer.id;
+            }
+
+            if (data.duplicateGomafiaPlayer && (!data.duplicatePolemicaPlayer ||
+                data.duplicateGomafiaPlayer.id !== data.duplicatePolemicaPlayer.id)) {
+                const card = createProfileCard('Найден по Gomafia ID', data.duplicateGomafiaPlayer, false);
+                duplicatesContainer.appendChild(card);
+                duplicatePlayerId = data.duplicateGomafiaPlayer.id;
+            }
+
+            // Закрываем модальное окно редактирования ID
+            bootstrap.Modal.getInstance(document.getElementById('editIdsModal')).hide();
+
+            // Показываем модальное окно объединения
+            const mergeModal = new bootstrap.Modal(document.getElementById('mergeProfilesModal'));
+            mergeModal.show();
+        }
+
+        // Функция создания карточки профиля
+        function createProfileCard(title, player, isCurrent) {
+            const col = document.createElement('div');
+            col.className = 'col-md-6';
+
+            const card = document.createElement('div');
+            card.className = 'card' + (isCurrent ? ' border-primary' : '');
+
+            card.innerHTML = `
+                <div class="card-header ${isCurrent ? 'bg-primary text-white' : ''}">
+                    <strong>${title}</strong>
+                </div>
+                <div class="card-body">
+                    <p><strong>Никнейм:</strong> ${player.nickname}</p>
+                    <p><strong>Polemica ID:</strong> ${player.polemicaId || '—'}</p>
+                    <p><strong>Gomafia ID:</strong> ${player.gomafiaId || '—'}</p>
+                </div>
+            `;
+
+            col.appendChild(card);
+            return col;
+        }
+
+        // Обработчики выбора профиля для объединения
+        document.getElementById('keepCurrentProfile').addEventListener('click', function () {
+            selectedMergeOption = 'current';
+            this.classList.add('active');
+            document.getElementById('keepDuplicateProfile').classList.remove('active');
+            document.getElementById('confirmMergeButton').style.display = 'block';
+        });
+
+        document.getElementById('keepDuplicateProfile').addEventListener('click', function () {
+            selectedMergeOption = 'duplicate';
+            this.classList.add('active');
+            document.getElementById('keepCurrentProfile').classList.remove('active');
+            document.getElementById('confirmMergeButton').style.display = 'block';
+        });
+
+        // Обработчик подтверждения объединения
+        document.getElementById('confirmMergeButton').addEventListener('click', function () {
+            if (!selectedMergeOption || !duplicatePlayerId) return;
+
+            const primaryId = selectedMergeOption === 'current' ? playerId : duplicatePlayerId;
+            const secondaryId = selectedMergeOption === 'current' ? duplicatePlayerId : playerId;
+
+            fetch(`/admin/photos/players/${primaryId}/merge/${secondaryId}`, {
+                method: 'POST'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Профили успешно объединены!');
+                        // Перенаправляем на страницу основного профиля
+                        window.location.href = `/admin/photos/players/${primaryId}`;
+                    } else {
+                        alert('Ошибка объединения: ' + (data.message || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(err => {
+                    alert('Ошибка объединения профилей: ' + err.message);
             });
         });
 

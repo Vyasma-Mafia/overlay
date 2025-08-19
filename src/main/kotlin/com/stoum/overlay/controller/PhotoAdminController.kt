@@ -85,18 +85,113 @@ class PhotoAdminController(
         return "admin/player_card"
     }
 
-    // API для обновления ID игрока
+    // Страница поиска игроков
+    @GetMapping("/players/search")
+    fun showPlayerSearchPage(
+        @RequestParam(required = false) query: String?,
+        model: Model
+    ): String {
+        val players = if (!query.isNullOrBlank()) {
+            playerService.searchPlayers(query)
+        } else {
+            emptyList()
+        }
+
+        model.addAttribute("players", players)
+        model.addAttribute("query", query ?: "")
+        return "admin/player_search"
+    }
+
+    // API для обновления ID игрока с проверкой дубликатов
     @PostMapping("/players/{playerId}/ids")
+    @ResponseBody
     fun updatePlayerIds(
         @PathVariable playerId: UUID,
         @RequestParam(required = false) polemicaId: Long?,
         @RequestParam(required = false) gomafiaId: Long?
-    ): ResponseEntity<Player> {
+    ): ResponseEntity<Map<String, Any>> {
         return try {
-            val updatedPlayer = playerService.updatePlayerIds(playerId, polemicaId, gomafiaId)
-            ResponseEntity.ok(updatedPlayer)
+            // Проверяем на дубликаты
+            val duplicateCheck = playerService.checkForDuplicateIds(playerId, polemicaId, gomafiaId)
+
+            if (duplicateCheck.hasDuplicates) {
+                // Возвращаем информацию о дубликатах
+                val response = mutableMapOf<String, Any>(
+                    "status" to "duplicate_found",
+                    "hasDuplicates" to true
+                )
+
+                duplicateCheck.duplicatePolemicaPlayer?.let { player ->
+                    response["duplicatePolemicaPlayer"] = mapOf(
+                        "id" to player.id,
+                        "nickname" to player.nickname,
+                        "polemicaId" to player.polemicaId,
+                        "gomafiaId" to player.gomafiaId
+                    )
+                }
+
+                duplicateCheck.duplicateGomafiaPlayer?.let { player ->
+                    response["duplicateGomafiaPlayer"] = mapOf(
+                        "id" to player.id,
+                        "nickname" to player.nickname,
+                        "polemicaId" to player.polemicaId,
+                        "gomafiaId" to player.gomafiaId
+                    )
+                }
+
+                ResponseEntity.ok(response)
+            } else {
+                // Нет дубликатов, обновляем
+                val updatedPlayer = playerService.updatePlayerIds(playerId, polemicaId, gomafiaId)
+                ResponseEntity.ok(
+                    mapOf(
+                        "status" to "success",
+                        "player" to mapOf(
+                            "id" to updatedPlayer.id,
+                            "nickname" to updatedPlayer.nickname,
+                            "polemicaId" to updatedPlayer.polemicaId,
+                            "gomafiaId" to updatedPlayer.gomafiaId
+                        )
+                    )
+                )
+            }
         } catch (e: Exception) {
-            ResponseEntity.notFound().build()
+            ResponseEntity.badRequest().body(
+                mapOf(
+                    "status" to "error",
+                    "message" to e.message.toString()
+                )
+            )
+        }
+    }
+
+    // API для объединения профилей
+    @PostMapping("/players/{primaryId}/merge/{secondaryId}")
+    @ResponseBody
+    fun mergePlayers(
+        @PathVariable primaryId: UUID,
+        @PathVariable secondaryId: UUID
+    ): ResponseEntity<Map<String, Any>> {
+        return try {
+            val mergedPlayer = playerService.mergePlayers(primaryId, secondaryId)
+            ResponseEntity.ok(
+                mapOf(
+                    "status" to "success",
+                    "player" to mapOf(
+                        "id" to mergedPlayer.id,
+                        "nickname" to mergedPlayer.nickname,
+                        "polemicaId" to mergedPlayer.polemicaId,
+                        "gomafiaId" to mergedPlayer.gomafiaId
+                    )
+                )
+            )
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(
+                mapOf(
+                    "status" to "error",
+                    "message" to e.message.toString()
+                )
+            )
         }
     }
 

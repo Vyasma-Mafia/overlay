@@ -81,5 +81,48 @@
         </div>
     </div>
 </div>
+
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ ОБЪЕДИНЕНИЯ ПРОФИЛЕЙ -->
+<div class="modal fade" id="mergeProfilesModal" tabindex="-1" aria-labelledby="mergeProfilesModalLabel"
+        aria-hidden="true" th:fragment="merge-profiles-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mergeProfilesModalLabel">Обнаружены дубликаты профилей</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                    Найдены существующие профили с указанными ID. Выберите действие:
+                </div>
+
+                <div id="duplicateProfiles" class="row g-3">
+                    <!-- Здесь будут динамически добавлены карточки дубликатов -->
+                </div>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <h6>Выберите основной профиль для объединения:</h6>
+                    <div class="btn-group mt-3" role="group">
+                        <button type="button" class="btn btn-outline-primary" id="keepCurrentProfile">
+                            <i class="fa-solid fa-check me-2"></i>Оставить текущий
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="keepDuplicateProfile">
+                            <i class="fa-solid fa-arrow-right me-2"></i>Оставить найденный
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" id="confirmMergeButton" style="display: none;">
+                    <i class="fa-solid fa-code-merge me-2"></i>Объединить профили
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
