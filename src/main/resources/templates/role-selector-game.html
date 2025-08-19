@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Раздача ролей</title>
+    <link rel="stylesheet" href="/css/style-role-selector.css">
+</head>
+<body>
+<div class="container">
+    <div class="game-info">
+        <div class="game-title" id="game-title" th:text="${gameTitle}">Загрузка...</div>
+    </div>
+
+    <div class="timer" id="timer">00:00</div>
+
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="player-card-container">
+        <!-- Фото и ник игрока - всегда видимые, не переворачиваются -->
+        <div class="player-info-static">
+            <div class="player-photo" id="player-photo"></div>
+            <div class="player-nickname" id="player-nickname">Загрузка...</div>
+        </div>
+
+        <div class="player-card" id="player-card">
+            <div class="card-inner" id="card">
+                <div class="card-front">
+                    <div class="player-number" id="player-number">1</div>
+                    <div class="card-icon front-icon">❓</div>
+                    <div class="role-name">Нажмите, чтобы увидеть роль</div>
+                </div>
+                <div class="card-back" id="card-back">
+                    <div class="player-number" id="player-number-back">1</div>
+                    <div class="card-icon" id="role-icon"></div>
+                    <div class="role-name" id="role-name">Мирный житель</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn navigation" id="prev-btn" disabled>← Предыдущий</button>
+        <button class="btn navigation" id="next-btn" disabled>Следующий →</button>
+    </div>
+
+    <div class="controls" style="margin-top: 10px;">
+        <button class="btn reset" id="reset-btn">Перемешать роли</button>
+        <button class="btn primary" id="next-game-btn">Следующая игра</button>
+    </div>
+
+    <div class="controls" style="margin-top: 10px;" id="polemica-controls" th:if="${service == 'polemica'}">
+        <button class="btn export" id="export-btn">Экспорт в Polemica</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        // Получаем параметры из шаблона
+        let id = [[${id}]];
+        let tournamentId = [[${tournamentId}]];
+        let gameNum = [[${gameNum}]];
+        let tableNum = [[${tableNum}]];
+        let phase = [[${phase}]];
+        let service = [[${service}]];
+
+        // Получаем данные игроков из модели
+        let serverPlayers = /*[[${players}]]*/ [];
+
+        // Элементы DOM
+        const playerCardEl = document.getElementById('player-card');
+        const card = document.getElementById('card');
+        const cardBack = document.getElementById('card-back');
+        const roleIcon = document.getElementById('role-icon');
+        const roleName = document.getElementById('role-name');
+        const playerNumber = document.getElementById('player-number');
+        const playerNumberBack = document.getElementById('player-number-back');
+        const playerNickname = document.getElementById('player-nickname');
+        const playerPhoto = document.getElementById('player-photo');
+        const progressBar = document.getElementById('progress');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const nextGameBtn = document.getElementById('next-game-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const timerEl = document.getElementById('timer');
+
+        // Состояние игры
+        let players = [];
+        let currentPlayerIndex = 0;
+        let isCardFlipped = false;
+
+        // Переменные для секундомера
+        let timerInterval;
+        let timerStart;
+        let timerRunning = false;
+
+        // Переменные для отслеживания свайпов
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // Конфигурация ролей
+        const roleConfig = {
+            red: {name: 'Мирный житель'},
+            sher: {name: 'Шериф'},
+            black: {name: 'Мафия'},
+            don: {name: 'Дон мафии'}
+        };
+
+        function getRoles() {
+            // Создаем стандартный набор игроков
+            const roles = [
+                'red', 'red', 'red', 'red', 'red', 'red',
+                'sher',
+                'black', 'black',
+                'don'
+            ];
+
+            // Перемешивание ролей
+            for (let attempts = 0; attempts < 100; attempts++) {
+                for (let i = roles.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [roles[i], roles[j]] = [roles[j], roles[i]];
+                }
+            }
+            return roles;
+        }
+
+        // Инициализация игры
+        function initGame() {
+            let roles = getRoles();
+            players = serverPlayers.map((player, index) => ({
+                id: player.place || (index + 1),
+                nickname: player.nickname || `Игрок ${player.place || (index + 1)}`,
+                photoUrl: player.photoUrl || '/images/placeholder.png',
+                role: roles[index],
+                seen: false
+            }));
+
+            currentPlayerIndex = 0;
+            isCardFlipped = false;
+            resetTimer();
+            startTimer();
+            updateUI();
+        }
+
+        // Обновление интерфейса
+        function updateUI() {
+            if (players.length === 0) return;
+
+            const player = players[currentPlayerIndex];
+
+            // Обновление номера игрока
+            playerNumber.textContent = player.id;
+            playerNumberBack.textContent = player.id;
+
+            // Обновление ника игрока
+            playerNickname.textContent = player.nickname;
+
+            // Обновление фотографии игрока
+            if (player.photoUrl && player.photoUrl !== '/images/placeholder.png') {
+                playerPhoto.style.backgroundImage = `url("${player.photoUrl}")`;
+                playerPhoto.style.backgroundSize = 'cover';
+                playerPhoto.style.backgroundPosition = 'center';
+                playerPhoto.classList.add('has-photo');
+            } else {
+                playerPhoto.style.backgroundImage = 'none';
+                playerPhoto.classList.remove('has-photo');
+            }
+
+            // Обновление роли на обратной стороне карты
+            cardBack.className = 'card-back';
+            cardBack.classList.add(player.role);
+
+            // Обновление иконки
+            roleIcon.className = 'card-icon';
+            roleIcon.classList.add(player.role);
+
+            // Обновление имени роли
+            roleName.textContent = roleConfig[player.role].name;
+
+            // Обновляем состояние карты (перевернута или нет)
+            if (isCardFlipped) {
+                card.classList.add('flipped');
+            } else {
+                card.classList.remove('flipped');
+            }
+
+            // Обновление прогресс-бара
+            const progress = ((currentPlayerIndex + 1) / players.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Обновление кнопок
+            nextBtn.disabled = currentPlayerIndex >= players.length - 1;
+            prevBtn.disabled = currentPlayerIndex <= 0;
+        }
+
+        // Функции для секундомера
+        function startTimer() {
+            if (!timerRunning) {
+                timerStart = new Date().getTime();
+                timerRunning = true;
+                timerInterval = setInterval(updateTimer, 100);
+            }
+        }
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const elapsed = now - timerStart;
+
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+
+            timerEl.textContent =
+                (minutes < 10 ? '0' : '') + minutes + ':' +
+                (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerEl.textContent = '00:00';
+        }
+
+        // Обработка переворота карты
+        function toggleCard() {
+            isCardFlipped = !isCardFlipped;
+            if (isCardFlipped) {
+                card.classList.add('flipped');
+                players[currentPlayerIndex].seen = true;
+                nextBtn.disabled = currentPlayerIndex >= players.length - 1;
+                prevBtn.disabled = currentPlayerIndex <= 0;
+            } else {
+                card.classList.remove('flipped');
+            }
+        }
+
+        // Переход к следующему игроку
+        function nextPlayer() {
+            if (currentPlayerIndex < players.length - 1) {
+                playerCardEl.classList.add('slide-out-left');
+
+                playerCardEl.addEventListener('animationend', function handleSlideOut() {
+                    playerCardEl.removeEventListener('animationend', handleSlideOut);
+
+                    currentPlayerIndex++;
+                    isCardFlipped = false;
+                    resetTimer();
+                    startTimer();
+                    updateUI();
+
+                    playerCardEl.classList.remove('slide-out-left');
+                    playerCardEl.classList.add('slide-in-right');
+
+                    playerCardEl.addEventListener('animationend', function handleSlideIn() {
+                        playerCardEl.removeEventListener('animationend', handleSlideIn);
+                        playerCardEl.classList.remove('slide-in-right');
+                    }, {once: true});
+                }, {once: true});
+            } else {
+                alert('Все игроки увидели свои роли! Игра может начинаться.');
+            }
+        }
+
+        // Переход к предыдущему игроку
+        function prevPlayer() {
+            if (currentPlayerIndex > 0) {
+                playerCardEl.classList.add('slide-out-right');
+
+                playerCardEl.addEventListener('animationend', function handleSlideOut() {
+                    playerCardEl.removeEventListener('animationend', handleSlideOut);
+
+                    currentPlayerIndex--;
+                    isCardFlipped = false;
+                    resetTimer();
+                    startTimer();
+                    updateUI();
+
+                    playerCardEl.classList.remove('slide-out-right');
+                    playerCardEl.classList.add('slide-in-left');
+
+                    playerCardEl.addEventListener('animationend', function handleSlideIn() {
+                        playerCardEl.removeEventListener('animationend', handleSlideIn);
+                        playerCardEl.classList.remove('slide-in-left');
+                    }, {once: true});
+                }, {once: true});
+            }
+        }
+
+        // Обработка свайпа
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const minSwipeDistance = 50;
+
+            if (swipeDistance > minSwipeDistance) {
+                if (!prevBtn.disabled) {
+                    prevPlayer();
+                }
+            } else if (swipeDistance < -minSwipeDistance) {
+                if (!nextBtn.disabled) {
+                    nextPlayer();
+                }
+            }
+        }
+
+        // Функция для перехода к следующей игре
+        function goToNextGame() {
+            if (confirm('Перейти к следующей игре?')) {
+                fetch(`/${id}/next`, {
+                    method: 'POST'
+                }).then(response => {
+                    if (!response.ok) {
+                        alert('Ошибка при переходе к следующей игре');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Ошибка при переходе к следующей игре');
+                });
+            }
+        }
+
+        // Функция для экспорта ролей в Polemica
+        function exportToPolemica() {
+            if (confirm('Экспортировать роли в Polemica?')) {
+                const roles = {};
+                players.forEach(player => {
+                    roles[player.id] = player.role;
+                });
+
+                fetch(`/${id}/exportToPolemica`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(roles)
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Роли успешно экспортированы в Polemica!');
+                    } else {
+                        alert('Ошибка при экспорте ролей');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Ошибка при экспорте ролей');
+                });
+            }
+        }
+
+        // Функция для перемешивания ролей
+        function shuffleRoles() {
+            const roles = [
+                'red', 'red', 'red', 'red', 'red', 'red',
+                'sher',
+                'black', 'black',
+                'don'
+            ];
+
+            // Перемешивание ролей
+            for (let attempts = 0; attempts < 100; attempts++) {
+                for (let i = roles.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [roles[i], roles[j]] = [roles[j], roles[i]];
+                }
+            }
+
+            // Обновляем роли игроков
+            players.forEach((player, index) => {
+                if (index < roles.length) {
+                    player.role = roles[index];
+                    player.seen = false;
+                }
+            });
+
+            currentPlayerIndex = 0;
+            isCardFlipped = false;
+            resetTimer();
+            startTimer();
+            updateUI();
+        }
+
+        // Обработчики событий
+        playerCardEl.addEventListener('click', function (e) {
+            if (e.target.closest('.btn') === null) {
+                toggleCard();
+            }
+        });
+
+        playerCardEl.addEventListener('touchstart', function (e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        playerCardEl.addEventListener('touchend', function (e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        nextBtn.addEventListener('click', nextPlayer);
+        prevBtn.addEventListener('click', prevPlayer);
+        nextGameBtn.addEventListener('click', goToNextGame);
+
+        if (exportBtn) {
+            exportBtn.addEventListener('click', exportToPolemica);
+        }
+
+        resetBtn.addEventListener('click', function () {
+            if (confirm('Вы уверены, что хотите перемешать роли и начать заново?')) {
+                shuffleRoles();
+            }
+        });
+
+        // Инициализация
+        initGame();
+    });
+</script>
+</body>
+</html>
