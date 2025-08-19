@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бенчмарк распределения ролей в Мафии</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .controls h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+
+        .control-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-item label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .control-item input, .control-item select {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .control-item input:focus, .control-item select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results-header {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #28a745;
+        }
+
+        .results-header h3 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 4px solid #667eea;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .heatmap-container {
+            grid-column: 1 / -1;
+            margin-bottom: 30px;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: auto repeat(10, 1fr);
+            gap: 2px;
+            margin: 20px 0;
+        }
+
+        .heatmap-cell {
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 3px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heatmap-header {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .heatmap-role {
+            background: #34495e;
+            color: white;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        .statistical-tests {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .statistical-tests h4 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .test-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .test-result {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .export-section {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .export-section h4 {
+            color: #0c5460;
+            margin-bottom: 15px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-table th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .interpretation {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .interpretation h4 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+
+        .interpretation ul {
+            margin-left: 20px;
+        }
+
+        .interpretation li {
+            margin-bottom: 8px;
+            color: #155724;
+        }
+
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .control-group {
+                grid-template-columns: 1fr;
+            }
+
+            .heatmap {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎭 Бенчмарк распределения ролей в Мафии</h1>
+        <p>Статистический анализ равномерности распределения ролей по позициям игроков</p>
+    </div>
+
+    <div class="content">
+        <div class="controls">
+            <h3>⚙️ Настройки тестирования</h3>
+
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="iterations">Количество итераций:</label>
+                    <select id="iterations">
+                        <option value="10000">10,000 (быстро)</option>
+                        <option value="100000">100,000 (средне)</option>
+                        <option value="1000000" selected>1,000,000 (рекомендуется)</option>
+                        <option value="5000000">5,000,000 (медленно)</option>
+                        <option value="custom">Пользовательское значение</option>
+                    </select>
+                </div>
+
+                <div class="control-item" id="custom-iterations" style="display: none;">
+                    <label for="custom-value">Пользовательское количество:</label>
+                    <input type="number" id="custom-value" min="1000" max="10000000" value="1000000">
+                </div>
+
+                <div class="control-item">
+                    <label for="batch-size">Размер батча:</label>
+                    <select id="batch-size">
+                        <option value="1">1</option>
+                        <option value="10">10</option>
+                        <option value="1000">1,000</option>
+                        <option value="5000" selected>5,000</option>
+                        <option value="10000">10,000</option>
+                        <option value="50000">50,000</option>
+                    </select>
+                </div>
+
+                <div class="control-item">
+                    <label for="confidence-level">Уровень доверия:</label>
+                    <select id="confidence-level">
+                        <option value="0.90">90%</option>
+                        <option value="0.95" selected>95%</option>
+                        <option value="0.99">99%</option>
+                    </select>
+                </div>
+
+                <div class="control-item">
+                    <label for="simulation-mode">Режим симуляции:</label>
+                    <select id="simulation-mode">
+                        <option value="continuous">Непрерывный (быстрый)</option>
+                        <option value="realistic" selected>Реалистичный (как в игре)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" id="start-benchmark">🚀 Запустить бенчмарк</button>
+                <button class="btn btn-danger" id="stop-benchmark" disabled>⏹️ Остановить</button>
+                <button class="btn btn-secondary" id="reset-results">🔄 Сбросить результаты</button>
+            </div>
+        </div>
+
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">Подготовка к тестированию...</div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="results-header">
+                <h3>📊 Результаты анализа</h3>
+                <p id="results-summary">Анализ завершен успешно</p>
+            </div>
+
+            <div class="summary-stats" id="summary-stats">
+                <!-- Статистические карточки будут добавлены динамически -->
+            </div>
+
+            <div class="statistical-tests" id="statistical-tests">
+                <h4>📈 Статистические тесты</h4>
+                <div class="test-results" id="test-results">
+                    <!-- Результаты тестов будут добавлены динамически -->
+                </div>
+            </div>
+
+            <div class="heatmap-container chart-container">
+                <h4>🔥 Тепловая карта распределения ролей по позициям</h4>
+                <div class="heatmap" id="heatmap">
+                    <!-- Тепловая карта будет построена динамически -->
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-container">
+                    <h4>📊 Распределение по ролям</h4>
+                    <canvas id="roles-chart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h4>📈 Отклонения от ожидаемых значений</h4>
+                    <canvas id="deviations-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h4>📋 Детальная таблица результатов</h4>
+                <table class="data-table" id="results-table">
+                    <!-- Таблица будет заполнена динамически -->
+                </table>
+            </div>
+
+            <div class="interpretation" id="interpretation">
+                <h4>🔍 Интерпретация результатов</h4>
+                <div id="interpretation-content">
+                    <!-- Интерпретация будет добавлена динамически -->
+                </div>
+            </div>
+
+            <div class="export-section">
+                <h4>💾 Экспорт результатов</h4>
+                <button class="btn btn-secondary" id="export-csv">📄 Экспорт в CSV</button>
+                <button class="btn btn-secondary" id="export-json">📋 Экспорт в JSON</button>
+                <button class="btn btn-secondary" id="export-html">🌐 Экспорт отчета в HTML</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Глобальные переменные
+    let benchmarkRunning = false;
+    let shouldStop = false;
+    let currentResults = null;
+
+    // Конфигурация ролей (точная копия из оригинального файла)
+    const ROLES_CONFIG = {
+        red: {
+            name: 'Мирный житель',
+            count: 6,
+            color: '#28a745'
+        },
+        sher: {
+            name: 'Шериф',
+            count: 1,
+            color: '#007bff'
+        },
+        black: {
+            name: 'Мафия',
+            count: 2,
+            color: '#dc3545'
+        },
+        don: {
+            name: 'Дон мафии',
+            count: 1,
+            color: '#6f42c1'
+        }
+    };
+
+    const TOTAL_PLAYERS = 10;
+    const ROLE_NAMES = Object.keys(ROLES_CONFIG);
+
+    // Элементы DOM
+    const elements = {
+        iterations: document.getElementById('iterations'),
+        customIterations: document.getElementById('custom-iterations'),
+        customValue: document.getElementById('custom-value'),
+        batchSize: document.getElementById('batch-size'),
+        confidenceLevel: document.getElementById('confidence-level'),
+        simulationMode: document.getElementById('simulation-mode'),
+        startBtn: document.getElementById('start-benchmark'),
+        stopBtn: document.getElementById('stop-benchmark'),
+        resetBtn: document.getElementById('reset-results'),
+        progressContainer: document.getElementById('progress-container'),
+        progressFill: document.getElementById('progress-fill'),
+        progressText: document.getElementById('progress-text'),
+        results: document.getElementById('results'),
+        summaryStats: document.getElementById('summary-stats'),
+        statisticalTests: document.getElementById('statistical-tests'),
+        testResults: document.getElementById('test-results'),
+        heatmap: document.getElementById('heatmap'),
+        resultsTable: document.getElementById('results-table'),
+        interpretation: document.getElementById('interpretation-content'),
+        exportCsv: document.getElementById('export-csv'),
+        exportJson: document.getElementById('export-json'),
+        exportHtml: document.getElementById('export-html')
+    };
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', function () {
+        setupEventListeners();
+        updateCustomIterationsVisibility();
+    });
+
+    function setupEventListeners() {
+        elements.iterations.addEventListener('change', updateCustomIterationsVisibility);
+        elements.startBtn.addEventListener('click', startBenchmark);
+        elements.stopBtn.addEventListener('click', stopBenchmark);
+        elements.resetBtn.addEventListener('click', resetResults);
+        elements.exportCsv.addEventListener('click', exportToCsv);
+        elements.exportJson.addEventListener('click', exportToJson);
+        elements.exportHtml.addEventListener('click', exportToHtml);
+    }
+
+    function updateCustomIterationsVisibility() {
+        const isCustom = elements.iterations.value === 'custom';
+        elements.customIterations.style.display = isCustom ? 'block' : 'none';
+    }
+
+    // Алгоритм Fisher-Yates с поддержкой реалистичного режима
+    function shuffleRoles(useRealisticMode = false) {
+        const roles = [
+            'red', 'red', 'red', 'red', 'red', 'red',
+            'sher',
+            'black', 'black',
+            'don'
+        ];
+
+        // В реалистичном режиме имитируем новую сессию браузера
+        if (useRealisticMode) {
+            // Создаем новый "сид" на основе текущего времени и случайного числа
+            // Это имитирует поведение Math.random() при новой загрузке страницы
+            const seed = Date.now() + Math.random() * 1000000;
+
+            // Простой PRNG на основе сида для этой итерации
+            let randomState = seed % 2147483647;
+
+            function seededRandom() {
+                randomState = (randomState * 16807) % 2147483647;
+                return (randomState - 1) / 2147483646;
+            }
+
+            for (let attempt = 0; attempt < 100; attempt++) {
+
+                // Перемешивание Fisher-Yates с сидированным генератором
+                for (let i = roles.length - 1; i > 0; i--) {
+                    const j = Math.floor(seededRandom() * (i + 1));
+                    [roles[i], roles[j]] = [roles[j], roles[i]];
+                }
+            }
+
+        } else {
+            // Обычное перемешивание Fisher-Yates (непрерывный режим)
+            for (let i = roles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [roles[i], roles[j]] = [roles[j], roles[i]];
+            }
+        }
+
+        return roles;
+    }
+
+    // Основная функция бенчмарка
+    async function startBenchmark() {
+        if (benchmarkRunning) return;
+
+        benchmarkRunning = true;
+        shouldStop = false;
+
+        // Получение параметров
+        const iterations = getIterationsCount();
+        const batchSize = parseInt(elements.batchSize.value);
+        const confidenceLevel = parseFloat(elements.confidenceLevel.value);
+        const simulationMode = elements.simulationMode.value;
+        const useRealisticMode = simulationMode === 'realistic';
+
+        // Обновление UI
+        elements.startBtn.disabled = true;
+        elements.stopBtn.disabled = false;
+        elements.progressContainer.style.display = 'block';
+        elements.results.style.display = 'none';
+
+        // Инициализация матрицы результатов
+        const distributionMatrix = {};
+        ROLE_NAMES.forEach(role => {
+            distributionMatrix[role] = new Array(TOTAL_PLAYERS).fill(0);
+        });
+
+        let completedIterations = 0;
+        const startTime = Date.now();
+
+        try {
+            // Выполнение тестирования батчами
+            while (completedIterations < iterations && !shouldStop) {
+                const currentBatchSize = Math.min(batchSize, iterations - completedIterations);
+
+                // Выполнение батча
+                for (let i = 0; i < currentBatchSize; i++) {
+                    const shuffledRoles = shuffleRoles(useRealisticMode);
+                    shuffledRoles.forEach((role, position) => {
+                        distributionMatrix[role][position]++;
+                    });
+                }
+
+                completedIterations += currentBatchSize;
+
+                // Обновление прогресса
+                const progress = (completedIterations / iterations) * 100;
+                updateProgress(progress, completedIterations, iterations);
+
+                // Пауза для обновления UI
+                await new Promise(resolve => setTimeout(resolve, 1));
+            }
+
+            if (!shouldStop) {
+                const endTime = Date.now();
+                const executionTime = endTime - startTime;
+
+                // Анализ результатов
+                currentResults = analyzeResults(distributionMatrix, completedIterations, executionTime, confidenceLevel, simulationMode);
+
+                // Отображение результатов
+                displayResults(currentResults);
+            }
+
+        } catch (error) {
+            console.error('Ошибка при выполнении бенчмарка:', error);
+            alert('Произошла ошибка при выполнении бенчмарка: ' + error.message);
+        } finally {
+            // Сброс состояния
+            benchmarkRunning = false;
+            elements.startBtn.disabled = false;
+            elements.stopBtn.disabled = true;
+
+            if (shouldStop) {
+                elements.progressText.textContent = 'Тестирование остановлено пользователем';
+            }
+        }
+    }
+
+    function getIterationsCount() {
+        if (elements.iterations.value === 'custom') {
+            return parseInt(elements.customValue.value) || 1000000;
+        }
+        return parseInt(elements.iterations.value);
+    }
+
+    function updateProgress(percentage, completed, total) {
+        elements.progressFill.style.width = percentage + '%';
+        elements.progressText.textContent =
+            `Выполнено: ${completed.toLocaleString()} из ${total.toLocaleString()} итераций (${percentage.toFixed(1)}%)`;
+    }
+
+    function stopBenchmark() {
+        shouldStop = true;
+        elements.stopBtn.disabled = true;
+    }
+
+    function resetResults() {
+        elements.results.style.display = 'none';
+        elements.progressContainer.style.display = 'none';
+        currentResults = null;
+    }
+
+    // Анализ результатов
+    function analyzeResults(distributionMatrix, totalIterations, executionTime, confidenceLevel, simulationMode) {
+        const results = {
+            totalIterations,
+            executionTime,
+            confidenceLevel,
+            simulationMode,
+            distributionMatrix,
+            statistics: {},
+            chiSquareTests: {},
+            interpretation: []
+        };
+
+        // Расчет статистик для каждой роли
+        ROLE_NAMES.forEach(role => {
+            const expectedFrequency = (ROLES_CONFIG[role].count / TOTAL_PLAYERS) * totalIterations;
+            const observed = distributionMatrix[role];
+
+            // Базовые статистики
+            const mean = observed.reduce((sum, val) => sum + val, 0) / TOTAL_PLAYERS;
+            const variance = observed.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (TOTAL_PLAYERS - 1);
+            const stdDev = Math.sqrt(variance);
+
+            // Тест хи-квадрат
+            const chiSquare = observed.reduce((sum, obs) => {
+                return sum + Math.pow(obs - expectedFrequency, 2) / expectedFrequency;
+            }, 0);
+
+            const degreesOfFreedom = TOTAL_PLAYERS - 1;
+            const criticalValue = getCriticalValue(confidenceLevel, degreesOfFreedom);
+            const pValue = calculatePValue(chiSquare, degreesOfFreedom);
+
+            results.statistics[role] = {
+                expectedFrequency,
+                mean,
+                variance,
+                stdDev,
+                min: Math.min(...observed),
+                max: Math.max(...observed),
+                range: Math.max(...observed) - Math.min(...observed)
+            };
+
+            results.chiSquareTests[role] = {
+                chiSquare,
+                degreesOfFreedom,
+                criticalValue,
+                pValue,
+                isSignificant: chiSquare > criticalValue,
+                interpretation: interpretChiSquareTest(chiSquare, criticalValue, pValue, confidenceLevel)
+            };
+        });
+
+        // Общая интерпретация
+        results.interpretation = generateInterpretation(results);
+
+        return results;
+    }
+
+    // Критические значения хи-квадрат (приближенные)
+    function getCriticalValue(confidenceLevel, df) {
+        const criticalValues = {
+            0.90: [2.706, 4.605, 6.251, 7.779, 9.236, 10.645, 12.017, 13.362, 14.684, 15.987],
+            0.95: [3.841, 5.991, 7.815, 9.488, 11.070, 12.592, 14.067, 15.507, 16.919, 18.307],
+            0.99: [6.635, 9.210, 11.345, 13.277, 15.086, 16.812, 18.475, 20.090, 21.666, 23.209]
+        };
+
+        return criticalValues[confidenceLevel][Math.min(df - 1, 9)] ||
+            criticalValues[confidenceLevel][9] + (df - 10) * 1.5;
+    }
+
+    // Приближенный расчет p-value для хи-квадрат
+    function calculatePValue(chiSquare, df) {
+        // Упрощенная аппроксимация p-value
+        if (chiSquare < 1) return 0.9;
+        if (chiSquare < 3) return 0.5;
+        if (chiSquare < 6) return 0.2;
+        if (chiSquare < 10) return 0.05;
+        if (chiSquare < 15) return 0.01;
+        return 0.001;
+    }
+
+    function interpretChiSquareTest(chiSquare, criticalValue, pValue, confidenceLevel) {
+        if (chiSquare <= criticalValue) {
+            return `Распределение статистически не отличается от равномерного (p > ${1 - confidenceLevel})`;
+        } else {
+            return `Обнаружено статистически значимое отклонение от равномерного распределения (p < ${1 - confidenceLevel})`;
+        }
+    }
+
+    function generateInterpretation(results) {
+        const interpretation = [];
+        let hasSignificantDeviations = false;
+
+        // Добавляем информацию о режиме тестирования
+        const modeDescription = results.simulationMode === 'realistic'
+            ? 'реалистичном режиме (имитация новых сессий браузера)'
+            : 'непрерывном режиме (один поток случайных чисел)';
+
+        interpretation.push(`🔧 РЕЖИМ ТЕСТИРОВАНИЯ: Анализ проведен в ${modeDescription}`);
+
+        ROLE_NAMES.forEach(role => {
+            const test = results.chiSquareTests[role];
+            const stats = results.statistics[role];
+            const roleName = ROLES_CONFIG[role].name;
+
+            if (test.isSignificant) {
+                hasSignificantDeviations = true;
+                interpretation.push(`❌ ${roleName}: Обнаружено неравномерное распределение (χ² = ${test.chiSquare.toFixed(2)}, p < ${1 - results.confidenceLevel})`);
+            } else {
+                interpretation.push(`✅ ${roleName}: Распределение близко к равномерному (χ² = ${test.chiSquare.toFixed(2)}, p > ${1 - results.confidenceLevel})`);
+            }
+
+            // Анализ разброса
+            const coefficientOfVariation = (stats.stdDev / stats.mean) * 100;
+            if (coefficientOfVariation > 10) {
+                interpretation.push(`⚠️ ${roleName}: Высокий разброс значений (CV = ${coefficientOfVariation.toFixed(1)}%)`);
+            }
+        });
+
+        // Общий вывод с учетом режима
+        if (hasSignificantDeviations) {
+            if (results.simulationMode === 'realistic') {
+                interpretation.unshift('🔍 ОБЩИЙ ВЫВОД: Обнаружены статистически значимые отклонения от равномерного распределения в реалистичных условиях. Это может указывать на проблемы с инициализацией ГПСЧ или алгоритмом.');
+            } else {
+                interpretation.unshift('🔍 ОБЩИЙ ВЫВОД: Обнаружены статистически значимые отклонения от равномерного распределения. Алгоритм может иметь систематические смещения.');
+            }
+        } else {
+            if (results.simulationMode === 'realistic') {
+                interpretation.unshift('✅ ОБЩИЙ ВЫВОД: Алгоритм Fisher-Yates работает корректно даже в реалистичных условиях. Все роли распределяются равномерно по позициям.');
+            } else {
+                interpretation.unshift('✅ ОБЩИЙ ВЫВОД: Алгоритм Fisher-Yates работает корректно. Все роли распределяются равномерно по позициям.');
+            }
+        }
+
+        return interpretation;
+    }
+
+    // Отображение результатов
+    function displayResults(results) {
+        elements.results.style.display = 'block';
+
+        // Обновление заголовка результатов
+        document.getElementById('results-summary').textContent =
+            `Проанализировано ${results.totalIterations.toLocaleString()} итераций за ${(results.executionTime / 1000).toFixed(1)} секунд`;
+
+        // Отображение сводной статистики
+        displaySummaryStats(results);
+
+        // Отображение статистических тестов
+        displayStatisticalTests(results);
+
+        // Построение тепловой карты
+        buildHeatmap(results);
+
+        // Построение графиков
+        buildCharts(results);
+
+        // Построение таблицы
+        buildResultsTable(results);
+
+        // Отображение интерпретации
+        displayInterpretation(results);
+    }
+
+    function displaySummaryStats(results) {
+        elements.summaryStats.innerHTML = '';
+
+        const cards = [
+            {
+                value: results.totalIterations.toLocaleString(),
+                label: 'Итераций выполнено'
+            },
+            {
+                value: (results.executionTime / 1000).toFixed(1) + 's',
+                label: 'Время выполнения'
+            },
+            {
+                value: Math.round(results.totalIterations / (results.executionTime / 1000)).toLocaleString(),
+                label: 'Итераций в секунду'
+            },
+            {
+                value: results.confidenceLevel * 100 + '%',
+                label: 'Уровень доверия'
+            }
+        ];
+
+        cards.forEach(card => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'stat-card';
+            cardElement.innerHTML = `
+                    <div class="stat-value">${card.value}</div>
+                    <div class="stat-label">${card.label}</div>
+                `;
+            elements.summaryStats.appendChild(cardElement);
+        });
+    }
+
+    function displayStatisticalTests(results) {
+        elements.testResults.innerHTML = '';
+
+        ROLE_NAMES.forEach(role => {
+            const test = results.chiSquareTests[role];
+            const roleName = ROLES_CONFIG[role].name;
+
+            const testElement = document.createElement('div');
+            testElement.className = 'test-result';
+            testElement.innerHTML = `
+                    <h5>${roleName}</h5>
+                    <p><strong>χ² статистика:</strong> ${test.chiSquare.toFixed(3)}</p>
+                    <p><strong>Критическое значение:</strong> ${test.criticalValue.toFixed(3)}</p>
+                    <p><strong>P-значение:</strong> ${test.pValue < 0.001 ? '< 0.001' : test.pValue.toFixed(3)}</p>
+                    <p><strong>Результат:</strong> ${test.isSignificant ? '❌ Значимое отклонение' : '✅ Равномерное распределение'}</p>
+                    <p><em>${test.interpretation}</em></p>
+                `;
+            elements.testResults.appendChild(testElement);
+        });
+    }
+
+    function buildHeatmap(results) {
+        elements.heatmap.innerHTML = '';
+
+        // Заголовок с номерами позиций
+        const headerCell = document.createElement('div');
+        headerCell.className = 'heatmap-cell heatmap-header';
+        headerCell.textContent = 'Роль \\ Позиция';
+        elements.heatmap.appendChild(headerCell);
+
+        for (let pos = 1; pos <= TOTAL_PLAYERS; pos++) {
+            const posCell = document.createElement('div');
+            posCell.className = 'heatmap-cell heatmap-header';
+            posCell.textContent = pos.toString();
+            elements.heatmap.appendChild(posCell);
+        }
+
+        // Строки для каждой роли
+        ROLE_NAMES.forEach(role => {
+            const roleName = ROLES_CONFIG[role].name;
+            const roleColor = ROLES_CONFIG[role].color;
+            const distribution = results.distributionMatrix[role];
+            const expectedValue = results.statistics[role].expectedFrequency;
+
+            // Заголовок роли
+            const roleCell = document.createElement('div');
+            roleCell.className = 'heatmap-cell heatmap-role';
+            roleCell.textContent = roleName;
+            roleCell.style.backgroundColor = roleColor;
+            elements.heatmap.appendChild(roleCell);
+
+            // Ячейки с данными
+            distribution.forEach((count, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+
+                const deviation = ((count - expectedValue) / expectedValue) * 100;
+                const absDeviation = Math.abs(deviation);
+
+                // Цветовое кодирование на основе отклонения
+                let backgroundColor;
+                if (absDeviation < 2) {
+                    backgroundColor = '#e8f5e9'; // Зеленый - норма
+                } else if (absDeviation < 5) {
+                    backgroundColor = '#fff3e0'; // Оранжевый - небольшое отклонение
+                } else {
+                    backgroundColor = '#ffebee'; // Красный - значительное отклонение
+                }
+
+                cell.style.backgroundColor = backgroundColor;
+                cell.innerHTML = `
+                        <div style="font-weight: bold;">${count}</div>
+                        <div style="font-size: 0.8em; color: ${deviation > 0 ? '#d32f2f' : '#1976d2'};">
+                            ${deviation > 0 ? '+' : ''}${deviation.toFixed(1)}%
+                        </div>
+                    `;
+
+                elements.heatmap.appendChild(cell);
+            });
+        });
+    }
+
+    function buildCharts(results) {
+        buildRolesChart(results);
+        buildDeviationsChart(results);
+    }
+
+    function buildRolesChart(results) {
+        const ctx = document.getElementById('roles-chart').getContext('2d');
+
+        const datasets = ROLE_NAMES.map(role => {
+            const roleName = ROLES_CONFIG[role].name;
+            const roleColor = ROLES_CONFIG[role].color;
+            const distribution = results.distributionMatrix[role];
+
+            return {
+                label: roleName,
+                data: distribution,
+                backgroundColor: roleColor + '80',
+                borderColor: roleColor,
+                borderWidth: 2
+            };
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: TOTAL_PLAYERS}, (_, i) => `Позиция ${i + 1}`),
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Количество выпадений'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Позиция игрока'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function (context) {
+                                const role = ROLE_NAMES[context.datasetIndex];
+                                const expected = results.statistics[role].expectedFrequency;
+                                const actual = context.parsed.y;
+                                const deviation = ((actual - expected) / expected * 100).toFixed(1);
+                                return `Ожидалось: ${expected.toFixed(0)}, Отклонение: ${deviation}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function buildDeviationsChart(results) {
+        const ctx = document.getElementById('deviations-chart').getContext('2d');
+
+        const datasets = ROLE_NAMES.map(role => {
+            const roleName = ROLES_CONFIG[role].name;
+            const roleColor = ROLES_CONFIG[role].color;
+            const distribution = results.distributionMatrix[role];
+            const expected = results.statistics[role].expectedFrequency;
+
+            const deviations = distribution.map(actual =>
+                ((actual - expected) / expected * 100)
+            );
+
+            return {
+                label: roleName,
+                data: deviations,
+                backgroundColor: roleColor + '80',
+                borderColor: roleColor,
+                borderWidth: 2
+            };
+        });
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: TOTAL_PLAYERS}, (_, i) => `Позиция ${i + 1}`),
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Отклонение от ожидаемого (%)'
+                        },
+                        grid: {
+                            color: function (context) {
+                                if (context.tick.value === 0) {
+                                    return '#000000';
+                                }
+                                return '#e0e0e0';
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Позиция игрока'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    }
+
+    function buildResultsTable(results) {
+        let tableHTML = `
+                <thead>
+                    <tr>
+                        <th>Роль</th>
+                        <th>Ожидаемое значение</th>
+                        <th>Среднее</th>
+                        <th>Стд. отклонение</th>
+                        <th>Мин</th>
+                        <th>Макс</th>
+                        <th>Размах</th>
+                        <th>χ² статистика</th>
+                        <th>P-значение</th>
+                        <th>Результат</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+        ROLE_NAMES.forEach(role => {
+            const roleName = ROLES_CONFIG[role].name;
+            const stats = results.statistics[role];
+            const test = results.chiSquareTests[role];
+
+            tableHTML += `
+                    <tr>
+                        <td style="background-color: ${ROLES_CONFIG[role].color}20; font-weight: bold;">${roleName}</td>
+                        <td>${stats.expectedFrequency.toFixed(0)}</td>
+                        <td>${stats.mean.toFixed(1)}</td>
+                        <td>${stats.stdDev.toFixed(1)}</td>
+                        <td>${stats.min}</td>
+                        <td>${stats.max}</td>
+                        <td>${stats.range}</td>
+                        <td>${test.chiSquare.toFixed(3)}</td>
+                        <td>${test.pValue < 0.001 ? '< 0.001' : test.pValue.toFixed(3)}</td>
+                        <td>${test.isSignificant ? '❌ Отклонение' : '✅ Норма'}</td>
+                    </tr>
+                `;
+        });
+
+        tableHTML += '</tbody>';
+        elements.resultsTable.innerHTML = tableHTML;
+    }
+
+    function displayInterpretation(results) {
+        const interpretationHTML = `
+                <ul>
+                    ${results.interpretation.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                
+                <h5 style="margin-top: 20px;">📚 Методология:</h5>
+                <ul>
+                    <li><strong>Тест хи-квадрат:</strong> Проверяет гипотезу о равномерном распределении ролей по позициям</li>
+                    <li><strong>Уровень значимости:</strong> ${(1 - results.confidenceLevel) * 100}% (α = ${1 - results.confidenceLevel})</li>
+                    <li><strong>Степени свободы:</strong> ${TOTAL_PLAYERS - 1} для каждой роли</li>
+                    <li><strong>Ожидаемая частота:</strong> Рассчитывается как (количество ролей / общее количество позиций) × общее количество итераций</li>
+                </ul>
+                
+                <h5 style="margin-top: 20px;">🎯 Рекомендации:</h5>
+                <ul>
+                    <li>Если обнаружены значимые отклонения, рекомендуется проверить реализацию алгоритма Fisher-Yates</li>
+                    <li>Небольшие отклонения (< 5%) могут быть случайными и не требуют вмешательства</li>
+                    <li>Для более точных результатов увеличьте количество итераций до 5-10 миллионов</li>
+                    <li>Повторите тест несколько раз для подтверждения результатов</li>
+                </ul>
+            `;
+
+        elements.interpretation.innerHTML = interpretationHTML;
+    }
+
+    // Функции экспорта
+    function exportToCsv() {
+        if (!currentResults) {
+            alert('Нет данных для экспорта. Сначала запустите бенчмарк.');
+            return;
+        }
+
+        let csvContent = 'Роль,Позиция,Количество,Ожидаемое,Отклонение_%\n';
+
+        ROLE_NAMES.forEach(role => {
+            const roleName = ROLES_CONFIG[role].name;
+            const distribution = currentResults.distributionMatrix[role];
+            const expected = currentResults.statistics[role].expectedFrequency;
+
+            distribution.forEach((count, position) => {
+                const deviation = ((count - expected) / expected * 100).toFixed(2);
+                csvContent += `"${roleName}",${position + 1},${count},${expected.toFixed(0)},${deviation}\n`;
+            });
+        });
+
+        downloadFile(csvContent, 'role-distribution-benchmark.csv', 'text/csv');
+    }
+
+    function exportToJson() {
+        if (!currentResults) {
+            alert('Нет данных для экспорта. Сначала запустите бенчмарк.');
+            return;
+        }
+
+        const exportData = {
+            metadata: {
+                timestamp: new Date().toISOString(),
+                totalIterations: currentResults.totalIterations,
+                executionTime: currentResults.executionTime,
+                confidenceLevel: currentResults.confidenceLevel
+            },
+            distributionMatrix: currentResults.distributionMatrix,
+            statistics: currentResults.statistics,
+            chiSquareTests: currentResults.chiSquareTests,
+            interpretation: currentResults.interpretation
+        };
+
+        const jsonContent = JSON.stringify(exportData, null, 2);
+        downloadFile(jsonContent, 'role-distribution-benchmark.json', 'application/json');
+    }
+
+    function exportToHtml() {
+        if (!currentResults) {
+            alert('Нет данных для экспорта. Сначала запустите бенчмарк.');
+            return;
+        }
+
+        const reportHTML = generateHtmlReport(currentResults);
+        downloadFile(reportHTML, 'role-distribution-report.html', 'text/html');
+    }
+
+    function generateHtmlReport(results) {
+        return `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет: Анализ распределения ролей в Мафии</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .summary { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th, .results-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .results-table th { background: #f2f2f2; }
+        .interpretation { background: #e8f5e8; padding: 20px; border-radius: 5px; margin-top: 30px; }
+        .significant { color: #d32f2f; font-weight: bold; }
+        .normal { color: #388e3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎭 Отчет: Анализ распределения ролей в Мафии</h1>
+        <p>Дата создания: ${new Date().toLocaleString('ru-RU')}</p>
+    </div>
+    
+    <div class="summary">
+        <h2>📊 Сводка</h2>
+        <p><strong>Количество итераций:</strong> ${results.totalIterations.toLocaleString()}</p>
+        <p><strong>Время выполнения:</strong> ${(results.executionTime / 1000).toFixed(1)} секунд</p>
+        <p><strong>Уровень доверия:</strong> ${results.confidenceLevel * 100}%</p>
+        <p><strong>Итераций в секунду:</strong> ${Math.round(results.totalIterations / (results.executionTime / 1000))
+            .toLocaleString()}</p>
+    </div>
+    
+    <h2>📈 Результаты статистических тестов</h2>
+    <table class="results-table">
+        <thead>
+            <tr>
+                <th>Роль</th>
+                <th>χ² статистика</th>
+                <th>P-значение</th>
+                <th>Результат</th>
+                <th>Интерпретация</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${ROLE_NAMES.map(role => {
+            const roleName = ROLES_CONFIG[role].name;
+            const test = results.chiSquareTests[role];
+            return `
+                    <tr>
+                        <td><strong>${roleName}</strong></td>
+                        <td>${test.chiSquare.toFixed(3)}</td>
+                        <td>${test.pValue < 0.001 ? '< 0.001' : test.pValue.toFixed(3)}</td>
+                        <td class="${test.isSignificant ? 'significant' : 'normal'}">
+                            ${test.isSignificant ? '❌ Отклонение' : '✅ Норма'}
+                        </td>
+                        <td>${test.interpretation}</td>
+                    </tr>
+                `;
+        }).join('')}
+        </tbody>
+    </table>
+    
+    <div class="interpretation">
+        <h2>🔍 Интерпретация результатов</h2>
+        <ul>
+            ${results.interpretation.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+    </div>
+</body>
+</html>
+            `;
+    }
+
+    function downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], {type: mimeType});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+</script>
+</body>
+</html>

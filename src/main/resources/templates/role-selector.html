@@ -98,9 +98,11 @@
             ];
 
             // Перемешивание ролей
-            for (let i = roles.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [roles[i], roles[j]] = [roles[j], roles[i]];
+            for (let attempts = 0; attempts < 100; attempts++) {
+                for (let i = roles.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [roles[i], roles[j]] = [roles[j], roles[i]];
+                }
             }
 
             // Создание игроков с распределенными ролями
