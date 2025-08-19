@@ -213,6 +213,7 @@ class PhotoAdminController(
         @RequestPart(value = "photoType", required = false) photoType: String?,
         @RequestPart(value = "tournamentType", required = false) tournamentType: String?,
         @RequestPart(value = "tournamentId", required = false) tournamentId: String?,
+        @RequestPart(value = "saveAsMain", required = false) saveAsMain: String?,
         @RequestPart("photo") photoFile: MultipartFile
     ): ResponseEntity<Player> {
         // Проверка на пустой файл
@@ -228,7 +229,8 @@ class PhotoAdminController(
                     photoFile,
                     photoType?.let { PhotoType.valueOf(it) },
                     tournamentType?.let { GameType.valueOf(it) },
-                    tournamentId?.toLongOrNull()
+                    tournamentId?.toLongOrNull(),
+                    saveAsMain?.toBoolean() ?: false
                 )
             }
             return ResponseEntity.ok(updatedPlayer)

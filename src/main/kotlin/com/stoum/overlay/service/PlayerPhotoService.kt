@@ -1,9 +1,6 @@
 package com.stoum.overlay.service
 
 import aws.sdk.kotlin.services.s3.S3Client
-import aws.sdk.kotlin.services.s3.model.PutObjectRequest
-import aws.smithy.kotlin.runtime.content.ByteStream
-import aws.smithy.kotlin.runtime.content.fromInputStream
 import com.stoum.overlay.entity.Player
 import com.stoum.overlay.entity.PlayerPhoto
 import com.stoum.overlay.entity.enums.GameType
@@ -109,113 +106,84 @@ class PlayerPhotoService(
         photoFile: MultipartFile,
         photoType: PhotoType?,
         tournamentType: GameType?,
-        tournamentId: Long?
-    ): Player = withContext(Dispatchers.IO) {
-        // 1. Находим игрока или выбрасываем исключение
-        val player = playerRepository.findById(playerId)
-            .orElseThrow { PlayerNotFoundException("Player with id $playerId not found") } // Используйте свое исключение
+        tournamentId: Long?,
+        saveAsMain: Boolean
+    ): Player {
+        val finalPhotoType = photoType ?: PhotoType.MAIN
+        return withContext(Dispatchers.IO) {
+            // 1. Находим игрока или выбрасываем исключение
+            val player = playerRepository.findById(playerId)
+                .orElseThrow { PlayerNotFoundException("Player with id $playerId not found") } // Используйте свое исключение
 
-        // 2. Генерируем уникальное имя для файла
+            // 2. Определяем, как сохранять фото на основе флага saveAsMain
+            val containNoTournamentPhoto = player.playerPhotos.any {
+                it.tournamentType == null && it.tournamentId == null && it.type == finalPhotoType && !it.deleted
+            }
+            val (finalTournamentType, finalTournamentId) = if (saveAsMain && !containNoTournamentPhoto) {
+                null to null
+            } else {
+                // Иначе сохраняем с указанными параметрами турнира
+                tournamentType to tournamentId
+            }
 
-        val newPlayerPhoto = playerPhotoRepository.save(
-            PlayerPhoto(
-                id = null,
-                url = DEFAULT_PHOTO_URL,
-                type = photoType ?: PhotoType.MAIN,
-                tournamentId = tournamentId,
-                tournamentType = tournamentType,
-                deleted = false
-            )
-        )
-
-        val photoId = newPlayerPhoto.id
-        val extension = StringUtils.getFilenameExtension(photoFile.originalFilename)
-        val objectKey = "$photoId"
-
-        // 3. Загружаем файл в Object Storage
-        try {
-
-            val putObjectRequest = PutObjectRequest {
-                bucket = bucketName
-                key = objectKey
-                body = ByteStream.fromInputStream(photoFile.inputStream)
-                contentType = extension
-                contentLength = photoFile.size
-                metadata = mapOf(
-                    "playerId" to playerId.toString(),
-                    "photoType" to photoType.toString(),
-                    "tournamentId" to tournamentId.toString(),
-                    "tournamentType" to tournamentType.toString(),
+            // 3. Генерируем уникальное имя для файла
+            val newPlayerPhoto = playerPhotoRepository.save(
+                PlayerPhoto(
+                    id = null,
+                    url = DEFAULT_PHOTO_URL,
+                    type = finalPhotoType,
+                    tournamentId = finalTournamentId,
+                    tournamentType = finalTournamentType,
+                    deleted = false
                 )
-            }
-            s3TransferManager.upload(UploadRequest.builder()
-                .putObjectRequest {
-                    it.bucket(bucketName)
-                        .key(objectKey)
-                        .contentType(extension)
-                        .contentLength(photoFile.size)
-                        .metadata(
-                            mapOf(
-                                "playerId" to playerId.toString(),
-                                "photoType" to photoType.toString(),
-                                "tournamentId" to tournamentId.toString(),
-                                "tournamentType" to tournamentType.toString(),
+            )
+
+            val photoId = newPlayerPhoto.id
+            val extension = StringUtils.getFilenameExtension(photoFile.originalFilename)
+            val objectKey = "$photoId"
+
+            // 3. Загружаем файл в Object Storage
+            try {
+                s3TransferManager.upload(UploadRequest.builder()
+                    .putObjectRequest {
+                        it.bucket(bucketName)
+                            .key(objectKey)
+                            .contentType(extension)
+                            .contentLength(photoFile.size)
+                            .metadata(
+                                mapOf(
+                                    "playerId" to playerId.toString(),
+                                    "photoType" to photoType.toString(),
+                                    "tournamentId" to tournamentId.toString(),
+                                    "tournamentType" to tournamentType.toString(),
+                                )
                             )
-                        )
-                }
-                .requestBody(AsyncRequestBody.fromBytes(photoFile.inputStream.readAllBytes()))
-                .build())
-                .completionFuture().join()
-
-            // objectStorage.putObject(putObjectRequest)
-            // val upload = objectStorage.createMultipartUpload(CreateMultipartUploadRequest {
-            //     bucket = bucketName
-            //     key = objectKey
-            //     contentType = extension
-            //     metadata = mapOf(
-            //         "playerId" to playerId.toString(),
-            //         "photoType" to photoType.toString(),
-            //         "tournamentId" to tournamentId.toString(),
-            //         "tournamentType" to tournamentType.toString(),
-            //     )
-            // })
-            // val bytes = photoFile.inputStream.readAllBytes()
-            // objectStorage.uploadPart(
-            //     UploadPartRequest {
-            //         bucket = bucketName
-            //         key = objectKey
-            //         partNumber = 1
-            //         uploadId = upload.uploadId
-            //         body = ByteStream.fromBytes(bytes)
-            //         contentLength = bytes.size.toLong()
-            //     }
-            // )
-            // objectStorage.completeMultipartUpload(CompleteMultipartUploadRequest {
-            //     bucket = bucketName
-            //     key = objectKey
-            //     uploadId = upload.uploadId
-            // })
-        } catch (e: Exception) {
-            // Если загрузка не удалась, транзакция откатится, и данные в БД не сохранятся
-            throw S3UploadException("Failed to upload photo to S3", e) // Ваше кастомное исключение
-        }
-
-        // 4. Создаем запись о фото в БД
-        val photoUrl = "$baseUrl/$bucketName/$objectKey"
-        newPlayerPhoto.url = photoUrl
-
-        player.playerPhotos
-            .filter {
-                it.tournamentType == newPlayerPhoto.tournamentType
-                    && it.tournamentId == newPlayerPhoto.tournamentId
-                    && it.type == newPlayerPhoto.type
+                    }
+                    .requestBody(AsyncRequestBody.fromBytes(photoFile.inputStream.readAllBytes()))
+                    .build())
+                    .completionFuture().join()
+            } catch (e: Exception) {
+                // Если загрузка не удалась, транзакция откатится, и данные в БД не сохранятся
+                throw S3UploadException("Failed to upload photo to S3", e) // Ваше кастомное исключение
             }
-            .forEach { it.deleted = true }
 
-        player.playerPhotos.add(newPlayerPhoto)
+            // 4. Создаем запись о фото в БД
+            val photoUrl = "$baseUrl/$bucketName/$objectKey"
+            newPlayerPhoto.url = photoUrl
 
-        // 5. Сохраняем обновленную сущность игрока
-        return@withContext playerRepository.save(player)
+            player.playerPhotos
+                .filter {
+                    it.tournamentType == finalTournamentType
+                        && it.tournamentId == finalTournamentId
+                        && it.type == newPlayerPhoto.type
+                }
+                .forEach { it.deleted = true }
+
+            player.playerPhotos.add(newPlayerPhoto)
+
+            // 5. Сохраняем обновленную сущность игрока
+            return@withContext playerRepository.save(player)
+        }
     }
 
     private fun roleToPhotoType(role: String?): PhotoType = when (role) {

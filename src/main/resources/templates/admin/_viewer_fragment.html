@@ -116,12 +116,14 @@
             .querySelector('.role-indicator.active');
         const photoType = activeIndicator ? activeIndicator.dataset.photoType : 'MAIN';
 
+
         // Создаем FormData
         const formData = new FormData();
         formData.append('photo', file);
         formData.append('photoType', photoType);
         if (tournamentType) formData.append('tournamentType', tournamentType);
         if (tournamentId) formData.append('tournamentId', tournamentId);
+        formData.append('saveAsMain', 'true');
 
         // Отправляем запрос (как и раньше, но с новыми данными)
         fetch(`/admin/photos/players/${playerId}/photos`, {
