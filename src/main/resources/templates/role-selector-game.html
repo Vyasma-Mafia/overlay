@@ -136,7 +136,8 @@
                 nickname: player.nickname || `Игрок ${player.place || (index + 1)}`,
                 photoUrl: player.photoUrl || '/images/placeholder.png',
                 role: roles[index],
-                seen: false
+                seen: false,
+                cardFlipped: false
             }));
 
             currentPlayerIndex = 0;
@@ -182,10 +183,14 @@
             roleName.textContent = roleConfig[player.role].name;
 
             // Обновляем состояние карты (перевернута или нет)
+            // Если текущая карта была открыта, то и следующая должна быть открыта
             if (isCardFlipped) {
                 card.classList.add('flipped');
+                player.cardFlipped = true;
+                player.seen = true;
             } else {
                 card.classList.remove('flipped');
+                player.cardFlipped = false;
             }
 
             // Обновление прогресс-бара
@@ -227,6 +232,7 @@
         // Обработка переворота карты
         function toggleCard() {
             isCardFlipped = !isCardFlipped;
+            players[currentPlayerIndex].cardFlipped = isCardFlipped;
             if (isCardFlipped) {
                 card.classList.add('flipped');
                 players[currentPlayerIndex].seen = true;
@@ -246,7 +252,6 @@
                     playerCardEl.removeEventListener('animationend', handleSlideOut);
 
                     currentPlayerIndex++;
-                    isCardFlipped = false;
                     resetTimer();
                     startTimer();
                     updateUI();
@@ -273,7 +278,6 @@
                     playerCardEl.removeEventListener('animationend', handleSlideOut);
 
                     currentPlayerIndex--;
-                    isCardFlipped = false;
                     resetTimer();
                     startTimer();
                     updateUI();
@@ -370,6 +374,7 @@
                 if (index < roles.length) {
                     player.role = roles[index];
                     player.seen = false;
+                    player.cardFlipped = false;
                 }
             });
 
