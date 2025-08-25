@@ -413,6 +413,9 @@
             }
             playerElement.querySelectorAll('.photo').forEach((el) => {
                     let imageUrl = playerInfo.photoUrl//`/content/photo/${playerInfo.nickname}.png`
+                if (playerInfo.nickname === 'Велосипедостроитель' && playerInfo.status) {
+                    imageUrl = `https://storage.yandexcloud.net/random/generated-image__5_-removebg-preview.png`;
+                }
                     el.style.backgroundImage = `url("${imageUrl}")`
                 }
             );
