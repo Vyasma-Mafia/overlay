@@ -58,6 +58,8 @@
 
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM загружен, инициализация роль-селектора...');
+        
         // Получаем параметры из шаблона
         let id = [[${id}]];
         let tournamentId = [[${tournamentId}]];
@@ -66,8 +68,18 @@
         let phase = [[${phase}]];
         let service = [[${service}]];
 
+        console.log('Параметры игры:', {
+            id,
+            tournamentId,
+            gameNum,
+            tableNum,
+            phase,
+            service
+        });
+
         // Получаем данные игроков из модели
         let serverPlayers = /*[[${players}]]*/ [];
+        console.log('Данные игроков с сервера:', serverPlayers);
 
         // Элементы DOM
         const playerCardEl = document.getElementById('player-card');
@@ -86,6 +98,12 @@
         const nextGameBtn = document.getElementById('next-game-btn');
         const exportBtn = document.getElementById('export-btn');
         const timerEl = document.getElementById('timer');
+
+        console.log('Элементы DOM найдены:', {
+            resetBtn: !!resetBtn,
+            nextGameBtn: !!nextGameBtn,
+            exportBtn: !!exportBtn
+        });
 
         // Состояние игры
         let players = [];
@@ -110,13 +128,38 @@
         };
 
         function getRoles() {
-            // Создаем стандартный набор игроков
-            const roles = [
-                'red', 'red', 'red', 'red', 'red', 'red',
-                'sher',
-                'black', 'black',
-                'don'
-            ];
+            const playerCount = serverPlayers.length;
+            console.log('Создание ролей для', playerCount, 'игроков');
+
+            let roles = [];
+
+            if (playerCount === 10) {
+                // Стандартная игра на 10 игроков
+                roles = [
+                    'red', 'red', 'red', 'red', 'red', 'red',
+                    'sher',
+                    'black', 'black',
+                    'don'
+                ];
+            } else {
+                // Адаптируем под количество игроков
+                const mafiaCount = Math.floor(playerCount / 3);
+                const sheriffCount = 1;
+                const redCount = playerCount - mafiaCount - sheriffCount;
+
+                roles = [];
+                // Добавляем мирных
+                for (let i = 0; i < redCount; i++) {
+                    roles.push('red');
+                }
+                // Добавляем шерифа
+                roles.push('sher');
+                // Добавляем мафию (дон + обычная мафия)
+                roles.push('don');
+                for (let i = 1; i < mafiaCount; i++) {
+                    roles.push('black');
+                }
+            }
 
             // Перемешивание ролей
             for (let attempts = 0; attempts < 100; attempts++) {
@@ -125,6 +168,8 @@
                     [roles[i], roles[j]] = [roles[j], roles[i]];
                 }
             }
+
+            console.log('Созданные роли:', roles);
             return roles;
         }
 
@@ -311,18 +356,92 @@
 
         // Функция для перехода к следующей игре
         function goToNextGame() {
-            if (confirm('Перейти к следующей игре?')) {
-                fetch(`/${id}/next`, {
-                    method: 'POST'
-                }).then(response => {
-                    if (!response.ok) {
-                        alert('Ошибка при переходе к следующей игре');
+            console.log('Функция goToNextGame() вызвана');
+            console.log('Кнопка "Следующая игра" нажата');
+
+            try {
+                // Проверяем, поддерживается ли confirm
+                if (typeof confirm === 'function') {
+                    if (confirm('Перейти к следующей игре?')) {
+                        console.log('Пользователь подтвердил переход к следующей игре');
+                        executeNextGame();
+                    } else {
+                        console.log('Пользователь отменил переход к следующей игре');
                     }
-                }).catch(error => {
-                    console.error('Error:', error);
-                    alert('Ошибка при переходе к следующей игре');
-                });
+                } else {
+                    console.error('confirm() не поддерживается, выполняем без подтверждения');
+                    executeNextGame();
+                }
+            } catch (error) {
+                console.error('Ошибка при вызове confirm():', error);
+                executeNextGame();
             }
+        }
+
+        // Отдельная функция для выполнения перехода к следующей игре
+        function executeNextGame() {
+            console.log('Выполнение перехода к следующей игре:', service, tournamentId, phase, tableNum, gameNum);
+
+            const nextGameUrl = `/${service}/tournaments/${tournamentId}/phases/${phase}/tables/${tableNum}/games/${gameNum}/nextgame`;
+            console.log('URL для запроса:', nextGameUrl);
+
+            fetch(nextGameUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            }).then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    try {
+                        if (typeof alert === 'function') {
+                            alert(data.message);
+                        } else {
+                            console.log('Alert не поддерживается, сообщение:', data.message);
+                        }
+                    } catch (alertError) {
+                        console.error('Ошибка при вызове alert():', alertError);
+                        console.log('Сообщение:', data.message);
+                    }
+
+                    if (data.redirectUrl) {
+                        console.log('Перенаправление на:', data.redirectUrl);
+                        window.location.href = data.redirectUrl;
+                    }
+                } else {
+                    const errorMessage = data.message || 'Ошибка при переходе к следующей игре';
+                    console.error('Ошибка от сервера:', errorMessage);
+                    try {
+                        if (typeof alert === 'function') {
+                            alert(errorMessage);
+                        } else {
+                            console.log('Alert не поддерживается, ошибка:', errorMessage);
+                        }
+                    } catch (alertError) {
+                        console.error('Ошибка при вызове alert():', alertError);
+                    }
+                }
+            }).catch(error => {
+                console.error('Network error:', error);
+                const errorMessage = 'Ошибка сети при переходе к следующей игре: ' + error.message;
+                try {
+                    if (typeof alert === 'function') {
+                        alert(errorMessage);
+                    } else {
+                        console.log('Alert не поддерживается, ошибка сети:', errorMessage);
+                    }
+                } catch (alertError) {
+                    console.error('Ошибка при вызове alert():', alertError);
+                }
+            });
         }
 
         // Функция для экспорта ролей в Polemica
@@ -354,12 +473,40 @@
 
         // Функция для перемешивания ролей
         function shuffleRoles() {
-            const roles = [
-                'red', 'red', 'red', 'red', 'red', 'red',
-                'sher',
-                'black', 'black',
-                'don'
-            ];
+            console.log('Кнопка "Перемешать роли" нажата');
+            console.log('Перемешивание ролей, количество игроков:', players.length);
+
+            // Создаем роли в зависимости от количества игроков
+            let roles = [];
+            const playerCount = players.length;
+
+            if (playerCount === 10) {
+                // Стандартная игра на 10 игроков
+                roles = [
+                    'red', 'red', 'red', 'red', 'red', 'red',
+                    'sher',
+                    'black', 'black',
+                    'don'
+                ];
+            } else {
+                // Адаптируем под количество игроков
+                const mafiaCount = Math.floor(playerCount / 3);
+                const sheriffCount = 1;
+                const redCount = playerCount - mafiaCount - sheriffCount;
+
+                roles = [];
+                // Добавляем мирных
+                for (let i = 0; i < redCount; i++) {
+                    roles.push('red');
+                }
+                // Добавляем шерифа
+                roles.push('sher');
+                // Добавляем мафию (дон + обычная мафия)
+                roles.push('don');
+                for (let i = 1; i < mafiaCount; i++) {
+                    roles.push('black');
+                }
+            }
 
             // Перемешивание ролей
             for (let attempts = 0; attempts < 100; attempts++) {
@@ -368,6 +515,8 @@
                     [roles[i], roles[j]] = [roles[j], roles[i]];
                 }
             }
+
+            console.log('Новые роли:', roles);
 
             // Обновляем роли игроков
             players.forEach((player, index) => {
@@ -383,6 +532,8 @@
             resetTimer();
             startTimer();
             updateUI();
+
+            console.log('Роли перемешаны успешно');
         }
 
         // Обработчики событий
@@ -403,20 +554,59 @@
 
         nextBtn.addEventListener('click', nextPlayer);
         prevBtn.addEventListener('click', prevPlayer);
-        nextGameBtn.addEventListener('click', goToNextGame);
+
+        console.log('Добавляем обработчик для кнопки "Следующая игра"');
+        if (nextGameBtn) {
+            nextGameBtn.addEventListener('click', function (e) {
+                console.log('Обработчик кнопки "Следующая игра" вызван', e);
+                e.preventDefault();
+                e.stopPropagation();
+                goToNextGame();
+            });
+        } else {
+            console.error('Кнопка "Следующая игра" не найдена!');
+        }
 
         if (exportBtn) {
+            console.log('Добавляем обработчик для кнопки "Экспорт в Polemica"');
             exportBtn.addEventListener('click', exportToPolemica);
         }
 
-        resetBtn.addEventListener('click', function () {
-            if (confirm('Вы уверены, что хотите перемешать роли и начать заново?')) {
-                shuffleRoles();
-            }
-        });
+        console.log('Добавляем обработчик для кнопки "Перемешать роли"');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function (e) {
+                console.log('Обработчик кнопки "Перемешать роли" вызван', e);
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Проверяем, поддерживается ли confirm
+                try {
+                    if (typeof confirm === 'function') {
+                        if (confirm('Вы уверены, что хотите перемешать роли и начать заново?')) {
+                            console.log('Пользователь подтвердил перемешивание ролей');
+                            shuffleRoles();
+                        } else {
+                            console.log('Пользователь отменил перемешивание ролей');
+                        }
+                    } else {
+                        console.error('confirm() не поддерживается');
+                        // Выполняем без подтверждения
+                        shuffleRoles();
+                    }
+                } catch (error) {
+                    console.error('Ошибка при вызове confirm():', error);
+                    // Выполняем без подтверждения
+                    shuffleRoles();
+                }
+            });
+        } else {
+            console.error('Кнопка "Перемешать роли" не найдена!');
+        }
 
         // Инициализация
+        console.log('Запуск инициализации игры...');
         initGame();
+        console.log('Инициализация завершена');
     });
 </script>
 </body>

@@ -116,14 +116,7 @@ class OverlayController(
 
         val (tournamentId, gameNum, tableNum, phase) = gameData
 
-        val nextGame = when (game.get().type) {
-            GameType.POLEMICA -> polemicaService.getNextGame(
-                PolemicaService.PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
-            )
-
-            GameType.GOMAFIA -> gomafiaService.getGame(tournamentId, gameNum + 1, tableNum)
-            GameType.CUSTOM -> null
-        }
+        val nextGame = findNextGame(game.get().type, tournamentId, gameNum, tableNum, phase)
 
         if (nextGame != null) {
             emitterService.changeGame(id, nextGame)
@@ -198,6 +191,76 @@ class OverlayController(
         getLogger().info("Role selector for ${game?.id}: ${service.name}, $tournamentId, $gameNum, $tableNum")
 
         return "role-selector-game"
+    }
+
+    @PostMapping("/{service}/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}/nextgame")
+    @ResponseBody
+    fun nextGameFromRoleSelector(
+        @PathVariable service: ServiceType,
+        @PathVariable tournamentId: Int,
+        @PathVariable phase: Int,
+        @PathVariable tableNum: Int,
+        @PathVariable gameNum: Int
+    ): Map<String, Any> {
+        getLogger().info("Получен запрос на переход к следующей игре: service=${service.name}, tournamentId=$tournamentId, phase=$phase, tableNum=$tableNum, gameNum=$gameNum")
+
+        try {
+            val gameType = GameType.valueOf(service.name)
+            getLogger().info("Определен тип игры: $gameType")
+
+            val nextGame = findNextGame(gameType, tournamentId, gameNum, tableNum, phase)
+            getLogger().info("Результат поиска следующей игры: $nextGame")
+
+            if (nextGame != null) {
+                getLogger().info("Переход к следующей игре: ${service.name}, $tournamentId, ${nextGame.gameNum}, $tableNum, $phase")
+
+                // Формируем URL для перенаправления
+                val nextGameUrl =
+                    "/${service.getPathValue()}/tournaments/$tournamentId/phases/$phase/tables/$tableNum/games/${nextGame.gameNum}/roleselector"
+                getLogger().info("Сформирован URL для перенаправления: $nextGameUrl")
+
+                val response = mapOf(
+                    "success" to true,
+                    "message" to "Переход к игре ${nextGame.gameNum} выполнен успешно",
+                    "redirectUrl" to nextGameUrl,
+                    "gameNum" to nextGame.gameNum.toString()
+                )
+                getLogger().info("Отправляем успешный ответ: $response")
+                return response
+            } else {
+                val response = mapOf(
+                    "success" to false,
+                    "message" to "Следующая игра не найдена или не может быть создана"
+                )
+                getLogger().warn("Следующая игра не найдена, отправляем ответ: $response")
+                return response
+            }
+        } catch (e: Exception) {
+            getLogger().error(
+                "Ошибка при переходе к следующей игре: service=${service.name}, tournamentId=$tournamentId, phase=$phase, tableNum=$tableNum, gameNum=$gameNum",
+                e
+            )
+            val response = mapOf(
+                "success" to false,
+                "message" to "Ошибка при переходе к следующей игре: ${e.message}"
+            )
+            getLogger().error("Отправляем ответ с ошибкой: $response")
+            return response
+        }
+    }
+
+    /**
+     * Общий метод для поиска следующей игры
+     */
+    private fun findNextGame(gameType: GameType, tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
+        return when (gameType) {
+            GameType.POLEMICA -> polemicaService.getNextGame(
+                PolemicaService.PolemicaTournamentGame(tournamentId, gameNum, tableNum, phase)
+            )
+
+            GameType.GOMAFIA -> gomafiaService.getGame(tournamentId, gameNum + 1, tableNum)
+            GameType.CUSTOM -> null
+        }
     }
 
     private fun getOrCreatePolemicaGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {

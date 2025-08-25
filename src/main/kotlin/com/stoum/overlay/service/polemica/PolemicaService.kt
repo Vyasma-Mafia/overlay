@@ -92,12 +92,7 @@ class PolemicaService(
                 GameType.POLEMICA
             )
             if (game == null) {
-                tryCreateGame(
-                    tournamentId,
-                    polemicaTournamentGame.gameNum,
-                    polemicaTournamentGame.tableNum,
-                    polemicaTournamentGame.phase
-                )
+                createGameFromPolemica(PolemicaTournamentGame(tournamentId, tGame), tGame.id)
             }
         }
     }
@@ -351,15 +346,14 @@ class PolemicaService(
         }
     }
 
-
-    fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame): Game? {
+    fun getNextGame(polemicaTournamentGame: PolemicaTournamentGame, withInit: Boolean = true): Game? {
         with(polemicaTournamentGame) {
             val nextGameNum = gameRepository.findGameByTournamentIdAndGameNumAndTableNumAndPhaseAndType(
-                tournamentId,
-                gameNum + 1,
-                tableNum,
-                phase,
-                GameType.POLEMICA
+                tournamentId = tournamentId,
+                gameNum = gameNum + 1,
+                tableNum = tableNum,
+                phase = phase,
+                type = GameType.POLEMICA
             )
             if (nextGameNum != null) {
                 return nextGameNum
@@ -373,9 +367,9 @@ class PolemicaService(
             }
             val polemicaGamesCount = polemicaClient.getGamesFromCompetition(tournamentId.toLong()).size
             val dbGamesCount = gameRepository.findGamesByTournamentId(tournamentId).size
-            if (polemicaGamesCount > dbGamesCount) {
+            if (polemicaGamesCount > dbGamesCount && withInit) {
                 initTournament(tournamentId)
-                return getNextGame(polemicaTournamentGame)
+                return getNextGame(polemicaTournamentGame, false)
             }
             return null
         }
