@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск игроков</title>
+
+    <!-- Ссылки на CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/style-admin.css">
+</head>
+<body>
+<div class="container-fluid main-container">
+    <div class="page-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fa-solid fa-search me-2"></i>Поиск игроков</h1>
+            <a th:href="@{/admin/photos/tournaments}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left me-2"></i>К турнирам
+            </a>
+        </div>
+
+        <!-- Форма поиска -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" th:action="@{/admin/photos/players/search}">
+                    <div class="row g-3">
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" name="query" th:value="${query}"
+                                    placeholder="Введите никнейм, Polemica ID или Gomafia ID">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fa-solid fa-search me-2"></i>Поиск
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Результаты поиска -->
+        <div th:if="${!#lists.isEmpty(players)}">
+            <h4 class="mb-3">Найдено игроков: <span th:text="${#lists.size(players)}"></span></h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Никнейм</th>
+                        <th>Polemica ID</th>
+                        <th>Gomafia ID</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="player : ${players}">
+                        <td>
+                            <a th:href="@{/admin/photos/players/{id}(id=${player.id})}"
+                                    th:text="${player.nickname}" class="text-decoration-none"></a>
+                        </td>
+                        <td>
+                                <span th:if="${player.polemicaId}">
+                                    <a th:href="'https://polemicagame.com/profile/' + ${player.polemicaId}"
+                                            th:text="${player.polemicaId}" target="_blank"></a>
+                                </span>
+                            <span th:unless="${player.polemicaId}" class="text-muted">—</span>
+                        </td>
+                        <td>
+                                <span th:if="${player.gomafiaId}">
+                                    <a th:href="'https://gomafia.pro/stats/' + ${player.gomafiaId}"
+                                            th:text="${player.gomafiaId}" target="_blank"></a>
+                                </span>
+                            <span th:unless="${player.gomafiaId}" class="text-muted">—</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/photos/players/{id}(id=${player.id})}"
+                                    class="btn btn-sm btn-outline-primary">
+                                <i class="fa-solid fa-eye"></i> Просмотр
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Сообщение, если ничего не найдено -->
+        <div th:if="${#lists.isEmpty(players) and !#strings.isEmpty(query)}" class="alert alert-info">
+            <i class="fa-solid fa-info-circle me-2"></i>
+            По запросу "<span th:text="${query}"></span>" ничего не найдено.
+        </div>
+
+        <!-- Сообщение для начала поиска -->
+        <div th:if="${#strings.isEmpty(query)}" class="alert alert-light">
+            <i class="fa-solid fa-lightbulb me-2"></i>
+            Введите никнейм игрока, Polemica ID или Gomafia ID для поиска.
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+</html>
