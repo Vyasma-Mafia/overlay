@@ -59,7 +59,7 @@
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
         console.log('DOM загружен, инициализация роль-селектора...');
-        
+
         // Получаем параметры из шаблона
         let id = [[${id}]];
         let tournamentId = [[${tournamentId}]];
@@ -190,6 +190,14 @@
             resetTimer();
             startTimer();
             updateUI();
+
+            // Очищаем роли при инициализации
+            fetch(`/${id}/clearRoles`, {method: 'POST'})
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Ошибка при очистке ролей');
+                    }
+                });
         }
 
         // Обновление интерфейса
@@ -247,6 +255,29 @@
             prevBtn.disabled = currentPlayerIndex <= 0;
         }
 
+        function updateRoles() {
+            const roles = {};
+            players.forEach(player => {
+                if (player.seen) {
+                    roles[player.id] = player.role;
+                }
+            });
+
+            fetch(`/${id}/updateRoles`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(roles)
+            }).then(response => {
+                if (!response.ok) {
+                    console.error('Ошибка при обновлении ролей');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
         // Функции для секундомера
         function startTimer() {
             if (!timerRunning) {
@@ -281,6 +312,7 @@
             if (isCardFlipped) {
                 card.classList.add('flipped');
                 players[currentPlayerIndex].seen = true;
+                updateRoles();
                 nextBtn.disabled = currentPlayerIndex >= players.length - 1;
                 prevBtn.disabled = currentPlayerIndex <= 0;
             } else {
@@ -300,6 +332,9 @@
                     resetTimer();
                     startTimer();
                     updateUI();
+                    if (isCardFlipped) {
+                        updateRoles();
+                    }
 
                     playerCardEl.classList.remove('slide-out-left');
                     playerCardEl.classList.add('slide-in-right');

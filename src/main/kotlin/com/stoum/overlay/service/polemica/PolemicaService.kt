@@ -181,16 +181,19 @@ class PolemicaService(
                         4
                     )
                 )
-                getLogger().info("Polemica game ${polemicaGame.id} for $tournamentGame crawled")
+                getLogger().info("Polemica game ${polemicaGame.id} for $tournamentGame crawled with stage ${polemicaGame.stage}")
                 val kicked = polemicaGame.getKickedFromTable().groupBy { it.position }.mapValues { it.value.first() }
                 val firstKilled = polemicaGame.getFirstKilled()
+                val getPolemicaRoles = polemicaGame.stage?.type != StageType.DEALING
 
                 game.players.forEach { player ->
                     Position.fromInt(player.place)?.let { position ->
                         player.status = kicked[position]?.let {
                             if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed"
                         }
-                        player.role = polemicaRoleToRole(polemicaGame.getRole(position))
+                        if (getPolemicaRoles) {
+                            player.role = polemicaRoleToRole(polemicaGame.getRole(position))
+                        }
                         val polemicaPlayer = polemicaGame.players?.find { it.position == position }
                         val playerPhotoUrl = polemicaPlayer?.player?.id?.let { playerId ->
                             photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
@@ -437,6 +440,23 @@ class PolemicaService(
                 TimeUnit.SECONDS
             )
         }
+    }
+    fun clearRoles(gameId: UUID) {
+        val game = gameRepository.findById(gameId).orElse(null) ?: return
+        game.players.forEach {
+            it.role = null
+        }
+        saveAndEmitGame(game)
+    }
+
+    fun updateRoles(gameId: UUID, roles: Map<Int, String>) {
+        val game = gameRepository.findById(gameId).orElse(null) ?: return
+        game.players.forEach { player ->
+            roles[player.place]?.let { newRole ->
+                player.role = newRole
+            }
+        }
+        saveAndEmitGame(game)
     }
 
     data class PolemicaTournamentGame(val tournamentId: Int, val gameNum: Int, val tableNum: Int, val phase: Int) {

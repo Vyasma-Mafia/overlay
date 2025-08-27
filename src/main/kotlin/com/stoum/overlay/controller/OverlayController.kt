@@ -45,6 +45,36 @@ class ServiceTypeConverter : Converter<String, ServiceType> {
     }
 }
 
+// Определение enum для типов страниц
+enum class PageType {
+    OVERLAY, CONTROL, ROLESELECTOR;
+
+    // Метод для получения пути в URL
+    fun getPathValue(): String {
+        return when (this) {
+            OVERLAY -> "overlay"
+            CONTROL -> "control"
+            ROLESELECTOR -> "roleselector"
+        }
+    }
+
+    companion object {
+        // Метод для получения PageType из строки пути
+        fun fromPathValue(value: String): PageType {
+            return entries.find { it.name.lowercase() == value.lowercase() }
+                ?: throw IllegalArgumentException("Unknown page type: $value")
+        }
+    }
+}
+
+// Конвертер для PageType
+@Component
+class PageTypeConverter : Converter<String, PageType> {
+    override fun convert(source: String): PageType {
+        return PageType.fromPathValue(source)
+    }
+}
+
 @Controller
 class OverlayController(
     val gameRepository: GameRepository,
@@ -147,6 +177,43 @@ class OverlayController(
 
         getLogger().info("Control for ${game?.id}: ${service.name}, $tournamentId, $gameNum, $tableNum")
         return "control-panel"
+    }
+
+    @RequestMapping("/{service}/tournaments/{tournamentId}/{pageType}")
+    fun redirectToFirstGamePage(
+        @PathVariable service: ServiceType,
+        @PathVariable tournamentId: Int,
+        @PathVariable pageType: PageType,
+        model: Model,
+    ): String {
+        val game = gameRepository.findFirstByTournamentIdAndResultIsNullOrderByPhaseAscGameNumAsc(tournamentId)
+            ?: return "game-not-found"
+
+        val phase = game.phase
+        val tableNum = game.tableNum
+        val gameNum = game.gameNum
+
+        return "redirect:/${service.getPathValue()}/tournaments/$tournamentId/phases/$phase/tables/$tableNum/games/$gameNum/${pageType.getPathValue()}"
+    }
+
+    @RequestMapping("/{service}/tournaments/{tournamentId}/tables/{tableNum}/{pageType}")
+    fun redirectToFirstGamePageForTable(
+        @PathVariable service: ServiceType,
+        @PathVariable tournamentId: Int,
+        @PathVariable tableNum: Int,
+        @PathVariable pageType: PageType,
+        model: Model,
+    ): String {
+        val game = gameRepository.findFirstByTournamentIdAndTableNumAndResultIsNullOrderByPhaseAscGameNumAsc(
+            tournamentId,
+            tableNum
+        )
+            ?: return "game-not-found"
+
+        val phase = game.phase
+        val gameNum = game.gameNum
+
+        return "redirect:/${service.getPathValue()}/tournaments/$tournamentId/phases/$phase/tables/$tableNum/games/$gameNum/${pageType.getPathValue()}"
     }
 
     @RequestMapping("/{service}/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}/roleselector")
@@ -269,5 +336,22 @@ class OverlayController(
 
     private fun getOrCreateGomafiaGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
         return gomafiaService.getGame(tournamentId, gameNum, tableNum)
+    }
+
+    @PostMapping("/{id}/clearRoles")
+    @ResponseBody
+    fun clearRoles(@PathVariable id: String) {
+        val gameId = UUID.fromString(id)
+        polemicaService.clearRoles(gameId)
+    }
+
+    @PostMapping("/{id}/updateRoles")
+    @ResponseBody
+    fun updateRoles(
+        @PathVariable id: String,
+        @org.springframework.web.bind.annotation.RequestBody roles: Map<Int, String>
+    ) {
+        val gameId = UUID.fromString(id)
+        polemicaService.updateRoles(gameId, roles)
     }
 }
