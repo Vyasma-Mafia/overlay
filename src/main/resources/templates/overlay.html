@@ -28,6 +28,8 @@
         <div class="player" id="player_1">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="clubIcon"></div>
             <div class="score"></div>
@@ -46,6 +48,8 @@
         <div class="player" id="player_2">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -64,6 +68,8 @@
         <div class="player" id="player_3">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -82,6 +88,8 @@
         <div class="player" id="player_4">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -100,6 +108,8 @@
         <div class="player" id="player_5">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -118,6 +128,8 @@
         <div class="player" id="player_6">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -136,6 +148,8 @@
         <div class="player" id="player_7">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -154,6 +168,8 @@
         <div class="player" id="player_8">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -172,6 +188,8 @@
         <div class="player" id="player_9">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -190,6 +208,8 @@
         <div class="player" id="player_10">
             <!--            <div class="role-header"></div>-->
             <div class="photo"></div>
+            <div class="gun-animation"></div>
+            <div class="fist-animation"></div>
             <div class="status"><p class="status-text"></p></div>
             <div class="score"></div>
             <div class="clubIcon"></div>
@@ -423,15 +443,25 @@
                     el.style.backgroundImage = `url("${imageUrl}")`
                 }
             );
-            //todo set status
-            if (playerInfo.status) {
-                playerElement.classList.add('dead', playerInfo.status);
-            } else {
-                playerElement.classList.remove('dead')
-                playerElement.classList.remove('killed')
-                playerElement.classList.remove('first-killed');
-                playerElement.classList.remove('voted')
-                playerElement.classList.remove('removed')
+            const isAlreadyDead = playerElement.classList.contains('dead');
+
+            if (playerInfo.status && !isAlreadyDead) {
+                // Start animation
+                if (playerInfo.status === 'killed' || playerInfo.status === 'first-killed') {
+                    playerElement.classList.add('killed-animation');
+                } else if (playerInfo.status === 'voted') {
+                    playerElement.classList.add('voted-animation');
+                }
+
+                // After 3s animation, set final state
+                setTimeout(() => {
+                    playerElement.classList.remove('killed-animation', 'voted-animation');
+                    playerElement.classList.add('dead', playerInfo.status);
+                }, 3000);
+
+            } else if (!playerInfo.status) {
+                // Reset if not dead
+                playerElement.classList.remove('dead', 'killed', 'first-killed', 'voted', 'removed');
             }
 
             const ROLES = ['don', 'sher', 'black', 'red'];

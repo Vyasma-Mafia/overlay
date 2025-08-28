@@ -319,6 +319,144 @@ footer {
     transform: scale(1.3);
 }
 
+.player.killed-animation {
+    animation: player-killed-animation 3s forwards;
+}
+
+.player.killed-animation .gun-animation {
+    animation: gun-animation 3s forwards;
+}
+
+.player.voted-animation {
+    animation: player-voted-animation 3s forwards;
+}
+
+.player.voted-animation .fist-animation {
+    animation: fist-animation 3s forwards;
+}
+
+.gun-animation, .fist-animation {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.gun-animation {
+    background-image: url('../icon/gun.png');
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%) rotate(90deg);
+}
+
+.fist-animation {
+    background-image: url('../icon/voted.png');
+    background-color: white;
+    border-radius: 16px;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%); /* Переворачиваем и отражаем для правильного вида кулака */
+}
+
+
+@keyframes player-killed-animation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1);
+    }
+    55% {
+        transform: scale(1.05) rotate(5deg);
+    }
+    /* Реакция на выстрел */
+    70% {
+        transform: scale(1) rotate(-5deg);
+        color: red;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes gun-animation {
+    30% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-50px) rotate(90deg);
+    }
+    45% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50px) rotate(90deg);
+    }
+    55% {
+        transform: translateX(-50%) translateY(-70px) rotate(80deg);
+    }
+    /* Отдача */
+    65% {
+        transform: translateX(-50%) translateY(-50px) rotate(100deg);
+    }
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50px) rotate(90deg);
+        scale: 1;
+    }
+    100% {
+        opacity: 0.5;
+        transform: translateX(10%) translateY(10px);
+        scale: 0.2;
+    }
+}
+
+@keyframes player-voted-animation {
+    45% {
+        height: 220px;
+        transform: translateY(0px);
+    }
+    52% {
+        transform: translateY(40px);
+        height: 180px;
+    }
+    /* Прогибается от удара */
+    100% {
+        transform: translateY(40px);
+        height: 180px;
+    }
+}
+
+@keyframes fist-animation {
+    30% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-120px);
+    }
+    45% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-30px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    55% {
+        transform: translateX(-50%) translateY(-30px);
+    }
+    /* Удар */
+    70% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-120px);
+        scale: 1;
+    }
+    100% {
+        opacity: 0.5;
+        transform: translateX(10%) translateY(10px);
+        scale: 0.2;
+    }
+}
+
+
 .dead .status {
     visibility: visible;
     opacity: 1;
