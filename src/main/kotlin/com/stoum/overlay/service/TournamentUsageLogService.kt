@@ -43,7 +43,7 @@ class TournamentUsageLogService(
 
     @Transactional(readOnly = true)
     fun getTournamentUsageStats(): List<TournamentUsageStat> {
-        val allLogs = tournamentUsageLogRepository.findAll()
+        val allLogs = tournamentUsageLogRepository.findAll().sortedByDescending { it.updatedAt }
         val competitions = polemicaClient.getCompetitions().associateBy { it.id }
 
         return allLogs.map { log ->
