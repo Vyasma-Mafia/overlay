@@ -81,7 +81,8 @@ class OverlayController(
     val emitterService: EmitterService,
     val polemicaService: PolemicaService,
     val gomafiaService: GomafiaService,
-    val tournamentOverlayService: TournamentOverlayService
+    val tournamentOverlayService: TournamentOverlayService,
+    val tournamentUsageLogService: com.stoum.overlay.service.TournamentUsageLogService
 ) {
     @RequestMapping("/{id}/overlay")
     fun overlay(@PathVariable id: String, model: Model): String? {
@@ -110,6 +111,10 @@ class OverlayController(
         val game = when (service) {
             ServiceType.POLEMICA -> getOrCreatePolemicaGame(tournamentId, gameNum, tableNum, phase)
             ServiceType.GOMAFIA -> getOrCreateGomafiaGame(tournamentId, gameNum, tableNum, phase)
+        }
+
+        if (game != null) {
+            tournamentUsageLogService.logGameUsage(game.id!!, tournamentId.toLong(), tableNum)
         }
 
         model.addAttribute("id", game?.id)

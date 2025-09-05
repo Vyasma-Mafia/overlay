@@ -440,6 +440,10 @@ class PolemicaService(
                 TimeUnit.SECONDS
             )
         }
+
+        fun getAllCompetitions(): List<PolemicaClient.PolemicaCompetition> {
+            return polemicaClient.getCompetitions()
+        }
     }
     fun clearRoles(gameId: UUID) {
         val game = gameRepository.findById(gameId).orElse(null) ?: return
