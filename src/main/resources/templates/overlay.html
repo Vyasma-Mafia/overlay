@@ -40,6 +40,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">1</div>
                 <div class="player-name"></div>
@@ -60,6 +63,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">2</div>
                 <div class="player-name"></div>
@@ -80,6 +86,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">3</div>
                 <div class="player-name"></div>
@@ -100,6 +109,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">4</div>
                 <div class="player-name"></div>
@@ -120,6 +132,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">5</div>
                 <div class="player-name"></div>
@@ -140,6 +155,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">6</div>
                 <div class="player-name"></div>
@@ -160,6 +178,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">7</div>
                 <div class="player-name"></div>
@@ -180,6 +201,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">8</div>
                 <div class="player-name"></div>
@@ -200,6 +224,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">9</div>
                 <div class="player-name"></div>
@@ -220,6 +247,9 @@
             <div class="role"></div>
             <div class="fouls"></div>
             <div class="techs"></div>
+            <div class="voted-by-container">
+                <div class="voted-by-numbers"></div>
+            </div>
             <div class="role-footer">
                 <div class="number">10</div>
                 <div class="player-name"></div>
@@ -571,6 +601,28 @@
                         el.querySelector('.guess-text').innerHTML = '';
                     }
                 );
+            }
+
+            // Обработка голосов за игрока
+            if (playerInfo.votedBy && playerInfo.votedBy.length > 0 && playerInfo.status === 'voted') {
+                const votedByContainer = playerElement.querySelector('.voted-by-container');
+                const votedByNumbers = playerElement.querySelector('.voted-by-numbers');
+
+                votedByNumbers.innerHTML = '';
+                playerInfo.votedBy.forEach((voter, index) => {
+                    const badge = document.createElement('span');
+                    badge.className = `voted-by-badge ${gameInfo.visibleRoles === true ? voter.role : 'red'}`;
+                    badge.textContent = voter.num;
+                    badge.style.animationDelay = `${index * 0.1}s`;
+                    votedByNumbers.appendChild(badge);
+                });
+
+                votedByContainer.classList.add('visible');
+            } else {
+                const votedByContainer = playerElement.querySelector('.voted-by-container');
+                if (votedByContainer) {
+                    votedByContainer.classList.remove('visible');
+                }
             }
         })
 

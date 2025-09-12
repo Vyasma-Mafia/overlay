@@ -1576,3 +1576,69 @@ body.stats-right.show-stats .stats-panel {
     max-height: 36px;
 }
 
+/* Стили для отображения номеров голосовавших */
+.voted-by-container {
+    position: absolute;
+    bottom: 35px !important; /* Над role-footer */
+    left: 0;
+    right: 0;
+    padding: 4px;
+    display: flex;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.voted-by-container.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.voted-by-numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: center;
+    max-width: 100%;
+}
+
+.voted-by-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.9);
+    font-family: 'MrNorwester', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    animation: voted-by-appear 0.3s ease-out;
+}
+
+.voted-by-badge.red {
+    color: #98141d;
+}
+
+.voted-by-badge.black {
+    color: #000000;
+}
+
+.voted-by-badge.sher {
+    color: #EAC35E;
+}
+
+.voted-by-badge.don {
+    color: #000000;
+}
+
+/* Адаптация для мертвых игроков */
+.player.dead .voted-by-container {
+    bottom: 0; /* Для мертвых игроков размещаем в самом низу */
+}
+

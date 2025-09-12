@@ -10,6 +10,7 @@ import com.github.mafia.vyasma.polemica.library.model.game.Position
 import com.github.mafia.vyasma.polemica.library.model.game.Role
 import com.github.mafia.vyasma.polemica.library.model.game.StageType
 import com.github.mafia.vyasma.polemica.library.utils.KickReason
+import com.github.mafia.vyasma.polemica.library.utils.getFinalVotes
 import com.github.mafia.vyasma.polemica.library.utils.getFirstKilled
 import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
 import com.github.mafia.vyasma.polemica.library.utils.getRole
@@ -188,13 +189,23 @@ class PolemicaService(
 
                 game.players.forEach { player ->
                     Position.fromInt(player.place)?.let { position ->
+                        val polemicaPlayer = polemicaGame.players?.find { it.position == position }
                         player.status = kicked[position]?.let {
+                            if (it.reason == KickReason.VOTING) {
+                                player.votedBy =
+                                    polemicaGame.getFinalVotes(beforeGamePhase = null).filter { it.expelled }
+                                        .filter { it.convicted.contains(position) }.map {
+                                            mapOf(
+                                                "role" to polemicaRoleToRole(polemicaGame.getRole(it.position)),
+                                                "num" to it.position.value.toString()
+                                            )
+                                        }.toMutableList()
+                            }
                             if (firstKilled != position) kickReasonToStatus(it.reason) else "first-killed"
                         }
                         if (getPolemicaRoles) {
                             player.role = polemicaRoleToRole(polemicaGame.getRole(position))
                         }
-                        val polemicaPlayer = polemicaGame.players?.find { it.position == position }
                         val playerPhotoUrl = polemicaPlayer?.player?.id?.let { playerId ->
                             photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
                                 playerId = playerId,

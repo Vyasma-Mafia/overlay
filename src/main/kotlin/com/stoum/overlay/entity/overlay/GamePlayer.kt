@@ -31,6 +31,8 @@ data class GamePlayer(
     var checks: MutableList<Map<String, String>>? = arrayListOf(),
     @Convert(converter = MapListConverter::class)
     var guess: MutableList<Map<String, String>>? = arrayListOf(),
+    @Convert(converter = MapListConverter::class)
+    var votedBy: MutableList<Map<String, String>>? = arrayListOf(),
     @Convert(converter = MapMapConverter::class)
     var stat: MutableMap<String, Map<String, String>>? = hashMapOf(),
     var customPhoto: Boolean? = null,
