@@ -457,6 +457,9 @@
             const playerName = playerElement.querySelector('.player-name');
             if (playerName) {
                 playerName.textContent = playerInfo.nickname;
+                if (playerInfo.nickname === 'Плюшка)' && playerElement.classList.contains('dead')) {
+                    playerName.textContent = 'Плюшка(';
+                }
                 // Добавляем атрибут data-nickname для стилизации
                 playerName.setAttribute('data-nickname', playerInfo.nickname);
                 fNicknameFontSize.call(playerName);
