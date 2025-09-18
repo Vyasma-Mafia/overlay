@@ -109,6 +109,53 @@ class PolemicaService(
         return null
     }
 
+    /**
+     * Определяет количество столов в указанной фазе турнира
+     */
+    private fun getTablesCountInPhase(tournamentId: Int, phase: Int): Int {
+        return gameRepository.findGamesByTournamentId(tournamentId)
+            .filter { it.phase == phase && it.type == GameType.POLEMICA }
+            .map { it.tableNum }
+            .distinct()
+            .size
+    }
+
+    /**
+     * Генерирует название игры согласно новым требованиям:
+     * - Название турнира | Игра N (один стол)
+     * - Название турнира | Игра N | Стол M (несколько столов)
+     * - Название турнира | Финал | Игра N (финал с одним столом)
+     * - Название турнира | Финал | Игра N | Стол M (финал с несколькими столами)
+     */
+    private fun generateGameTitle(
+        tournamentName: String,
+        gameNum: Int,
+        tableNum: Int,
+        phase: Int,
+        tournamentId: Int
+    ): String {
+        val parts = mutableListOf<String>()
+
+        // Название турнира
+        parts.add(tournamentName)
+
+        // Финал (если phase = 2)
+        if (phase == 2) {
+            parts.add("Финал")
+        }
+
+        // Номер игры
+        parts.add("Игра $gameNum")
+
+        // Номер стола (если в фазе больше одного стола)
+        val tablesCount = getTablesCountInPhase(tournamentId, phase)
+        if (tablesCount > 1) {
+            parts.add("Стол $tableNum")
+        }
+
+        return parts.joinToString(" | ")
+    }
+
     private fun createGameFromPolemica(polemicaTournamentGame: PolemicaTournamentGame, polemicaGameId: Long): Game {
         val polemicaTournament = polemicaClient.getCompetition(polemicaTournamentGame.tournamentId.toLong())
         val polemicaGame = polemicaClient.getGameFromCompetition(
@@ -151,7 +198,13 @@ class PolemicaService(
             started = true,
             visibleOverlay = true,
             visibleRoles = true,
-            text = "${polemicaTournament!!.name} | Игра ${polemicaTournamentGame.gameNum}"
+            text = generateGameTitle(
+                tournamentName = polemicaTournament!!.name,
+                gameNum = polemicaTournamentGame.gameNum,
+                tableNum = polemicaTournamentGame.tableNum,
+                phase = polemicaTournamentGame.phase,
+                tournamentId = polemicaTournamentGame.tournamentId
+            )
         )
         return gameRepository.save(game)
     }
