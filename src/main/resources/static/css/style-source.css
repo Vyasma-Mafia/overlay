@@ -1600,7 +1600,7 @@ body.stats-right.show-stats .stats-panel {
     display: flex;
     flex-wrap: wrap;
     gap: 2px;
-    justify-content: center;
+    justify-content: flex-start;
     max-width: 100%;
 }
 
@@ -1608,10 +1608,9 @@ body.stats-right.show-stats .stats-panel {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 9px;
-    max-width: 18px;
+    width: 14px;
     height: 18px;
-    padding: 0 4px;
+    padding: 0 6px;
     border-radius: 3px;
     background: rgba(255, 255, 255, 0.9);
     font-family: 'MrNorwester', sans-serif;
@@ -1620,6 +1619,7 @@ body.stats-right.show-stats .stats-panel {
     border: 1px solid rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease;
     animation: voted-by-appear 0.3s ease-out;
+    text-shadow: 0 0 1px #000000;
 }
 
 .voted-by-badge.red {

@@ -32,3 +32,9 @@ This file tracks the project's current status, including recent changes, current
 
 [2025-09-18 16:15:48] - Завершена реализация новой логики формирования названий игр в Polemica. Добавлены функции
 getTablesCountInPhase() и generateGameTitle(), изменена строка 154 в PolemicaService.kt. Все тесты прошли успешно.
+
+[2025-09-19 18:57:30] - Исправлено выравнивание элементов "Voted by" в оверлеях. Изменено CSS-свойство justify-content с
+center на flex-start для класса .voted-by-numbers в файле style-source.css.
+
+[2025-09-19 19:12:55] - Добавлена черная обводка (text-shadow) для цифр в элементах voted-by для улучшения видимости,
+особенно желтого цвета шерифа.
