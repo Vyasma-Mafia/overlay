@@ -26,6 +26,9 @@ import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.PlayerPhotoService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.time.LocalDateTime
 import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -235,7 +238,7 @@ class PolemicaService(
                         4
                     )
                 )
-                getLogger().info("Polemica game ${polemicaGame.id} for $tournamentGame crawled with stage ${polemicaGame.stage}")
+                logCrawlSuccess(game, polemicaGame)
                 val kicked = polemicaGame.getKickedFromTable().groupBy { it.position }.mapValues { it.value.first() }
                 val firstKilled = polemicaGame.getFirstKilled()
                 val getPolemicaRoles = polemicaGame.stage?.type != StageType.DEALING
@@ -342,7 +345,6 @@ class PolemicaService(
                             }.toMutableList()
                     }
 
-
                 }
 
 
@@ -369,10 +371,7 @@ class PolemicaService(
                 }
                 saveAndEmitGame(game)
             } catch (e: Exception) {
-                getLogger().error(
-                    "Error while crawling polemica game {}: {} {} {}",
-                    game.id, game.tournamentId, game.gameNum, game.tableNum, e
-                )
+                handleCrawlError(game, e)
                 gameIdCache.invalidateAll()
             }
         }
@@ -509,6 +508,7 @@ class PolemicaService(
             return polemicaClient.getCompetitions()
         }
     }
+
     fun clearRoles(gameId: UUID) {
         val game = gameRepository.findById(gameId).orElse(null) ?: return
         game.players.forEach {
@@ -524,7 +524,183 @@ class PolemicaService(
                 player.role = newRole
             }
         }
-        saveAndEmitGame(game)
+    }
+
+    /**
+     * Обработка ошибок краулинга с различением типов ошибок
+     */
+    private fun handleCrawlError(game: Game, exception: Exception) {
+        when {
+            // HTTP 404 - игра удалена в Полемике
+            isGameNotFoundError(exception) -> {
+                game.started = false
+                game.crawlStopReason = "GAME_DELETED_IN_POLEMICA"
+                game.lastCrawlError = "Game not found in Polemica API"
+                getLogger().info("Game ${game.id} stopped - deleted in Polemica")
+            }
+
+            // HTTP 401/403 - проблемы с авторизацией
+            isAuthenticationError(exception) -> {
+                val currentCount = (game.crawlFailureCount ?: 0) + 1
+                game.crawlFailureCount = currentCount
+                game.lastCrawlError = "Authentication failed: ${exception.message}"
+                game.lastFailureTime = LocalDateTime.now()
+
+                if (currentCount >= 5) {
+                    game.started = false
+                    game.crawlStopReason = "AUTHENTICATION_FAILED"
+                    getLogger().error("Game ${game.id} stopped - authentication failed")
+                }
+            }
+
+            // Сетевые ошибки и таймауты
+            isNetworkError(exception) -> {
+                val currentCount = (game.crawlFailureCount ?: 0) + 1
+                game.crawlFailureCount = currentCount
+                game.lastCrawlError = "Network error: ${exception.message}"
+                game.lastFailureTime = LocalDateTime.now()
+
+                if (currentCount >= 3) {
+                    game.started = false
+                    game.crawlStopReason = "NETWORK_ERRORS"
+                    getLogger().warn("Game ${game.id} stopped after $currentCount network failures")
+                }
+            }
+
+            // Другие ошибки
+            else -> {
+                val currentCount = (game.crawlFailureCount ?: 0) + 1
+                game.crawlFailureCount = currentCount
+                game.lastCrawlError = "Unknown error: ${exception.message}"
+                game.lastFailureTime = LocalDateTime.now()
+
+                if (currentCount >= 2) {
+                    game.started = false
+                    game.crawlStopReason = "UNKNOWN_ERRORS"
+                    getLogger().error(
+                        "Game ${game.id} stopped after $currentCount unknown failures",
+                        exception
+                    )
+                }
+            }
+        }
+
+        gameRepository.save(game)
+    }
+
+    /**
+     * Проверка на ошибку "игра не найдена"
+     */
+    private fun isGameNotFoundError(exception: Exception): Boolean {
+        return exception.message?.contains("404") == true ||
+            exception.message?.contains("Not Found") == true ||
+            exception is NoSuchElementException
+    }
+
+    /**
+     * Проверка на ошибки авторизации
+     */
+    private fun isAuthenticationError(exception: Exception): Boolean {
+        return exception.message?.contains("401") == true ||
+            exception.message?.contains("403") == true ||
+            exception.message?.contains("Unauthorized") == true
+    }
+
+    /**
+     * Проверка на сетевые ошибки
+     */
+    private fun isNetworkError(exception: Exception): Boolean {
+        return exception is ConnectException ||
+            exception is SocketTimeoutException ||
+            exception.message?.contains("timeout") == true
+    }
+
+    /**
+     * Логирование успешного краулинга с сбросом счетчика ошибок
+     */
+    private fun logCrawlSuccess(game: Game, polemicaGame: PolemicaGame) {
+        // Сброс счетчика при успешном краулинге
+        val failureCount = game.crawlFailureCount ?: 0
+        if (failureCount > 0) {
+            getLogger().info("Game ${game.id} crawling recovered after $failureCount failures")
+            game.crawlFailureCount = null
+            game.lastCrawlError = null
+            game.lastFailureTime = null
+        }
+
+        getLogger().info("Polemica game ${polemicaGame.id} for ${PolemicaTournamentGame(game)} crawled with stage ${polemicaGame.stage}")
+    }
+
+    /**
+     * Попытка восстановить краулинг остановленной игры
+     */
+    fun restartGameCrawling(gameId: UUID): Boolean {
+        val game = gameRepository.findById(gameId).orElse(null) ?: return false
+
+        // Сброс счетчиков ошибок
+        game.crawlFailureCount = null
+        game.lastCrawlError = null
+        game.lastFailureTime = null
+        game.crawlStopReason = null
+        game.started = true
+
+        gameRepository.save(game)
+        getLogger().info("Game ${game.id} crawling restarted manually")
+        return true
+    }
+
+    /**
+     * Автоматическое восстановление игр после определенного времени
+     */
+    fun autoRecoverStoppedGames() {
+        val cutoffTime = LocalDateTime.now().minusHours(1)
+        val stoppedGames = gameRepository.findGamesByTypeAndStartedAndCrawlStopReasonIsNotNull(
+            GameType.POLEMICA, false
+        ).filter {
+            it.lastFailureTime?.isBefore(cutoffTime) == true &&
+                it.crawlStopReason in listOf("NETWORK_ERRORS", "UNKNOWN_ERRORS")
+        }
+
+        stoppedGames.forEach { game ->
+            getLogger().info("Auto-recovering game ${game.id} after network issues")
+            restartGameCrawling(game.id!!)
+        }
+    }
+
+    /**
+     * Получить статистику по проблемным играм
+     */
+    fun getCrawlErrorStatistics(): Map<String, Any> {
+        val allGames = gameRepository.findGameByTypeAndStarted(GameType.POLEMICA, false)
+            .filter { it.crawlStopReason != null }
+
+        return mapOf(
+            "totalStopped" to allGames.size,
+            "byReason" to allGames.groupBy { it.crawlStopReason }.mapValues { it.value.size },
+            "recentFailures" to allGames.filter {
+                it.lastFailureTime?.isAfter(LocalDateTime.now().minusHours(24)) == true
+            }.size
+        )
+    }
+
+    /**
+     * Получить список проблемных игр для админ-панели
+     */
+    fun getProblematicGames(): List<Map<String, Any>> {
+        return gameRepository.findGamesByTypeAndStartedAndCrawlFailureCountGreaterThan(
+            GameType.POLEMICA, false, 0
+        ).map { game ->
+            mapOf(
+                "id" to game.id,
+                "tournamentId" to game.tournamentId,
+                "gameNum" to game.gameNum,
+                "tableNum" to game.tableNum,
+                "failureCount" to game.crawlFailureCount,
+                "lastError" to game.lastCrawlError,
+                "stopReason" to game.crawlStopReason,
+                "lastFailureTime" to game.lastFailureTime
+            ) as Map<String, Any>
+        }
     }
 
     data class PolemicaTournamentGame(val tournamentId: Int, val gameNum: Int, val tableNum: Int, val phase: Int) {

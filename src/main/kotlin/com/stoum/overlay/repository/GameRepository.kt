@@ -24,4 +24,16 @@ interface GameRepository : JpaRepository<Game, UUID> {
         tournamentId: Int,
         tableNum: Int
     ): Game?
+
+    // Методы для работы с проблемными играми
+    fun findGamesByTypeAndStartedAndCrawlFailureCountGreaterThan(
+        type: GameType,
+        started: Boolean,
+        failureCount: Int
+    ): List<Game>
+
+    fun findGamesByTypeAndStartedAndCrawlStopReasonIsNotNull(
+        type: GameType,
+        started: Boolean
+    ): List<Game>
 }

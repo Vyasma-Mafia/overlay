@@ -19,6 +19,7 @@ import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import jakarta.persistence.Version
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
@@ -50,6 +51,12 @@ data class Game(
     var autoNextGame: Boolean? = true,
     @Convert(converter = MapListConverter::class)
     var voteCandidates: MutableList<Map<String, String>>? = arrayListOf(),
+
+    // Поля для отслеживания ошибок краулинга
+    var crawlFailureCount: Int? = null,
+    var lastCrawlError: String? = null,
+    var lastFailureTime: LocalDateTime? = null,
+    var crawlStopReason: String? = null,
 
     @Version
     private var version: Long? = 0

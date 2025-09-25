@@ -72,3 +72,36 @@ This file records architectural and implementation decisions using a list format
     - Финал: `"Турнир | Финал | Игра N"` или `"Турнир | Финал | Игра N | Стол M"`
 * **Функция подсчета столов:** Использует `gameRepository.findGamesByTournamentId()` с фильтрацией по фазе
 * **Место изменений:** `src/main/kotlin/com/stoum/overlay/service/polemica/PolemicaService.kt`
+
+[2025-09-24 23:37:09] - Принято решение о реализации продвинутой системы обработки ошибок краулинга в PolemicaService с
+различением типов ошибок и автоматическим восстановлением.
+
+## Decision
+
+* Расширить модель Game полями для отслеживания ошибок краулинга (crawlFailureCount, lastCrawlError, lastFailureTime,
+  crawlStopReason)
+* Реализовать детальную обработку различных типов ошибок:
+    - HTTP 404 (игра удалена) - немедленная остановка краулинга
+    - HTTP 401/403 (проблемы авторизации) - остановка после 5 попыток
+    - Сетевые ошибки - остановка после 3 попыток
+    - Неизвестные ошибки - остановка после 2 попыток
+* Добавить методы восстановления краулинга (ручное и автоматическое)
+* Реализовать административные методы для мониторинга проблемных игр
+
+## Rationale
+
+* Различение типов ошибок позволяет применять разные стратегии обработки
+* Счетчик попыток предотвращает бесконечные попытки краулинга проблемных игр
+* Автоматическое восстановление для временных проблем (сеть) повышает надежность
+* Детальное логирование и статистика упрощают диагностику проблем
+* Административные методы обеспечивают контроль и мониторинг системы
+
+## Implementation Details
+
+* Модифицированы файлы:
+    - `src/main/kotlin/com/stoum/overlay/entity/Game.kt` - добавлены новые поля
+    - `src/main/kotlin/com/stoum/overlay/repository/GameRepository.kt` - новые методы поиска
+    - `src/main/kotlin/com/stoum/overlay/service/polemica/PolemicaService.kt` - улучшенная обработка ошибок
+* Добавлены методы: handleCrawlError(), restartGameCrawling(), autoRecoverStoppedGames(), getCrawlErrorStatistics(),
+  getProblematicGames()
+* Реализована логика сброса счетчика ошибок при успешном краулинге
