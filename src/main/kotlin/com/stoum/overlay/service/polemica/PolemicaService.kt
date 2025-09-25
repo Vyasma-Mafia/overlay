@@ -347,8 +347,6 @@ class PolemicaService(
 
                 }
 
-
-
                 if (polemicaGame.result != null) {
                     game.started = false
                     game.result = if (polemicaGame.result == PolemicaGameResult.RED_WIN) "red" else "black"
@@ -543,7 +541,7 @@ class PolemicaService(
             isAuthenticationError(exception) -> {
                 val currentCount = (game.crawlFailureCount ?: 0) + 1
                 game.crawlFailureCount = currentCount
-                game.lastCrawlError = "Authentication failed: ${exception.message}"
+                game.lastCrawlError = "Authentication failed"
                 game.lastFailureTime = LocalDateTime.now()
 
                 if (currentCount >= 5) {
@@ -557,7 +555,7 @@ class PolemicaService(
             isNetworkError(exception) -> {
                 val currentCount = (game.crawlFailureCount ?: 0) + 1
                 game.crawlFailureCount = currentCount
-                game.lastCrawlError = "Network error: ${exception.message}"
+                game.lastCrawlError = "Network error"
                 game.lastFailureTime = LocalDateTime.now()
 
                 if (currentCount >= 3) {
@@ -571,7 +569,7 @@ class PolemicaService(
             else -> {
                 val currentCount = (game.crawlFailureCount ?: 0) + 1
                 game.crawlFailureCount = currentCount
-                game.lastCrawlError = "Unknown error: ${exception.message}"
+                game.lastCrawlError = "Unknown error"
                 game.lastFailureTime = LocalDateTime.now()
 
                 if (currentCount >= 2) {
