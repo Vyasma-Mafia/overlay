@@ -122,7 +122,7 @@ class PolemicaServiceErrorHandlingTest {
 
         // Then
         assertEquals(3, statistics["totalStopped"])
-        val byReason = statistics["byReason"] as Map<String, Int>
+        val byReason = statistics["byReason"] as Map<*, *>
         assertEquals(1, byReason["GAME_DELETED_IN_POLEMICA"])
         assertEquals(2, byReason["NETWORK_ERRORS"])
         assertEquals(2, statistics["recentFailures"]) // За последние 24 часа
