@@ -262,6 +262,12 @@ class PolemicaService(
                         if (getPolemicaRoles) {
                             player.role = polemicaRoleToRole(polemicaGame.getRole(position))
                         }
+                        val overlayPlayer = polemicaPlayer?.player?.id?.let { playerId ->
+                            photoService.getPlayer(
+                                GameType.POLEMICA,
+                                playerId
+                            )
+                        }
                         val playerPhotoUrl = polemicaPlayer?.player?.id?.let { playerId ->
                             photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
                                 playerId = playerId,
@@ -270,7 +276,7 @@ class PolemicaService(
                                 role = if (game.visibleRoles == true) player.role else null
                             )
                         } ?: DEFAULT_PHOTO_URL
-                        player.nickname = polemicaPlayer?.username.toString()
+                        player.nickname = overlayPlayer?.nickname ?: polemicaPlayer?.username.toString()
                         player.photoUrl = playerPhotoUrl
                         player.fouls = polemicaPlayer?.fouls?.size
                         player.techs = polemicaPlayer?.techs?.size

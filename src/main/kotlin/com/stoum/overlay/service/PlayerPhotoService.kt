@@ -82,11 +82,7 @@ class PlayerPhotoService(
         tournamentId: Long,
         role: String?
     ): String {
-        val player = when (tournamentType) {
-            GameType.POLEMICA -> playerRepository.findPlayerByPolemicaId(playerId)
-            GameType.GOMAFIA -> playerRepository.findPlayerByGomafiaId(playerId)
-            GameType.CUSTOM -> null
-        }
+        val player = getPlayer(tournamentType, playerId)
         if (player != null) {
             val playerPhoto = getPlayerPhotoForCompetitionRole(player, tournamentType, tournamentId, role)
             if (playerPhoto != null) {
@@ -98,6 +94,15 @@ class PlayerPhotoService(
             GameType.GOMAFIA -> "https://storage.yandexcloud.net/mafia-photos/gomafia/${playerId}.jpg"
             GameType.CUSTOM -> DEFAULT_PHOTO_URL
         }
+    }
+
+    fun getPlayer(
+        tournamentType: GameType,
+        playerId: Long
+    ): Player? = when (tournamentType) {
+        GameType.POLEMICA -> playerRepository.findPlayerByPolemicaId(playerId)
+        GameType.GOMAFIA -> playerRepository.findPlayerByGomafiaId(playerId)
+        GameType.CUSTOM -> null
     }
 
     @Transactional
