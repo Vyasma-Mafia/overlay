@@ -523,12 +523,12 @@ class PolemicaService(
 
     fun updateRoles(gameId: UUID, roles: Map<Int, String>) {
         val game = gameRepository.findById(gameId).orElse(null) ?: return
-        getLogger().info("update roles found game: $game")
         game.players.forEach { player ->
             roles[player.place]?.let { newRole ->
                 player.role = newRole
             }
         }
+        saveAndEmitGame(game)
     }
 
     /**

@@ -346,18 +346,19 @@ class OverlayController(
     }
 
     @PostMapping("/{id}/clearRoles")
+    @ResponseBody
     fun clearRoles(@PathVariable id: String) {
         val gameId = UUID.fromString(id)
         polemicaService.clearRoles(gameId)
     }
 
     @PostMapping("/{id}/updateRoles")
+    @ResponseBody
     fun updateRoles(
         @PathVariable id: String,
         @RequestBody roles: Map<Int, String>
     ) {
         val gameId = UUID.fromString(id)
-        getLogger().info("Update roles $gameId: $roles")
         polemicaService.updateRoles(gameId, roles)
     }
 }
