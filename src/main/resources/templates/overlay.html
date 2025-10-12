@@ -10,6 +10,10 @@
 
 <body class="visible">
 <div class="fact-panel">
+    <div class="fact-player-info" id="fact-player-info" style="display: none;">
+        <div class="fact-player-photo" id="fact-player-photo"></div>
+        <div class="fact-player-name" id="fact-player-name"></div>
+    </div>
     <p id="fact-content"></p>
 </div>
 
@@ -318,6 +322,11 @@
                     }
                     case '!nextgame': {
                         nextGame(split[1]);
+                        break;
+                    }
+                    case '!fact': {
+                        displayFact(split[1]);
+                        break;
                     }
                 }
             }
@@ -654,6 +663,52 @@
         }
     }
 
+    function displayFact(factDataString) {
+        try {
+            const factData = JSON.parse(factDataString);
+            const factPanel = document.querySelector('.fact-panel');
+            const factContent = document.getElementById('fact-content');
+            const factPlayerInfo = document.getElementById('fact-player-info');
+            const factPlayerPhoto = document.getElementById('fact-player-photo');
+            const factPlayerName = document.getElementById('fact-player-name');
+
+            if (factData && factData.text) {
+                // Устанавливаем текст факта
+                factContent.textContent = factData.text;
+
+                // Обрабатываем информацию об игроке
+                if (factData.playerNickname && factData.playerPhotoUrl) {
+                    // Показываем информацию об игроке
+                    factPlayerName.textContent = factData.playerNickname;
+                    factPlayerPhoto.style.backgroundImage = `url("${factData.playerPhotoUrl}")`;
+                    factPlayerInfo.style.display = 'flex';
+                } else {
+                    // Скрываем информацию об игроке, если её нет
+                    factPlayerInfo.style.display = 'none';
+                }
+
+                // Показываем панель с фактом
+                factPanel.classList.add('visible');
+
+                // Автоматически скрываем факт через указанное время (в секундах)
+                const displayDuration = factData.displayDurationSeconds || 10; // По умолчанию 10 секунд
+                setTimeout(() => {
+                    factPanel.classList.remove('visible');
+                    // Сбрасываем информацию об игроке при скрытии
+                    factPlayerInfo.style.display = 'none';
+                    factPlayerPhoto.style.backgroundImage = '';
+                    factPlayerName.textContent = '';
+                }, displayDuration * 1000);
+
+                console.log(`Показан факт: ${factData.text} на ${displayDuration} секунд`);
+                if (factData.playerNickname) {
+                    console.log(`Игрок: ${factData.playerNickname}`);
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка при обработке факта:', error);
+        }
+    }
 
     $(document).ready(function () {
         var element = document.getElementsByTagName("body")[0];

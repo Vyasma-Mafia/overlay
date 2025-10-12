@@ -16,10 +16,12 @@ import com.github.mafia.vyasma.polemica.library.utils.getKickedFromTable
 import com.github.mafia.vyasma.polemica.library.utils.getRole
 import com.github.mafia.vyasma.polemica.library.utils.getVoteCandidatesOrder
 import com.github.mafia.vyasma.polemica.library.utils.getVotingParticipants
+import com.stoum.overlay.entity.Fact
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
 import com.stoum.overlay.getLogger
+import com.stoum.overlay.repository.FactRepository
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.DEFAULT_PHOTO_URL
 import com.stoum.overlay.service.EmitterService
@@ -38,6 +40,7 @@ import java.util.concurrent.TimeUnit
 class PolemicaService(
     val polemicaClient: PolemicaClient,
     val gameRepository: GameRepository,
+    val factRepository: FactRepository,
     val emitterService: EmitterService,
     val pointsService: GamePointsService,
     val photoService: PlayerPhotoService
@@ -351,6 +354,11 @@ class PolemicaService(
                             }.toMutableList()
                     }
 
+                }
+
+                // Проверка и отображение фактов для текущей стадии
+                polemicaGame.stage?.let { stage ->
+                    checkAndDisplayFacts(game, stage.type)
                 }
 
                 if (polemicaGame.result != null) {
@@ -719,6 +727,59 @@ class PolemicaService(
             tGame.num.toInt(),
             tGame.table.toInt(),
             tGame.phase.toInt()
+        )
+    }
+
+    /**
+     * Проверяет и отображает факты для текущей стадии игры
+     */
+    private fun checkAndDisplayFacts(game: Game, currentStageType: StageType) {
+        try {
+            // Получаем неотображенные факты для данной игры и стадии
+            val factsToDisplay = game.facts.filterNot { it.isDisplayed }
+                .filter { it.stageType == currentStageType.name }
+
+            factsToDisplay.forEach { fact ->
+                // Помечаем факт как отображенный
+                fact.isDisplayed = true
+                factRepository.save(fact)
+
+                // Планируем отображение факта через SSE
+                scheduleFactDisplay(fact, game)
+
+                getLogger().info("Displaying fact ${fact.id} for game ${game.id} at stage ${currentStageType}")
+            }
+        } catch (e: Exception) {
+            getLogger().warn("Error while processing facts for game ${game.id}: ${e.message}")
+        }
+    }
+
+    /**
+     * Планирует отображение факта через SSE
+     */
+    private fun scheduleFactDisplay(fact: Fact, game: Game) {
+        val factData = mapOf(
+            "type" to "fact",
+            "text" to fact.text,
+            "playerPhotoUrl" to fact.playerPhotoUrl,
+            "playerNickname" to fact.playerNickname,
+            "displayDurationSeconds" to fact.displayDurationSeconds
+        )
+
+        // Отправляем факт сразу
+        emitterService.emitFactToGame(game.id.toString(), factData)
+
+        // Планируем скрытие факта через указанное время
+        taskExecutorService.schedule(
+            {
+                val hideFactData = mapOf(
+                    "type" to "hideFact",
+                    "factId" to fact.id
+                )
+                emitterService.emitFactToGame(game.id.toString(), hideFactData)
+            },
+            fact.displayDurationSeconds.toLong(),
+            TimeUnit.SECONDS
         )
     }
 }

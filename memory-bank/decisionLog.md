@@ -105,3 +105,16 @@ This file records architectural and implementation decisions using a list format
 * Добавлены методы: handleCrawlError(), restartGameCrawling(), autoRecoverStoppedGames(), getCrawlErrorStatistics(),
   getProblematicGames()
 * Реализована логика сброса счетчика ошибок при успешном краулинге
+
+[2025-10-09 17:26:56] - Добавлена новая фича "Факты об игроках" в систему оверлеев. Принято решение создать отдельную
+сущность Fact с полями: factText, playerNickname, stage, displayTimeSeconds и связью @ManyToOne с
+TournamentOverlaySettings. Это позволяет хранить множество фактов для каждого турнира и управлять ими через
+админ-панель.
+
+[2025-10-09 17:26:56] - Создан новый контроллер TournamentSettingsAdminController для управления настройками турнира и
+фактами. Выбран RESTful подход с эндпоинтами: GET для отображения страницы, POST для добавления фактов, DELETE для
+удаления. Это обеспечивает четкое разделение ответственности и удобный API.
+
+[2025-10-09 17:26:56] - Добавлен HTML-интерфейс tournament_settings.html с использованием Bootstrap 5 для управления
+фактами. Интерфейс включает форму добавления фактов с выбором игрока из участников турнира, указанием стадии показа и
+времени отображения. Это обеспечивает удобное управление фактами через веб-интерфейс.

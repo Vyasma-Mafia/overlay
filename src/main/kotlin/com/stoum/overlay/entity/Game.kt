@@ -41,6 +41,9 @@ data class Game(
         @JoinColumn(name = "game_id")
         @OrderBy("place ASC")
     var players: MutableList<GamePlayer> = mutableListOf(),
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    var facts: MutableList<Fact> = mutableListOf(),
     var started: Boolean? = null,
     var visibleOverlay: Boolean? = true,
     var visibleRoles: Boolean? = true,

@@ -913,7 +913,7 @@ body.stats-right.show-stats .stats-panel {
 
 .fact-panel {
     top: 20px;
-    left: -100%;
+    left: -50%;
     max-width: 650px;
     width: max-content;
     min-width: 200px;
@@ -957,6 +957,39 @@ body.stats-right.show-stats .stats-panel {
     );
     border-radius: 20px;
     z-index: 0;
+}
+
+.fact-player-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    opacity: 0.7;
+    transform: translateX(-20px);
+    transition: opacity 0.3s ease-in-out 0.2s, transform 0.3s ease-in-out 0.2s;
+    position: relative;
+    z-index: 1;
+}
+
+.fact-player-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.fact-player-name {
+    color: #ffffff;
+    font-family: 'MrNorwester', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .fact-panel p {
@@ -1282,7 +1315,8 @@ body.stats-right.show-stats .stats-panel {
 }
 
 .fact-panel.visible {
-    left: 60px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .fact-panel.visible p {
