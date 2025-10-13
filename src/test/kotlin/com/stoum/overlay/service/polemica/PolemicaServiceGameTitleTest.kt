@@ -4,6 +4,7 @@ import com.github.mafia.vyasma.polemica.library.client.GamePointsService
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
+import com.stoum.overlay.repository.FactRepository
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.PlayerPhotoService
@@ -22,6 +23,7 @@ class PolemicaServiceGameTitleTest {
     private val emitterService = mockk<EmitterService>()
     private val pointsService = mockk<GamePointsService>()
     private val photoService = mockk<PlayerPhotoService>()
+    private val factRepository = mockk<FactRepository>()
 
     @BeforeEach
     fun setUp() {
@@ -30,7 +32,8 @@ class PolemicaServiceGameTitleTest {
             gameRepository = gameRepository,
             emitterService = emitterService,
             pointsService = pointsService,
-            photoService = photoService
+            photoService = photoService,
+            factRepository = factRepository
         )
     }
 
