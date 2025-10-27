@@ -124,25 +124,25 @@ footer {
 .sher .role {
     opacity: 1;
     background-color: rgb(234, 198, 103);
-    background-image: url("../icon/loupe.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/loupe.png");
 }
 
 .don .role {
     opacity: 1;
     background-color: rgb(220, 220, 220);
-    background-image: url("../icon/hat.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/hat.png");
 }
 
 .black .role {
     opacity: 1;
     background-color: rgb(13, 13, 13);
-    background-image: url("../icon/gun.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/gun.png");
 }
 
 .red .role {
     opacity: 1;
     background-color: rgb(152, 20, 29);
-    background-image: url("../icon/heart.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/heart.png");
 }
 
 .player {
@@ -178,19 +178,19 @@ footer {
 }
 
 .role-card.red {
-    background-image: url('../icon/red.png');
+    background-image: url('https://cdn.mafoverlay.online/icon/red.png');
 }
 
 .role-card.black {
-    background-image: url('../icon/black.png');
+    background-image: url('https://cdn.mafoverlay.online/icon/black.png');
 }
 
 .role-card.sher {
-    background-image: url('../icon/sher.png');
+    background-image: url('https://cdn.mafoverlay.online/icon/sher.png');
 }
 
 .role-card.don {
-    background-image: url('../icon/don.png');
+    background-image: url('https://cdn.mafoverlay.online/icon/don.png');
 }
 
 .player.role-reveal .role-card {
@@ -347,14 +347,14 @@ footer {
 }
 
 .gun-animation {
-    background-image: url('../icon/gun.png');
+    background-image: url('https://cdn.mafoverlay.online/icon/gun.png');
     top: -50px;
     left: 50%;
     transform: translateX(-50%) rotate(90deg);
 }
 
 .fist-animation {
-    background-image: url('../icon/voted.png');
+    background-image: url('https://cdn.mafoverlay.online/icon/voted.png');
     background-color: white;
     border-radius: 16px;
     top: -50px;
@@ -463,22 +463,22 @@ footer {
 }
 
 .killed .status {
-    background-image: url("../icon/killed.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/killed.png");
     background-size: 22px;
 }
 
 .voted .status {
-    background-image: url("../icon/voted.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/voted.png");
     background-size: 22px;
 }
 
 .deleted .status {
-    background-image: url("../icon/deleted.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/deleted.png");
     background-size: 19px;
 }
 
 .first-killed .status {
-    background-image: url("../icon/first-killed.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/first-killed.png");
     background-size: 22px;
 }
 
