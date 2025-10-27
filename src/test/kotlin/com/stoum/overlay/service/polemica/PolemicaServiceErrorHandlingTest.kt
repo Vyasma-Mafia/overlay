@@ -4,6 +4,7 @@ import com.github.mafia.vyasma.polemica.library.client.GamePointsService
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
+import com.stoum.overlay.repository.FactRepository
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.PlayerPhotoService
@@ -29,15 +30,17 @@ class PolemicaServiceErrorHandlingTest {
     private val emitterService = mockk<EmitterService>()
     private val pointsService = mockk<GamePointsService>()
     private val photoService = mockk<PlayerPhotoService>()
+    private val factRepository = mockk<FactRepository>()
 
     @BeforeEach
     fun setUp() {
         polemicaService = PolemicaService(
             polemicaClient,
             gameRepository,
+            factRepository,
             emitterService,
             pointsService,
-            photoService
+            photoService,
         )
     }
 
@@ -122,7 +125,7 @@ class PolemicaServiceErrorHandlingTest {
 
         // Then
         assertEquals(3, statistics["totalStopped"])
-        val byReason = statistics["byReason"] as Map<String, Int>
+        val byReason = statistics["byReason"] as Map<*, *>
         assertEquals(1, byReason["GAME_DELETED_IN_POLEMICA"])
         assertEquals(2, byReason["NETWORK_ERRORS"])
         assertEquals(2, statistics["recentFailures"]) // За последние 24 часа

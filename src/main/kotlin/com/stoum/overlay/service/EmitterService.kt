@@ -42,6 +42,11 @@ class EmitterService(
         sendTo(gameId, "!nextgame ${objectMapper.writeValueAsString(game)}")
     }
 
+    fun emitFactToGame(gameId: String, data: Map<String, Any?>) {
+        val payload = objectMapper.writeValueAsString(data)
+        sendTo(gameId, "!fact ${payload}")
+    }
+
     fun registerEmitter(id: String, emitter: SseEmitter): SseEmitter {
         emitters.computeIfAbsent(id) { arrayListOf() }
         getLogger().info("Registering emitter for $id: $emitter")

@@ -242,39 +242,39 @@ input:checked + .slider:before {
 }
 
 .icon-killed {
-    background-image: url("../icon/killed.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/killed.png");
 }
 
 .icon-first-killed {
-    background-image: url("../icon/first-killed.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/first-killed.png");
 }
 
 .icon-voted {
-    background-image: url("../icon/voted.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/voted.png");
 }
 
 .icon-deleted {
-    background-image: url("../icon/deleted.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/deleted.png");
 }
 
 .icon-don {
-    background-image: url("../icon/hat.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/hat.png");
 }
 
 .icon-black {
-    background-image: url("../icon/gun.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/gun.png");
 }
 
 .icon-sher {
-    background-image: url("../icon/loupe.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/loupe.png");
 }
 
 .icon-speaker {
-    background-image: url("../icon/speaker.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/speaker.png");
 }
 
 .icon-heart {
-    background-image: url("../icon/heart.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/heart.png");
 }
 
 /* Checks and Guess sections */

@@ -141,19 +141,19 @@ h1 {
 }
 
 .card-icon.red {
-    background-image: url("../icon/heart.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/heart.png");
 }
 
 .card-icon.sher {
-    background-image: url("../icon/loupe.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/loupe.png");
 }
 
 .card-icon.black {
-    background-image: url("../icon/gun.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/gun.png");
 }
 
 .card-icon.don {
-    background-image: url("../icon/hat.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/hat.png");
 }
 
 .front-icon {

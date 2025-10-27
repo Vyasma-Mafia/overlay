@@ -45,22 +45,22 @@ body {
 
 .role-indicator.SHER {
     background-color: rgb(234, 198, 103);
-    background-image: url("../icon/loupe.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/loupe.png");
 }
 
 .role-indicator.DON {
     background-color: rgb(220, 220, 220);
-    background-image: url("../icon/hat.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/hat.png");
 }
 
 .role-indicator.BLACK {
     background-color: rgb(13, 13, 13);
-    background-image: url("../icon/gun.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/gun.png");
 }
 
 .role-indicator.RED {
     background-color: rgb(152, 20, 29);
-    background-image: url("../icon/heart.png");
+    background-image: url("https://cdn.mafoverlay.online/icon/heart.png");
 }
 
 .role-indicator.available {
