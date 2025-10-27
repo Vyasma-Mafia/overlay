@@ -18,8 +18,8 @@ services:
       timeout: 5s
 
   overlay:
-    #    image: ghcr.io/vyasma-mafia/overlay:master
-    build: .
+    image: ghcr.io/vyasma-mafia/overlay:master
+    #    build: .
     container_name: overlay
     ports:
       - "8090:8080"
