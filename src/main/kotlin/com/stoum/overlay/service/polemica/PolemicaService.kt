@@ -8,6 +8,7 @@ import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGameResult
 import com.github.mafia.vyasma.polemica.library.model.game.PolemicaGuess
 import com.github.mafia.vyasma.polemica.library.model.game.Position
 import com.github.mafia.vyasma.polemica.library.model.game.Role
+import com.github.mafia.vyasma.polemica.library.model.game.Stage
 import com.github.mafia.vyasma.polemica.library.model.game.StageType
 import com.github.mafia.vyasma.polemica.library.utils.KickReason
 import com.github.mafia.vyasma.polemica.library.utils.getFinalVotes
@@ -17,6 +18,7 @@ import com.github.mafia.vyasma.polemica.library.utils.getRole
 import com.github.mafia.vyasma.polemica.library.utils.getVoteCandidatesOrder
 import com.github.mafia.vyasma.polemica.library.utils.getVotingParticipants
 import com.stoum.overlay.entity.Fact
+import com.stoum.overlay.entity.FactStage
 import com.stoum.overlay.entity.Game
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.overlay.GamePlayer
@@ -358,7 +360,7 @@ class PolemicaService(
 
                 // Проверка и отображение фактов для текущей стадии
                 polemicaGame.stage?.let { stage ->
-                    checkAndDisplayFacts(game, stage.type)
+                    checkAndDisplayFacts(game, stage)
                 }
 
                 if (polemicaGame.result != null) {
@@ -731,14 +733,17 @@ class PolemicaService(
     }
 
     /**
-     * Проверяет и отображает факты для текущей стадии игры
+     * Проверяет и отображает факты для текущей стадии игры.
+     * Факты показываются, если текущая стадия >= стадии факта (используя Comparable).
      */
-    private fun checkAndDisplayFacts(game: Game, currentStageType: StageType) {
+    private fun checkAndDisplayFacts(game: Game, currentStage: Stage) {
         try {
-            // Получаем неотображенные факты для данной игры и стадии
-            val factsToDisplay = game.facts.filterNot { it.isDisplayed }
-                .filter { it.stageType == currentStageType.name }
+            val currentFactStage = FactStage.fromPolemicaStage(currentStage)
 
+            // Находим факты, которые должны показаться на текущей или более ранней стадии
+            val factsToDisplay = game.facts.filterNot { it.isDisplayed }
+                .filter { it.stage <= currentFactStage }
+            
             factsToDisplay.forEach { fact ->
                 // Помечаем факт как отображенный
                 fact.isDisplayed = true
@@ -747,7 +752,7 @@ class PolemicaService(
                 // Планируем отображение факта через SSE
                 scheduleFactDisplay(fact, game)
 
-                getLogger().info("Displaying fact ${fact.id} for game ${game.id} at stage ${currentStageType}")
+                getLogger().info("Displaying fact ${fact.id} for game ${game.id} at stage ${currentStage}")
             }
         } catch (e: Exception) {
             getLogger().warn("Error while processing facts for game ${game.id}: ${e.message}")

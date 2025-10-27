@@ -1,7 +1,8 @@
 package com.stoum.overlay.controller
 
-import com.github.mafia.vyasma.polemica.library.model.game.StageType
 import com.stoum.overlay.entity.Fact
+import com.stoum.overlay.entity.FactStage
+import com.stoum.overlay.model.StageOptions
 import com.stoum.overlay.repository.FactRepository
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.PlayerPhotoService
@@ -35,9 +36,31 @@ class GameFactsAdminController(
 
         model.addAttribute("game", game)
         model.addAttribute("facts", facts)
-        model.addAttribute("stageTypes", StageType.entries.toTypedArray())
+        model.addAttribute("stageOptions", StageOptions.AVAILABLE_STAGES)
 
         return "admin/game_facts"
+    }
+
+    @GetMapping("/{gameId}/facts/api")
+    @ResponseBody
+    fun getGameFactsApi(@PathVariable gameId: UUID): ResponseEntity<List<Map<String, Any?>>> {
+        val game = gameRepository.findById(gameId).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+
+        val factsData = game.facts.map { fact ->
+            mapOf(
+                "id" to fact.id.toString(),
+                "text" to fact.text,
+                "playerPhotoUrl" to fact.playerPhotoUrl,
+                "stageType" to fact.stage.type,
+                "stageDay" to fact.stage.day,
+                "stagePlayer" to fact.stage.player,
+                "displayDurationSeconds" to fact.displayDurationSeconds,
+                "isDisplayed" to fact.isDisplayed
+            )
+        }
+
+        return ResponseEntity.ok(factsData)
     }
 
     @PostMapping("/{gameId}/facts")
@@ -47,6 +70,8 @@ class GameFactsAdminController(
         @RequestParam text: String,
         @RequestParam playerPlace: Int?,
         @RequestParam stageType: String,
+        @RequestParam stageDay: Int?,
+        @RequestParam stagePlayer: Int?,
         @RequestParam displayDurationSeconds: Int
     ): ResponseEntity<out Map<String, Any?>?> {
         val game = gameRepository.findById(gameId).orElse(null)
@@ -58,7 +83,12 @@ class GameFactsAdminController(
             text = text,
             playerNickname = player?.nickname,
             playerPhotoUrl = player?.photoUrl,
-            stageType = stageType,
+            stage = FactStage(
+                type = stageType,
+                day = stageDay,
+                player = stagePlayer,
+                voting = null
+            ),
             displayDurationSeconds = displayDurationSeconds,
             isDisplayed = false
         )
@@ -74,7 +104,9 @@ class GameFactsAdminController(
                 "id" to savedFact.id,
                 "text" to savedFact.text,
                 "playerPhotoUrl" to savedFact.playerPhotoUrl,
-                "stageType" to savedFact.stageType,
+                "stageType" to savedFact.stage.type,
+                "stageDay" to savedFact.stage.day,
+                "stagePlayer" to savedFact.stage.player,
                 "displayDurationSeconds" to savedFact.displayDurationSeconds,
                 "isDisplayed" to savedFact.isDisplayed
             )
@@ -89,6 +121,8 @@ class GameFactsAdminController(
         @RequestParam text: String,
         @RequestParam playerPlace: Int?,
         @RequestParam stageType: String,
+        @RequestParam stageDay: Int?,
+        @RequestParam stagePlayer: Int?,
         @RequestParam displayDurationSeconds: Int
     ): ResponseEntity<out Map<String, Any?>?> {
         val game = gameRepository.findById(gameId).orElse(null)
@@ -105,7 +139,12 @@ class GameFactsAdminController(
 
         fact.text = text
         fact.playerPhotoUrl = playerPhotoUrl
-        fact.stageType = stageType
+        fact.stage = FactStage(
+            type = stageType,
+            day = stageDay,
+            player = stagePlayer,
+            voting = null
+        )
         fact.displayDurationSeconds = displayDurationSeconds
 
         val savedFact = factRepository.save(fact)
@@ -115,7 +154,9 @@ class GameFactsAdminController(
                 "id" to savedFact.id,
                 "text" to savedFact.text,
                 "playerPhotoUrl" to savedFact.playerPhotoUrl,
-                "stageType" to savedFact.stageType,
+                "stageType" to savedFact.stage.type,
+                "stageDay" to savedFact.stage.day,
+                "stagePlayer" to savedFact.stage.player,
                 "displayDurationSeconds" to savedFact.displayDurationSeconds,
                 "isDisplayed" to savedFact.isDisplayed
             )

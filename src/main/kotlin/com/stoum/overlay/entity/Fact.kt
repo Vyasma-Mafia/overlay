@@ -1,6 +1,7 @@
 package com.stoum.overlay.entity
 
 import jakarta.persistence.Column
+import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -24,8 +25,8 @@ class Fact(
     @Column(name = "player_photo_url", nullable = true, length = 500)
     var playerPhotoUrl: String? = null,
 
-    @Column(name = "stage_type", nullable = false, length = 100)
-    var stageType: String,
+    @Embedded
+    var stage: FactStage,
 
     @Column(name = "display_duration_seconds", nullable = false)
     var displayDurationSeconds: Int,

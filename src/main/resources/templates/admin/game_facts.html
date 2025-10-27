@@ -98,7 +98,15 @@
                                             </div>
                                             <span th:unless="${fact.playerPhotoUrl}" class="text-muted">Без фото</span>
                                         </td>
-                                        <td th:text="${fact.stageType}">DEALING</td>
+                                        <td>
+                                            <span th:text="${T(com.stoum.overlay.model.StageOptions).getDisplayName(fact.stage.type)}">Раздача</span>
+                                            <span th:if="${fact.stage.day != null}">
+                                                (День <span th:text="${fact.stage.day}">1</span>)
+                                            </span>
+                                            <span th:if="${fact.stage.player != null}">
+                                                (Игрок <span th:text="${fact.stage.player}">1</span>)
+                                            </span>
+                                        </td>
                                         <td>
                                             <span th:text="${fact.displayDurationSeconds}">30</span> сек
                                         </td>
@@ -109,11 +117,13 @@
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline-primary me-1"
-                                                    th:onclick="'editFact(\'[[${fact.id}]]\')'">
+                                                    th:data-fact-id="${fact.id}"
+                                                    onclick="editFact(this.getAttribute('data-fact-id'))">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-danger"
-                                                    th:onclick="'deleteFact(\'[[${fact.id}]]\')'">
+                                                    th:data-fact-id="${fact.id}"
+                                                    onclick="deleteFact(this.getAttribute('data-fact-id'))">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
@@ -158,13 +168,28 @@
 
                             <div class="mb-3">
                                 <label for="stageType" class="form-label">Стадия показа *</label>
-                                <select class="form-select" id="stageType" name="stageType" required>
-                                    <option th:each="stage : ${stageTypes}"
-                                            th:value="${stage}"
-                                            th:text="${stage}">
-                                        DEALING
+                                <select class="form-select" id="stageType" name="stageType" required
+                                        onchange="updateStageFields()">
+                                    <option th:each="stage : ${stageOptions}"
+                                            th:value="${stage.type}"
+                                            th:text="${stage.displayName}"
+                                            th:data-requires-day="${stage.requiresDay}"
+                                            th:data-requires-player="${stage.requiresPlayer}">
+                                        Раздача
                                     </option>
                                 </select>
+                            </div>
+
+                            <div class="mb-3" id="stageDayField" style="display: none;">
+                                <label for="stageDay" class="form-label">День</label>
+                                <input type="number" class="form-control" id="stageDay"
+                                        name="stageDay" min="1" max="10">
+                            </div>
+
+                            <div class="mb-3" id="stagePlayerField" style="display: none;">
+                                <label for="stagePlayer" class="form-label">Номер игрока</label>
+                                <input type="number" class="form-control" id="stagePlayer"
+                                        name="stagePlayer" min="1" max="10">
                             </div>
 
                             <div class="mb-3">
@@ -184,6 +209,20 @@
     </div>
     <script>
         const gameId = '[[${game.id}]]';
+
+        // Функция для обновления видимости полей стадии
+        function updateStageFields() {
+            const select = document.getElementById('stageType');
+            const selectedOption = select.options[select.selectedIndex];
+            const requiresDay = selectedOption.getAttribute('data-requires-day') === 'true';
+            const requiresPlayer = selectedOption.getAttribute('data-requires-player') === 'true';
+
+            document.getElementById('stageDayField').style.display = requiresDay ? 'block' : 'none';
+            document.getElementById('stagePlayerField').style.display = requiresPlayer ? 'block' : 'none';
+
+            if (!requiresDay) document.getElementById('stageDay').value = '';
+            if (!requiresPlayer) document.getElementById('stagePlayer').value = '';
+        }
 
         // Обработка формы добавления/редактирования факта
         document.getElementById('factForm').addEventListener('submit', function (e) {
@@ -230,6 +269,17 @@
                         document.getElementById('factText').value = fact.text;
                         document.getElementById('stageType').value = fact.stageType;
                         document.getElementById('displayDuration').value = fact.displayDurationSeconds;
+
+                        // Устанавливаем дополнительные поля стадии
+                        if (fact.stageDay) {
+                            document.getElementById('stageDay').value = fact.stageDay;
+                        }
+                        if (fact.stagePlayer) {
+                            document.getElementById('stagePlayer').value = fact.stagePlayer;
+                        }
+
+                        // Обновляем видимость полей
+                        updateStageFields();
 
                         // Устанавливаем игрока, если есть фото
                         if (fact.playerPhotoUrl) {
@@ -278,6 +328,12 @@
             document.getElementById('factModalLabel').textContent = 'Добавить факт';
             document.getElementById('factForm').reset();
             document.getElementById('factId').value = '';
+            updateStageFields();
+        });
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function () {
+            updateStageFields();
         });
     </script>
 </div>
