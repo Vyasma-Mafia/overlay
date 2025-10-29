@@ -1,13 +1,18 @@
 package com.stoum.overlay.entity.overlay
 
-import com.stoum.overlay.entity.converters.MapListConverter
-import com.stoum.overlay.entity.converters.MapMapConverter
-import jakarta.persistence.Convert
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.stoum.overlay.entity.Game
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.util.UUID
 
 @Entity
@@ -27,16 +32,23 @@ data class GamePlayer(
     var voting: Boolean? = false,
     var clubIcon: String? = null,
     var score: Double? = null,
-    @Convert(converter = MapListConverter::class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
     var checks: MutableList<Map<String, String>>? = arrayListOf(),
-    @Convert(converter = MapListConverter::class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
     var guess: MutableList<Map<String, String>>? = arrayListOf(),
-    @Convert(converter = MapListConverter::class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
     var votedBy: MutableList<Map<String, String>>? = arrayListOf(),
-    @Convert(converter = MapMapConverter::class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
     var stat: MutableMap<String, Map<String, String>>? = hashMapOf(),
+    @ManyToOne
+    @JoinColumn(name = "game_id", nullable = false)
+    @JsonBackReference("game-players")
+    @JsonIgnore
+    var game: Game? = null,
     var customPhoto: Boolean? = null,
     var sourcePlayerId: Long? = null
-/*    @JoinColumn(name = "game", referencedColumnName = "id")
-    var gameId: UUID*/
 )

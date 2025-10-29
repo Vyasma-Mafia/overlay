@@ -214,6 +214,8 @@ class PolemicaService(
                 tournamentId = polemicaTournamentGame.tournamentId
             )
         )
+        // Ensure bidirectional association for cascading persist
+        players.forEach { it.game = game }
         return gameRepository.save(game)
     }
 
@@ -399,6 +401,8 @@ class PolemicaService(
     private fun saveAndEmitGame(game: Game) {
         // Сохраняем игру в репозиторий
         try {
+            // Ensure bidirectional association before save
+            game.players.forEach { if (it.game == null) it.game = game }
             gameRepository.save(game)
         } catch (e: Exception) {
             getLogger().warn("Error while saving game ${game.id}: ${e.message}")

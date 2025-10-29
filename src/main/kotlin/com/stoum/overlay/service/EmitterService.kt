@@ -16,11 +16,10 @@ import java.util.concurrent.atomic.AtomicLong
 
 @Service
 class EmitterService(
-    val gameRepository: GameRepository
+    val gameRepository: GameRepository,
+    val objectMapper: ObjectMapper
 ) {
     val ERRORS_TO_EXCLUDE = 3L
-
-    val objectMapper = ObjectMapper()
 
     private val emitters = ConcurrentHashMap<String, MutableList<SseEmitterInfo>>()
 
