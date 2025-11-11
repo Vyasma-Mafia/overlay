@@ -1,51 +1,132 @@
 # Active Context
 
 This file tracks the project's current status, including recent changes, current goals, and open questions.
-2025-09-03 10:32:30 - Log of updates made.
-
-*
 
 ## Current Focus
 
-* Анализ проекта и первоначальное (грубое) заполнение Memory Bank для создания базового контекста.
+The project is in active development and maintenance phase. Recent work has focused on:
+- Enhanced error handling for Polemica crawling
+- Player facts feature for game overlays
+- Database schema improvements (JSONB migration)
+- Admin panel enhancements
 
 ## Recent Changes
 
-* Произведено первоначальное заполнение `productContext.md` на основе анализа структуры проекта.
+### [2025-10-28] - JSONB Migration
+- Migrated JSON string columns to PostgreSQL JSONB type
+- Removed custom AttributeConverter classes
+- Improved type safety and query capabilities
+- Migration: `V20251028__jsonb_migration.sql`
 
-## Open Questions/Issues
+### [2025-10-11] - Facts Feature Implementation
+- Completed full implementation of player facts functionality
+- Facts now tied to individual games instead of tournaments
+- Added `isDisplayed` flag for tracking shown facts
+- Automatic fact display based on game stages from Polemica
+- Full admin UI for managing facts per game
 
-* Каковы конкретные требования к функционалу оверлеев? (Например, какие данные и в каком виде должны отображаться для
-  разных типов игр).
-* Требуется ли какая-либо аутентификация или авторизация для доступа к оверлеям?
-* Как именно происходит взаимодействие и синхронизация данных с `gomafia.pro` и `polemica.app`? (API, форматы данных).
-* Какие есть планы по развитию и добавлению нового функционала?
+### [2025-09-25] - Database Migration Fix
+- Fixed migration issue with `crawlFailureCount` field
+- Changed to nullable (Int?) for database compatibility
+- Updated code to handle nullable values correctly
 
-[2025-09-12 20:03:31] - Начата работа над добавлением отображения номеров игроков, проголосовавших за заголосованного
-игрока в оверлеях мафии.
+### [2025-09-24] - Enhanced Error Handling
+- Implemented advanced error handling system for Polemica crawling
+- Added error tracking fields to Game entity:
+  - `crawlFailureCount` - Number of consecutive failures
+  - `lastCrawlError` - Last error message
+  - `lastFailureTime` - Timestamp of last failure
+  - `crawlStopReason` - Reason for stopping crawl
+- Different retry strategies based on error types:
+  - HTTP 404 (game deleted) - Immediate stop
+  - HTTP 401/403 (auth issues) - Stop after 5 attempts
+  - Network errors - Stop after 3 attempts
+  - Unknown errors - Stop after 2 attempts
+- Added recovery methods for manual and automatic restart
 
-[2025-09-12 20:08:22] - Завершена реализация функции отображения номеров голосовавших игроков. Все изменения внесены в
-код.
+### [2025-09-19] - UI Improvements
+- Fixed alignment of "Voted by" elements in overlays
+- Changed CSS `justify-content` from `center` to `flex-start`
+- Added black text-shadow for better visibility of yellow sheriff numbers
 
-[2025-09-18 16:10:12] - Начата работа над изменением логики формирования названий игр в Polemica. Требуется добавить
-номер стола (при наличии нескольких столов в фазе) и маркер "Финал" для phase=2.
+### [2025-09-18] - Game Title Enhancement
+- Improved game title generation in Polemica
+- Added table number when multiple tables in phase
+- Added "Финал" (Final) marker for phase=2
+- Created helper functions: `getTablesCountInPhase()` and `generateGameTitle()`
 
-[2025-09-18 16:15:48] - Завершена реализация новой логики формирования названий игр в Polemica. Добавлены функции
-getTablesCountInPhase() и generateGameTitle(), изменена строка 154 в PolemicaService.kt. Все тесты прошли успешно.
+### [2025-09-12] - Voting Visualization
+- Added display of player numbers who voted for each voted player
+- New field `votedBy` in `GamePlayer` model
+- Visual badges showing voting information
+- Color-coded by player roles
 
-[2025-09-19 18:57:30] - Исправлено выравнивание элементов "Voted by" в оверлеях. Изменено CSS-свойство justify-content с
-center на flex-start для класса .voted-by-numbers в файле style-source.css.
+## Current State
 
-[2025-09-19 19:12:55] - Добавлена черная обводка (text-shadow) для цифр в элементах voted-by для улучшения видимости,
-особенно желтого цвета шерифа.
+### Application Status
+- **Version**: Active development
+- **Database**: PostgreSQL 16 with Flyway migrations
+- **Build**: Gradle with Kotlin 2.1.10
+- **Runtime**: JDK 21, Spring Boot 3.4.4
 
-[2025-09-24 23:36:57] - Завершена реализация улучшенной системы обработки ошибок краулинга в PolemicaService. Добавлены
-новые поля в модель Game для отслеживания ошибок, расширен GameRepository, реализована детальная обработка различных
-типов ошибок с автоматическим восстановлением.
+### Key Components Status
+- ✅ Core overlay functionality - Operational
+- ✅ Polemica integration - Active with error handling
+- ✅ Gomafia integration - Active
+- ✅ Admin panel - Functional
+- ✅ Player facts - Implemented
+- ✅ Photo management - Operational with S3
+- ✅ SSE real-time updates - Working
+- ✅ Scheduled crawling - Configurable
 
-[2025-09-25 16:02:55] - Исправлена проблема с миграцией базы данных. Изменены поля crawlFailureCount на nullable (Int?)
-для совместимости с существующими записями в БД. Обновлен код для корректной работы с nullable значениями.
+### Known Issues / Technical Debt
+- Security configuration currently disabled (CORS/CSRF) - needs review before production
+- Some admin endpoints may need authentication/authorization
+- Error handling could be extended to other integrations
+- Test coverage could be expanded
 
-[2025-10-09 17:26:46] - Начата реализация новой фичи "Факты об игроках" для оверлея турниров. Создана архитектура с
-новой сущностью Fact, контроллером TournamentSettingsAdminController, репозиторием FactRepository и HTML-интерфейсом для
-управления фактами в админ-панели.
+## Open Questions / Issues
+
+### Functional Questions
+- What are the specific requirements for overlay functionality for different game types?
+- Are there plans for additional overlay features or customization options?
+- Should there be user authentication/authorization for admin panel access?
+- Are there requirements for audit logging of admin actions?
+
+### Technical Questions
+- What is the expected scale (concurrent games, users, tournaments)?
+- Are there performance requirements or SLAs to meet?
+- Should there be rate limiting on API endpoints?
+- Are there plans for horizontal scaling or load balancing?
+
+### Integration Questions
+- How should synchronization conflicts be resolved between external services?
+- Are there plans for additional external service integrations?
+- What is the expected data consistency model between services?
+
+### Future Enhancements
+- Additional overlay customization options
+- Enhanced analytics and reporting
+- Mobile app or responsive improvements
+- Real-time collaboration features
+- Advanced tournament management features
+
+## Next Steps
+
+### Immediate Priorities
+1. Continue monitoring and improving error handling
+2. Expand test coverage for new features
+3. Review and enhance security configuration
+4. Document API endpoints more thoroughly
+
+### Short-term Goals
+- Improve admin panel UX
+- Add more comprehensive error logging
+- Optimize database queries if needed
+- Enhance monitoring and alerting
+
+### Long-term Considerations
+- Security hardening for production deployment
+- Performance optimization for scale
+- Additional integration features
+- Enhanced analytics capabilities

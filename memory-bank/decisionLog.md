@@ -1,173 +1,252 @@
 # Decision Log
 
 This file records architectural and implementation decisions using a list format.
-2025-09-03 10:33:44 - Log of updates made.
 
-*
+## [2025-10-28] - JSONB Migration Decision
 
-## Decision
+### Decision
+Migrate JSON string columns to PostgreSQL JSONB type via Flyway migration without indexes at this stage.
 
-* **[2025-09-03 10:33:44]** - Принято решение о первоначальном заполнении Memory Bank на основе автоматического анализа
-  файловой структуры проекта.
+### Rationale
+- **Type safety**: Database-level JSON validation
+- **Query capabilities**: Native PostgreSQL JSON operators and path queries
+- **Performance**: Better performance and indexing potential (GIN indexes)
+- **Reduced overhead**: Eliminate custom AttributeConverter classes
+- **Future-proofing**: Better foundation for complex queries and indexing
 
-## Rationale
+### Implementation Details
+- **Migration file**: `V20251028__jsonb_migration.sql`
+- **Columns migrated**:
+  - `game.vote_candidates`: `[]` default
+  - `game_player.checks`: `[]` default
+  - `game_player.guess`: `[]` default
+  - `game_player.voted_by`: `[]` default
+  - `game_player.stat`: `{}` default
+- **Entity updates**: 
+  - Replaced `@Convert` with `@JdbcTypeCode(SqlTypes.JSON)` and `@Column(columnDefinition = "jsonb")`
+  - Removed `MapListConverter` and `MapMapConverter` classes
+- **Transaction safety**: Single transaction migration, no downtime
 
-* Необходимо создать базовый контекст о проекте для всех последующих операций и режимов работы. Автоматический анализ
-  позволяет быстро получить высокоуровневое представление о технологическом стеке, архитектуре и назначении проекта без
-  необходимости задавать вопросы пользователю.
+## [2025-10-11] - Facts Feature Refactoring
 
-## Implementation Details
+### Decision
+Refactor facts from tournament-level to game-level association, with `isDisplayed` flag for tracking.
 
-* Были проанализированы имена файлов и директорий, зависимости (Gradle), конфигурационные
-  файлы (`Dockerfile`, `prometheus.yml`) и существующий код.
-* На основе этого анализа были заполнены разделы "Project Goal", "Key Features" и "Overall Architecture"
-  в `productContext.md`, а также другие файлы Memory Bank.
+### Rationale
+- **Better granularity**: Facts are game-specific, not tournament-wide
+- **Display control**: Track which facts have been shown to prevent duplicates
+- **Stage integration**: Better integration with Polemica game stages
+- **Flexibility**: Allow different facts for different games in same tournament
 
-[2025-09-12 20:03:47] - Принято решение о добавлении функции отображения номеров игроков, проголосовавших за
-заголосованного игрока.
+### Implementation Details
+- **Entity changes**: 
+  - `Fact.game_id` instead of `tournament_overlay_settings_id`
+  - Added `isDisplayed: Boolean` field
+  - `@OneToMany` relationship in `Game` entity
+- **Service changes**: 
+  - `PolemicaService` automatically displays facts based on game stages
+  - Integration with `StageType` from Polemica library
+- **Admin UI**: New `game_facts.html` page for managing facts per game
+- **Repository**: New `FactRepository` with game-specific queries
 
-## Decision
+## [2025-09-24] - Advanced Error Handling for Crawling
 
-* Добавить новое поле `votedBy` в модель `GamePlayer` для хранения информации о голосовавших игроках
-* Разместить номера голосовавших под фото игрока, над именем (Вариант 1)
-* Использовать существующую систему цветовых бейджей с адаптацией под новые требования
+### Decision
+Implement comprehensive error handling system for Polemica crawling with error type differentiation and automatic recovery.
 
-## Rationale
+### Rationale
+- **Error differentiation**: Different error types require different handling strategies
+- **Prevent infinite retries**: Counter-based stopping prevents resource waste
+- **Automatic recovery**: Transient errors should recover automatically
+- **Monitoring**: Detailed error tracking enables better diagnostics
+- **Administrative control**: Manual recovery options for administrators
 
-* Повышение информативности оверлеев - зрители смогут видеть, кто именно проголосовал за каждого игрока
-* Выбранное расположение не загораживает важную информацию (фото, имя) и логично связано с игроком
-* Использование существующих паттернов дизайна обеспечивает консистентность интерфейса
+### Implementation Details
+- **New fields in Game entity**:
+  - `crawlFailureCount: Int?` - Consecutive failure counter
+  - `lastCrawlError: String?` - Last error message
+  - `lastFailureTime: LocalDateTime?` - Timestamp tracking
+  - `crawlStopReason: String?` - Reason for stopping
+- **Error handling strategies**:
+  - HTTP 404 (game deleted): Immediate stop
+  - HTTP 401/403 (auth): Stop after 5 attempts
+  - Network errors: Stop after 3 attempts
+  - Unknown errors: Stop after 2 attempts
+- **Recovery methods**:
+  - `restartGameCrawling()` - Manual restart
+  - `autoRecoverStoppedGames()` - Automatic recovery for transient errors
+- **Monitoring**: `getCrawlErrorStatistics()` and `getProblematicGames()` methods
 
-## Implementation Details
+## [2025-09-18] - Game Title Generation Enhancement
 
-* Бэкенд: Новое поле `votedBy: MutableList<Map<String, String>>?` в `GamePlayer.kt`
-* Фронтенд: HTML-контейнер `.voted-by-container` с бейджами `.voted-by-badge`
-* Стили: Компактные номера (18px высота) с цветовой кодировкой по ролям
-* Анимации: Плавное появление с задержкой между номерами
-* Условия отображения: Только для игроков со статусом "voted"
+### Decision
+Enhance game title generation in Polemica to include table numbers and phase markers.
 
-[2025-09-18 16:10:25] - Принято решение об изменении логики формирования названий игр в Polemica для улучшения
-информативности.
+### Rationale
+- **Information clarity**: Distinguish games on different tables in multi-table phases
+- **Final identification**: Clear marking of final games
+- **User experience**: Better understanding of game context for viewers
+- **Backward compatibility**: Maintain existing format for single-table scenarios
 
-## Decision
+### Implementation Details
+- **New format**:
+  - Single table: `"Tournament | Game N"`
+  - Multiple tables: `"Tournament | Game N | Table M"`
+  - Final phase: `"Tournament | Final | Game N"` or `"Tournament | Final | Game N | Table M"`
+- **Helper functions**:
+  - `getTablesCountInPhase()` - Count tables in phase
+  - `generateGameTitle()` - Generate formatted title
+- **Location**: `PolemicaService.kt` line 154 in `createGameFromPolemica()`
 
-* Изменить формирование названий игр в PolemicaService для включения дополнительной информации:
-    - Номер стола (если в фазе турнира больше одного стола)
-    - Маркер "Финал" (при phase=2)
-* Создать вспомогательные функции `getTablesCountInPhase()` и `generateGameTitle()`
-* Модифицировать метод `createGameFromPolemica()` в строке 154
+## [2025-09-12] - Voting Visualization Feature
 
-## Rationale
+### Decision
+Add visualization of which players voted for each voted player, displayed as numbered badges.
 
-* Повышение информативности названий игр для зрителей и участников
-* Четкое различение игр на разных столах в многостольных фазах
-* Выделение финальных игр специальным маркером
-* Сохранение обратной совместимости с существующим форматом
+### Rationale
+- **Information transparency**: Viewers can see voting patterns
+- **Visual clarity**: Badge-based display is compact and clear
+- **Design consistency**: Uses existing color-coding system
+- **User experience**: Enhances understanding of game dynamics
 
-## Implementation Details
+### Implementation Details
+- **Backend**: 
+  - New field `votedBy: MutableList<Map<String, String>>?` in `GamePlayer`
+  - Stored as JSONB in database
+- **Frontend**:
+  - HTML container `.voted-by-container` with badges `.voted-by-badge`
+  - Compact design (18px height)
+  - Color-coded by player roles
+  - Smooth animations with staggered delays
+- **Display conditions**: Only shown for players with status "voted"
+- **Positioning**: Above player name, below photo
 
-* **Новый формат названий:**
-    - Одиночный стол: `"Турнир | Игра N"`
-    - Несколько столов: `"Турнир | Игра N | Стол M"`
-    - Финал: `"Турнир | Финал | Игра N"` или `"Турнир | Финал | Игра N | Стол M"`
-* **Функция подсчета столов:** Использует `gameRepository.findGamesByTournamentId()` с фильтрацией по фазе
-* **Место изменений:** `src/main/kotlin/com/stoum/overlay/service/polemica/PolemicaService.kt`
+## [2025-09-03] - Initial Memory Bank Creation
 
-[2025-09-24 23:37:09] - Принято решение о реализации продвинутой системы обработки ошибок краулинга в PolemicaService с
-различением типов ошибок и автоматическим восстановлением.
+### Decision
+Create initial Memory Bank structure based on automatic analysis of project structure and codebase.
 
-## Decision
+### Rationale
+- **Context establishment**: Provide foundation for all future operations
+- **Efficiency**: Automatic analysis provides quick high-level understanding
+- **Completeness**: Capture technology stack, architecture, and project purpose
+- **Documentation**: Centralized knowledge base for project understanding
 
-* Расширить модель Game полями для отслеживания ошибок краулинга (crawlFailureCount, lastCrawlError, lastFailureTime,
-  crawlStopReason)
-* Реализовать детальную обработку различных типов ошибок:
-    - HTTP 404 (игра удалена) - немедленная остановка краулинга
-    - HTTP 401/403 (проблемы авторизации) - остановка после 5 попыток
-    - Сетевые ошибки - остановка после 3 попыток
-    - Неизвестные ошибки - остановка после 2 попыток
-* Добавить методы восстановления краулинга (ручное и автоматическое)
-* Реализовать административные методы для мониторинга проблемных игр
+### Implementation Details
+- Analyzed file structure, dependencies, and configuration files
+- Reviewed existing code patterns and architecture
+- Documented key features and components
+- Established baseline for ongoing updates
 
-## Rationale
+## [Initial] - Technology Stack Selection
 
-* Различение типов ошибок позволяет применять разные стратегии обработки
-* Счетчик попыток предотвращает бесконечные попытки краулинга проблемных игр
-* Автоматическое восстановление для временных проблем (сеть) повышает надежность
-* Детальное логирование и статистика упрощают диагностику проблем
-* Административные методы обеспечивают контроль и мониторинг системы
+### Decision
+Use Spring Boot 3.4 with Kotlin, PostgreSQL, and SSE for real-time updates.
 
-## Implementation Details
+### Rationale
+- **Spring Boot**: Mature framework with excellent ecosystem
+- **Kotlin**: Modern language with null safety and concise syntax
+- **PostgreSQL**: Robust relational database with JSONB support
+- **SSE**: Simple and effective for server-to-client push updates
+- **Thymeleaf**: Server-side templating for admin panel
 
-* Модифицированы файлы:
-    - `src/main/kotlin/com/stoum/overlay/entity/Game.kt` - добавлены новые поля
-    - `src/main/kotlin/com/stoum/overlay/repository/GameRepository.kt` - новые методы поиска
-    - `src/main/kotlin/com/stoum/overlay/service/polemica/PolemicaService.kt` - улучшенная обработка ошибок
-* Добавлены методы: handleCrawlError(), restartGameCrawling(), autoRecoverStoppedGames(), getCrawlErrorStatistics(),
-  getProblematicGames()
-* Реализована логика сброса счетчика ошибок при успешном краулинге
+### Implementation Details
+- Spring Boot 3.4.4 with Kotlin 2.1.10
+- PostgreSQL 16 with Flyway migrations
+- Server-Sent Events via Spring Web MVC
+- Thymeleaf for HTML generation
+- S3-compatible storage for media files
 
-[2025-10-09 17:26:56] - Добавлена новая фича "Факты об игроках" в систему оверлеев. Принято решение создать отдельную
-сущность Fact с полями: factText, playerNickname, stage, displayTimeSeconds и связью @ManyToOne с
-TournamentOverlaySettings. Это позволяет хранить множество фактов для каждого турнира и управлять ими через
-админ-панель.
+## [Initial] - Architecture: Layered N-tier
 
-[2025-10-09 17:26:56] - Создан новый контроллер TournamentSettingsAdminController для управления настройками турнира и
-фактами. Выбран RESTful подход с эндпоинтами: GET для отображения страницы, POST для добавления фактов, DELETE для
-удаления. Это обеспечивает четкое разделение ответственности и удобный API.
+### Decision
+Adopt layered architecture with clear separation: Controller → Service → Repository → Entity.
 
-[2025-10-09 17:26:56] - Добавлен HTML-интерфейс tournament_settings.html с использованием Bootstrap 5 для управления
-фактами. Интерфейс включает форму добавления фактов с выбором игрока из участников турнира, указанием стадии показа и
-времени отображения. Это обеспечивает удобное управление фактами через веб-интерфейс.
+### Rationale
+- **Separation of concerns**: Clear boundaries between layers
+- **Testability**: Easy to mock dependencies
+- **Maintainability**: Changes isolated to specific layers
+- **Scalability**: Easy to add new features without affecting other layers
+- **Standard pattern**: Well-understood architecture pattern
 
-[2025-10-28 14:11:18] - Принято решение о миграции JSON-строковых колонок на jsonb через Flyway
+### Implementation Details
+- Controllers handle HTTP and routing
+- Services contain business logic
+- Repositories abstract data access
+- Entities represent domain models
+- Spring dependency injection throughout
 
-## Decision
+## [Initial] - Real-time Communication: SSE
 
-- Подключить Flyway и добавить транзакционную
-  миграцию [V20251028__jsonb_migration.sql](src/main/resources/db/migration/V20251028__jsonb_migration.sql) без индексов
-  на данном этапе.
-- Перевести следующие колонки из текстового JSON в jsonb:
-  - Таблица game_player: checks, guess, voted_by, stat (
-    см. [GamePlayer.kt](src/main/kotlin/com/stoum/overlay/entity/overlay/GamePlayer.kt:1);
-    поля: [checks](src/main/kotlin/com/stoum/overlay/entity/overlay/GamePlayer.kt:30), [guess](src/main/kotlin/com/stoum/overlay/entity/overlay/GamePlayer.kt:32), [voted_by](src/main/kotlin/com/stoum/overlay/entity/overlay/GamePlayer.kt:34), [stat](src/main/kotlin/com/stoum/overlay/entity/overlay/GamePlayer.kt:36))
-  - Таблица game: vote_candidates (см. [Game.kt](src/main/kotlin/com/stoum/overlay/entity/Game.kt:1);
-    поле: [voteCandidates](src/main/kotlin/com/stoum/overlay/entity/Game.kt:55))
-- Установить DEFAULT значения: [] для списков (checks, guess, voted_by, vote_candidates) и {} для stat.
-- Обеспечить отсутствие даунтайма: выполнение в одной транзакции; Flyway на PostgreSQL обеспечивает транзакционность по
-  умолчанию.
+### Decision
+Use Server-Sent Events (SSE) instead of WebSockets for real-time updates.
 
-## Rationale
+### Rationale
+- **Simplicity**: SSE is simpler than WebSockets (one-way communication sufficient)
+- **HTTP-based**: Works through standard HTTP, easier with proxies/firewalls
+- **Automatic reconnection**: Built-in browser reconnection support
+- **Lower overhead**: Less protocol overhead than WebSockets
+- **Sufficient for use case**: One-way server-to-client updates are all that's needed
 
-- jsonb даёт:
-  - типобезопасность и валидацию JSON на уровне БД;
-  - поддержку JSON-операторов и путевых запросов;
-  - снижение оверхеда за счёт отказа от кастомных конвертеров (AttributeConverter);
-  - лучшую производительность и возможности индексации (GIN) при необходимости в будущем.
+### Implementation Details
+- `SseEmitter` from Spring Web MVC
+- `EmitterService` manages emitter lifecycle
+- Automatic cleanup of dead connections
+- Error counting and threshold-based removal
+- ConcurrentHashMap for thread-safe storage
 
-## Implementation Details
+## [Initial] - Database: PostgreSQL with JSONB
 
-- Добавить зависимость Flyway в [build.gradle](build.gradle) (пример): implementation "org.flywaydb:flyway-core:
-  &lt;latest&gt;".
-- Включить Flyway в конфигурации приложения: добавить свойства в [
-  `application.properties`](src/main/resources/application.properties:1) (spring.flyway.enabled=true;
-  spring.flyway.clean-disabled=true; при существующей схеме — spring.flyway.baseline-on-migrate=true). Рекомендуется
-  перевести управление схемой на Flyway (spring.jpa.hibernate.ddl-auto=none) на проде.
-- Создать [V20251028__jsonb_migration.sql](src/main/resources/db/migration/V20251028__jsonb_migration.sql) со следующей
-  логикой:
-  - Условительные переименования на случай camelCase колонок:
-    - game.voteCandidates → vote_candidates
-    - game_player.votedBy → voted_by
-  - Приведение типов:
-    - game_player.checks/guess/voted_by: ALTER COLUMN ... TYPE jsonb USING CASE WHEN col IS NULL OR trim(col) = ''
-      THEN '[]'::jsonb ELSE col::jsonb END; затем SET DEFAULT '[]'::jsonb
-    - game_player.stat: ALTER COLUMN stat TYPE jsonb USING CASE WHEN stat IS NULL OR trim(stat) = '' THEN '{}'::jsonb
-      ELSE stat::jsonb END; затем SET DEFAULT '{}'::jsonb
-    - game.vote_candidates: аналогично спискам (DEFAULT '[]'::jsonb)
-- Обновить сущности, убрав конвертеры и установив jsonb-аннотации по
-  образцу [TournamentUsageLog.tables](src/main/kotlin/com/stoum/overlay/entity/TournamentUsageLog.kt:23):
-  - В [GamePlayer.kt](src/main/kotlin/com/stoum/overlay/entity/overlay/GamePlayer.kt:1)
-    и [Game.kt](src/main/kotlin/com/stoum/overlay/entity/Game.kt:1) для указанных полей поставить @JdbcTypeCode(
-    SqlTypes.JSON) + @Column(columnDefinition = "jsonb"), удалить @Convert и импорты конвертеров.
-- Удалить неиспользуемые
-  конвертеры [MapListConverter.kt](src/main/kotlin/com/stoum/overlay/entity/converters/MapListConverter.kt:1)
-  и [MapMapConverter.kt](src/main/kotlin/com/stoum/overlay/entity/converters/MapMapConverter.kt:6) после рефакторинга.
+### Decision
+Use PostgreSQL with JSONB columns for complex nested data structures.
+
+### Rationale
+- **JSONB benefits**: Type safety, query capabilities, indexing potential
+- **Flexibility**: Store variable structures without schema changes
+- **Performance**: Better than text JSON with converters
+- **PostgreSQL features**: Rich JSON operators and functions
+- **Future-proofing**: Can add GIN indexes for performance if needed
+
+### Implementation Details
+- JSONB columns for: `voteCandidates`, `checks`, `guess`, `votedBy`, `stat`
+- Default values: `[]` for arrays, `{}` for objects
+- `@JdbcTypeCode(SqlTypes.JSON)` annotation
+- Column definition: `columnDefinition = "jsonb"`
+
+## [Initial] - External Storage: S3-compatible
+
+### Decision
+Use S3-compatible object storage (Yandex Object Storage) for player photos.
+
+### Rationale
+- **Scalability**: Object storage scales better than file system
+- **Separation**: Media storage separate from application
+- **CDN integration**: Easy to integrate with CDN if needed
+- **Cost-effective**: Pay for what you use
+- **Flexibility**: Can switch providers if needed
+
+### Implementation Details
+- AWS SDK for Kotlin
+- S3 Transfer Manager for efficient uploads
+- Configuration via `ObjectStorageConfig`
+- Environment variables for credentials
+- Bucket-based organization
+
+## [Initial] - Monitoring: Prometheus + Actuator
+
+### Decision
+Use Spring Boot Actuator with Prometheus for monitoring and metrics.
+
+### Rationale
+- **Standard solution**: Actuator is Spring Boot standard
+- **Prometheus**: Industry-standard metrics format
+- **Integration**: Easy integration with monitoring stacks
+- **Health checks**: Built-in health endpoint
+- **Custom metrics**: Can add application-specific metrics
+
+### Implementation Details
+- Actuator on separate port (8081)
+- Prometheus metrics endpoint
+- Micrometer for metrics collection
+- Separate Prometheus service in Docker Compose
+- Configuration via `prometheus.yml`
