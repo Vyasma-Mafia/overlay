@@ -21,7 +21,7 @@ COPY src /app/src
 RUN ./gradlew --no-daemon build
 
 # STAGE 2: Create a minimal image to run the Kotlin app
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy
 
 # Set the working directory for the new container
 WORKDIR /app
