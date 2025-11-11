@@ -4,6 +4,7 @@ import com.stoum.overlay.entity.Player
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.enums.PhotoType
 import com.stoum.overlay.repository.PlayerRepository
+import com.stoum.overlay.service.PhotoMigrationService
 import com.stoum.overlay.service.PlayerPhotoService
 import com.stoum.overlay.service.PlayerService
 import com.stoum.overlay.service.TournamentOverlayService
@@ -32,7 +33,8 @@ class PhotoAdminController(
     private val playerService: PlayerService,
     private val playerRepository: PlayerRepository,
     private val playerPhotoService: PlayerPhotoService,
-    private val tournamentOverlayService: TournamentOverlayService
+    private val tournamentOverlayService: TournamentOverlayService,
+    private val photoMigrationService: PhotoMigrationService
 ) {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
@@ -286,6 +288,35 @@ class PhotoAdminController(
                 "updatedAt" to settings.updatedAt.toString()
             )
         )
+    }
+
+    @PostMapping("/migrate")
+    @ResponseBody
+    fun migratePhotos(): ResponseEntity<Map<String, Any>> {
+        return try {
+            log.info("Starting photo migration...")
+            val result = runBlocking {
+                photoMigrationService.migratePhotos()
+            }
+            ResponseEntity.ok().body(
+                mapOf(
+                    "status" to "success",
+                    "totalPhotos" to result.totalPhotos,
+                    "migrated" to result.migrated,
+                    "skipped" to result.skipped,
+                    "errors" to result.errors,
+                    "errorDetails" to result.errorDetails
+                )
+            )
+        } catch (e: Exception) {
+            log.error("Photo migration failed", e)
+            ResponseEntity.status(500).body(
+                mapOf(
+                    "status" to "error",
+                    "message" to e.message.toString()
+                )
+            )
+        }
     }
 }
 
