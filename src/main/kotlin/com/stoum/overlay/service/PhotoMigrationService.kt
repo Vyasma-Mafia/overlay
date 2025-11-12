@@ -128,10 +128,11 @@ class PhotoMigrationService(
             return
         }
 
-        // Check if player already has photos in new system
-        if (hasPhotosInNewSystem(player)) {
+        // Check if player already has MAIN photo without tournament in new system
+        // Photos from old system are treated as MAIN photos without tournament
+        if (hasMainPhotoWithoutTournament(player)) {
             result.skipped++
-            log.debug("Player ${player.id} already has photos in new system, skipping $oldKey")
+            log.debug("Player ${player.id} already has MAIN photo without tournament in new system, skipping $oldKey")
             return
         }
 
@@ -151,10 +152,11 @@ class PhotoMigrationService(
             return
         }
 
-        // Check if player already has photos in new system
-        if (hasPhotosInNewSystem(player)) {
+        // Check if player already has MAIN photo without tournament in new system
+        // Photos from old system are treated as MAIN photos without tournament
+        if (hasMainPhotoWithoutTournament(player)) {
             result.skipped++
-            log.debug("Player ${player.id} already has photos in new system, skipping $oldKey")
+            log.debug("Player ${player.id} already has MAIN photo without tournament in new system, skipping $oldKey")
             return
         }
 
@@ -162,17 +164,14 @@ class PhotoMigrationService(
         copyPhotoAndCreateEntry(player, oldKey, result)
     }
 
-    private fun hasPhotosInNewSystem(player: Player): Boolean {
-        // Check if player has any non-deleted photos in DB
-        val hasDbPhotos = player.playerPhotos.any { !it.deleted }
-        if (hasDbPhotos) {
-            return true
-        }
-
-        // Also check if photos exist in new S3 bucket (by checking if any photo URL points to new bucket)
-        // This is a safety check in case DB is out of sync
+    private fun hasMainPhotoWithoutTournament(player: Player): Boolean {
+        // Check if player already has a MAIN photo without tournament (tournamentType = null, tournamentId = null)
+        // Photos from old system are treated as MAIN photos without tournament
         return player.playerPhotos.any { 
-            it.url.contains(newBucketName) && !it.deleted 
+            !it.deleted 
+                && it.type == PhotoType.MAIN 
+                && it.tournamentType == null 
+                && it.tournamentId == null
         }
     }
 
