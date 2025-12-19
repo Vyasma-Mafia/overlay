@@ -43,7 +43,7 @@ class GomafiaService(
                         role = "red"
                     )
                 } ?: DEFAULT_PHOTO_URL
-                game.players.add(GamePlayer(
+                val player = GamePlayer(
                     nickname = playerDto.login!!,
                     photoUrl = playerPhotoUrl,
                     role = "red",
@@ -51,9 +51,10 @@ class GomafiaService(
                     checks = mutableListOf(),
                     customPhoto = false,
                     sourcePlayerId = playerDto.id?.toLong()
-                ))
+                )
+                player.game = game
+                game.players.add(player)
             }
-
             gameRepository.save(game)
         }
     }
