@@ -2,6 +2,7 @@ package com.stoum.overlay.service
 
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.stoum.overlay.entity.Player
+import com.stoum.overlay.repository.GamePlayerRepository
 import com.stoum.overlay.repository.PlayerRepository
 import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import io.mockk.every
@@ -18,14 +19,16 @@ import java.util.UUID
 class PlayerServiceTest {
 
     private lateinit var playerRepository: PlayerRepository
+    private lateinit var gamePlayerRepository: GamePlayerRepository
     private lateinit var playerService: PlayerService
 
     @BeforeEach
     fun setup() {
         playerRepository = mockk()
+        gamePlayerRepository = mockk(relaxed = true)
         val gomafiaRestClient: GomafiaRestClient = mockk(relaxed = true)
         val polemicaClient: PolemicaClient = mockk(relaxed = true)
-        playerService = PlayerService(playerRepository, gomafiaRestClient, polemicaClient)
+        playerService = PlayerService(playerRepository, gamePlayerRepository, gomafiaRestClient, polemicaClient)
     }
 
     @Test

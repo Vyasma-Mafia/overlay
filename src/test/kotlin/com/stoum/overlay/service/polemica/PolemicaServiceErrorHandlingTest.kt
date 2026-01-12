@@ -8,6 +8,7 @@ import com.stoum.overlay.repository.FactRepository
 import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.PlayerPhotoService
+import com.stoum.overlay.service.PlayerService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -31,6 +32,7 @@ class PolemicaServiceErrorHandlingTest {
     private val pointsService = mockk<GamePointsService>()
     private val photoService = mockk<PlayerPhotoService>()
     private val factRepository = mockk<FactRepository>()
+    private val playerService = mockk<PlayerService>(relaxed = true)
 
     @BeforeEach
     fun setUp() {
@@ -41,6 +43,7 @@ class PolemicaServiceErrorHandlingTest {
             emitterService,
             pointsService,
             photoService,
+            playerService
         )
     }
 
