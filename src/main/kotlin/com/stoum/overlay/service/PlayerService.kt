@@ -7,6 +7,7 @@ import com.stoum.overlay.entity.enums.PhotoType
 import com.stoum.overlay.model.ParticipantView
 import com.stoum.overlay.model.PlayerCardView
 import com.stoum.overlay.model.PlayerTournamentPhotoView
+import com.stoum.overlay.repository.GamePlayerRepository
 import com.stoum.overlay.repository.PlayerRepository
 import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import org.springframework.stereotype.Service
@@ -16,6 +17,7 @@ import java.util.UUID
 @Service
 class PlayerService(
     val playerRepository: PlayerRepository,
+    val gamePlayerRepository: GamePlayerRepository,
     val gomafiaRestClient: GomafiaRestClient,
     val polemicaClient: PolemicaClient
 ) {
@@ -195,5 +197,52 @@ class PlayerService(
         playerRepository.delete(secondaryPlayer)
 
         return updatedPrimaryPlayer
+    }
+
+    /**
+     * Returns the effective nickname for a player.
+     * If customNickname is set, returns it; otherwise returns the external service nickname.
+     */
+    fun getEffectiveNickname(player: Player): String {
+        return player.customNickname ?: player.nickname
+    }
+
+    /**
+     * Updates the player's custom nickname and updates all existing GamePlayer records.
+     * If customNickname is null or empty, clears the custom nickname (reverts to external service nickname).
+     */
+    @Transactional
+    fun updatePlayerNickname(playerId: UUID, customNickname: String?): Player {
+        val player = playerRepository.findById(playerId)
+            .orElseThrow { RuntimeException("Player not found") }
+
+        // Set customNickname (null or empty string clears it)
+        val newCustomNickname = customNickname?.takeIf { it.isNotBlank() }
+        player.customNickname = newCustomNickname
+
+        val updatedPlayer = playerRepository.save(player)
+
+        // Update all existing GamePlayer records for this player
+        val effectiveNickname = getEffectiveNickname(updatedPlayer)
+
+        // Update GamePlayers by polemicaId
+        player.polemicaId?.let { polemicaId ->
+            val gamePlayers = gamePlayerRepository.findBySourcePlayerId(polemicaId)
+            gamePlayers.forEach { gamePlayer ->
+                gamePlayer.nickname = effectiveNickname
+            }
+            gamePlayerRepository.saveAll(gamePlayers)
+        }
+
+        // Update GamePlayers by gomafiaId
+        player.gomafiaId?.let { gomafiaId ->
+            val gamePlayers = gamePlayerRepository.findBySourcePlayerId(gomafiaId)
+            gamePlayers.forEach { gamePlayer ->
+                gamePlayer.nickname = effectiveNickname
+            }
+            gamePlayerRepository.saveAll(gamePlayers)
+        }
+
+        return updatedPlayer
     }
 }

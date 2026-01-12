@@ -100,7 +100,7 @@ class CommandLineRunnerImpl(
         //
         // println(counter.map { it.key to it.value.first.toDouble() / it.value.second.toDouble() }
         //     .sortedByDescending { it.second })
-
+        //
         //     val players = listOf(91, 2304, 45, 1502, 892, 276, 319, 2075, 127, 768)
         //     val valueRedRedTotal: MutableMap<Pair<String, String>, Int> = hashMapOf()
         //     val valueRedRedWin: MutableMap<Pair<String, String>, Int> = hashMapOf()

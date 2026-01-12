@@ -28,6 +28,7 @@ import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.DEFAULT_PHOTO_URL
 import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.PlayerPhotoService
+import com.stoum.overlay.service.PlayerService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import java.net.ConnectException
@@ -45,7 +46,8 @@ class PolemicaService(
     val factRepository: FactRepository,
     val emitterService: EmitterService,
     val pointsService: GamePointsService,
-    val photoService: PlayerPhotoService
+    val photoService: PlayerPhotoService,
+    val playerService: PlayerService
 ) {
     private val taskExecutorService = Executors.newScheduledThreadPool(4)
     private val gameIdCache = Caffeine.newBuilder()
@@ -174,7 +176,15 @@ class PolemicaService(
             )
         )
         val players = polemicaGame.players?.sortedBy { it.position.value }?.map {
-            val photoUrl = it.player?.id?.let { playerId ->
+            val polemicaPlayerId = it.player?.id
+            val playerEntity = polemicaPlayerId?.let { pid ->
+                playerService.findOrCreatePlayer(
+                    nickname = it.username,
+                    polemicaId = pid
+                )
+            }
+            val effectiveNickname = playerEntity?.let { playerService.getEffectiveNickname(it) } ?: it.username
+            val photoUrl = polemicaPlayerId?.let { playerId ->
                 photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
                     playerId = playerId,
                     tournamentType = GameType.POLEMICA,
@@ -184,7 +194,7 @@ class PolemicaService(
             } ?: DEFAULT_PHOTO_URL
             GamePlayer(
                 id = null,
-                nickname = it.username,
+                nickname = effectiveNickname,
                 place = it.position.value,
                 photoUrl = photoUrl,
                 role = "red",
@@ -192,7 +202,7 @@ class PolemicaService(
                 guess = arrayListOf(),
                 stat = mutableMapOf(),
                 customPhoto = false,
-                sourcePlayerId = it.player?.id
+                sourcePlayerId = polemicaPlayerId
             )
         }?.toMutableList() ?: mutableListOf()
         val game = Game(
@@ -269,7 +279,16 @@ class PolemicaService(
                         if (getPolemicaRoles) {
                             player.role = polemicaRoleToRole(polemicaGame.getRole(position))
                         }
-                        val playerPhotoUrl = polemicaPlayer?.player?.id?.let { playerId ->
+                        val polemicaPlayerId = polemicaPlayer?.player?.id
+                        val playerEntity = polemicaPlayerId?.let { pid ->
+                            playerService.findOrCreatePlayer(
+                                nickname = polemicaPlayer?.username ?: "",
+                                polemicaId = pid
+                            )
+                        }
+                        val effectiveNickname = playerEntity?.let { playerService.getEffectiveNickname(it) }
+                            ?: polemicaPlayer?.username.toString()
+                        val playerPhotoUrl = polemicaPlayerId?.let { playerId ->
                             photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
                                 playerId = playerId,
                                 tournamentType = GameType.POLEMICA,
@@ -277,7 +296,7 @@ class PolemicaService(
                                 role = if (game.visibleRoles == true) player.role else null
                             )
                         } ?: DEFAULT_PHOTO_URL
-                        player.nickname = polemicaPlayer?.username.toString()
+                        player.nickname = effectiveNickname
                         player.photoUrl = playerPhotoUrl
                         player.fouls = polemicaPlayer?.fouls?.size
                         player.techs = polemicaPlayer?.techs?.size

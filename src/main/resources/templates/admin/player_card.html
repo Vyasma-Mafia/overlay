@@ -23,8 +23,28 @@
             <div class="col-md-6">
                 <div class="d-flex align-items-center mb-3">
                     <h1 class="mb-0"><i class="fa-solid fa-user-pen me-2"></i><span
-                            th:text="${view.player.nickname}"></span></h1>
+                            th:text="${view.player.customNickname ?: view.player.nickname}"></span></h1>
                 </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Никнейм</h5>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#editNicknameModal">
+                        <i class="fa-solid fa-pencil me-1"></i> Редактировать
+                    </button>
+                </div>
+                <p class="mt-2">
+                    <strong>Отображаемый никнейм:</strong>
+                    <span th:text="${view.player.customNickname ?: view.player.nickname}" class="fw-bold"></span>
+                </p>
+                <p th:if="${view.player.customNickname}">
+                    <strong>Никнейм из внешнего сервиса:</strong>
+                    <span th:text="${view.player.nickname}" class="text-muted"></span>
+                </p>
+                <p th:unless="${view.player.customNickname}">
+                    <strong>Никнейм из внешнего сервиса:</strong>
+                    <span th:text="${view.player.nickname}"></span>
+                </p>
                 <hr>
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Профили в системах</h5>
@@ -96,6 +116,7 @@
 <!-- =========================================================== -->
 <!-- Используем th:replace, чтобы не создавать лишний div-обертку -->
 <th:block th:replace="~{admin/_modal_fragments :: edit-ids-modal(player=${view.player})}"></th:block>
+<th:block th:replace="~{admin/_modal_fragments :: edit-nickname-modal(player=${view.player})}"></th:block>
 <th:block th:replace="~{admin/_modal_fragments :: upload-photo-modal}"></th:block>
 <th:block th:replace="~{admin/_modal_fragments :: merge-profiles-modal}"></th:block>
 
@@ -252,6 +273,55 @@
                 }
             });
         });
+
+        // Обработчик формы обновления никнейма
+        document.getElementById('update-nickname-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const customNickname = formData.get('customNickname')?.toString().trim() || null;
+
+            fetch(`/admin/photos/players/${playerId}/nickname`, {
+                method: 'POST',
+                body: new URLSearchParams({customNickname: customNickname || ''})
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Никнейм успешно обновлен!');
+                        location.reload();
+                    } else {
+                        alert('Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(err => {
+                    alert('Ошибка обновления никнейма: ' + err.message);
+                });
+        });
+
+        // Обработчик кнопки очистки никнейма
+        const clearNicknameButton = document.getElementById('clearNicknameButton');
+        if (clearNicknameButton) {
+            clearNicknameButton.addEventListener('click', function () {
+                if (confirm('Очистить пользовательский никнейм и вернуться к никнейму из внешнего сервиса?')) {
+                    fetch(`/admin/photos/players/${playerId}/nickname`, {
+                        method: 'POST',
+                        body: new URLSearchParams({customNickname: ''})
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert('Никнейм успешно очищен!');
+                                location.reload();
+                            } else {
+                                alert('Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+                            }
+                        })
+                        .catch(err => {
+                            alert('Ошибка очистки никнейма: ' + err.message);
+                        });
+                }
+            });
+        }
     });
 
     /*]]>*/

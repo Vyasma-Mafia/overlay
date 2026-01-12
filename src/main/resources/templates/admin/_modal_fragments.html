@@ -33,6 +33,43 @@
     </div>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО ДЛЯ РЕДАКТИРОВАНИЯ НИКНЕЙМА -->
+<div class="modal fade" id="editNicknameModal" tabindex="-1" aria-labelledby="editNicknameModalLabel" aria-hidden="true"
+        th:fragment="edit-nickname-modal(player)">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="update-nickname-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editNicknameModalLabel">Редактировать никнейм</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="customNickname" class="form-label">Пользовательский никнейм</label>
+                        <input type="text" id="customNickname" name="customNickname" class="form-control"
+                                th:value="${player.customNickname}"
+                                placeholder="Оставьте пустым для использования никнейма из внешнего сервиса">
+                        <small class="form-text text-muted">Если оставить пустым, будет использоваться никнейм из
+                            внешнего сервиса</small>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Никнейм из внешнего сервиса:</strong></p>
+                        <p class="text-muted" th:text="${player.nickname}"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-warning" id="clearNicknameButton"
+                            th:if="${player.customNickname}">
+                        <i class="fa-solid fa-eraser me-1"></i> Очистить
+                    </button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ЗАГРУЗКИ НОВОГО ФОТО -->
 <div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel"
         aria-hidden="true" th:fragment="upload-photo-modal">

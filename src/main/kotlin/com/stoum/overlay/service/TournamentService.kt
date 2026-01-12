@@ -2,6 +2,7 @@ package com.stoum.overlay.service
 
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.stoum.overlay.entity.enums.GameType
+import com.stoum.overlay.getLogger
 import com.stoum.overlay.model.ParticipantView
 import com.stoum.overlay.model.UnifiedTournamentView
 import com.stoum.overlay.service.gomafia.GomafiaRestClient
@@ -13,6 +14,7 @@ class TournamentService(
     private val polemicaClient: PolemicaClient,
     private val playerService: PlayerService
 ) {
+    val log = this.getLogger()
 
     // Получение списка турниров из указанного источника
     suspend fun getTournaments(source: GameType): List<UnifiedTournamentView> {

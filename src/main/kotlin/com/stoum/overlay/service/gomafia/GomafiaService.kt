@@ -9,6 +9,7 @@ import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.repository.PlayerRepository
 import com.stoum.overlay.service.DEFAULT_PHOTO_URL
 import com.stoum.overlay.service.PlayerPhotoService
+import com.stoum.overlay.service.PlayerService
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
@@ -17,7 +18,8 @@ class GomafiaService(
         val gameRepository: GameRepository,
         val gomafiaRestClient: GomafiaRestClient,
         val playerRepository: PlayerRepository,
-    val photoService: PlayerPhotoService
+    val photoService: PlayerPhotoService,
+    val playerService: PlayerService
 ) {
     val log = this.getLogger()
 
@@ -35,22 +37,31 @@ class GomafiaService(
                 text = "${tournament.tournamentDto.title} | Стол ${gameDto.tableNum} | Игра ${gameDto.gameNum}"
             )
             gameDto.table.forEach { playerDto ->
-                val playerPhotoUrl = playerDto.id?.let { playerId ->
+                val gomafiaPlayerId = playerDto.id?.toLong()
+                val playerEntity = gomafiaPlayerId?.let { gid ->
+                    playerService.findOrCreatePlayer(
+                        nickname = playerDto.login!!,
+                        gomafiaId = gid
+                    )
+                }
+                val effectiveNickname =
+                    playerEntity?.let { playerService.getEffectiveNickname(it) } ?: playerDto.login!!
+                val playerPhotoUrl = gomafiaPlayerId?.let { playerId ->
                     photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
-                        playerId = playerId.toLong(),
+                        playerId = playerId,
                         tournamentType = GameType.GOMAFIA,
                         tournamentId = tournamentId.toLong(),
                         role = "red"
                     )
                 } ?: DEFAULT_PHOTO_URL
                 val player = GamePlayer(
-                    nickname = playerDto.login!!,
+                    nickname = effectiveNickname,
                     photoUrl = playerPhotoUrl,
                     role = "red",
                     place = playerDto.place!!,
                     checks = mutableListOf(),
                     customPhoto = false,
-                    sourcePlayerId = playerDto.id?.toLong()
+                    sourcePlayerId = gomafiaPlayerId
                 )
                 player.game = game
                 game.players.add(player)

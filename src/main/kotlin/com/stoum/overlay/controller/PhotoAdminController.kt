@@ -167,6 +167,39 @@ class PhotoAdminController(
         }
     }
 
+    // API для обновления никнейма игрока
+    @PostMapping("/players/{playerId}/nickname")
+    @ResponseBody
+    fun updatePlayerNickname(
+        @PathVariable playerId: UUID,
+        @RequestParam(required = false) customNickname: String?
+    ): ResponseEntity<Map<String, Any>> {
+        return try {
+            val updatedPlayer = playerService.updatePlayerNickname(
+                playerId,
+                customNickname?.takeIf { it.isNotBlank() }
+            )
+            ResponseEntity.ok(
+                mapOf(
+                    "status" to "success",
+                    "player" to mapOf(
+                        "id" to updatedPlayer.id,
+                        "nickname" to updatedPlayer.nickname,
+                        "customNickname" to updatedPlayer.customNickname,
+                        "effectiveNickname" to playerService.getEffectiveNickname(updatedPlayer)
+                    )
+                )
+            )
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(
+                mapOf(
+                    "status" to "error",
+                    "message" to (e.message ?: "Unknown error")
+                )
+            )
+        }
+    }
+
     // API для объединения профилей
     @PostMapping("/players/{primaryId}/merge/{secondaryId}")
     @ResponseBody
