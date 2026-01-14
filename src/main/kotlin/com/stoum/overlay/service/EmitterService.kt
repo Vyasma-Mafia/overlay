@@ -51,7 +51,12 @@ class EmitterService(
         getLogger().info("Registering emitter for $id: $emitter")
         emitters[id]?.add(SseEmitterInfo(emitter, AtomicLong(0)))
         gameRepository.findById(UUID.fromString(id))
-            .ifPresent { it.started = true; gameRepository.save(it) }
+            .ifPresent { game ->
+                if (game.manuallyStarted != false) {
+                    game.started = true
+                }
+                gameRepository.save(game)
+            }
         return emitter
     }
 

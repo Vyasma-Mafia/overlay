@@ -109,7 +109,10 @@ class GameController(
 
     @PostMapping("/{id}/started")
     fun setStarted(@PathVariable id: String, @RequestParam value: Boolean): ResponseEntity<Void> {
-        return findGameAndDo(id) { game -> game.started = value }
+        return findGameAndDo(id) { game ->
+            game.started = value
+            game.manuallyStarted = value
+        }
     }
 
     @PostMapping("/{id}/text")

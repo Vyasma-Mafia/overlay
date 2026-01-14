@@ -41,6 +41,7 @@ data class Game(
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var facts: MutableList<Fact> = mutableListOf(),
     var started: Boolean? = null,
+    var manuallyStarted: Boolean? = true,
     var visibleOverlay: Boolean? = true,
     var visibleRoles: Boolean? = true,
     var visibleScores: Boolean? = true,

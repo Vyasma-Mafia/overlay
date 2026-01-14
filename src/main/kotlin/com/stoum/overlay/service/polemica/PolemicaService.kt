@@ -69,7 +69,9 @@ class PolemicaService(
             taskExecutorService.submit { initTournament(tournamentId) }
         }
         if (game != null) {
-            game.started = true
+            if (game.manuallyStarted != false) {
+                game.started = true
+            }
             gameRepository.save(game)
         }
         return game
@@ -384,7 +386,9 @@ class PolemicaService(
                     schedulePoints(game, id)
                     saveAndEmitGame(game)
                     val nextGame = getNextGame(tournamentGame) ?: return@forEach
-                    nextGame.started = true
+                    if (nextGame.manuallyStarted != false) {
+                        nextGame.started = true
+                    }
                     gameRepository.save(nextGame)
                     if (game.autoNextGame != false) {
                         scheduleNextGameTasks(game.id, nextGame)
@@ -674,7 +678,9 @@ class PolemicaService(
         game.lastCrawlError = null
         game.lastFailureTime = null
         game.crawlStopReason = null
-        game.started = true
+        if (game.manuallyStarted != false) {
+            game.started = true
+        }
 
         gameRepository.save(game)
         getLogger().info("Game ${game.id} crawling restarted manually")
