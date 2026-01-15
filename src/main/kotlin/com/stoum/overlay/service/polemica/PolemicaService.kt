@@ -265,6 +265,7 @@ class PolemicaService(
                 game.players.forEach { player ->
                     Position.fromInt(player.place)?.let { position ->
                         val polemicaPlayer = polemicaGame.players?.find { it.position == position }
+                        player.sourcePlayerId = polemicaPlayer?.player?.id ?: player.sourcePlayerId
                         player.status = kicked[position]?.let {
                             if (it.reason == KickReason.VOTING) {
                                 player.votedBy =
