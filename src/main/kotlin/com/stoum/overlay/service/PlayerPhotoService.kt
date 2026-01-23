@@ -5,6 +5,7 @@ import com.stoum.overlay.entity.Player
 import com.stoum.overlay.entity.PlayerPhoto
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.enums.PhotoType
+import com.stoum.overlay.repository.PlayerMafiaUniverseNicknameRepository
 import com.stoum.overlay.repository.PlayerPhotoRepository
 import com.stoum.overlay.repository.PlayerRepository
 import jakarta.transaction.Transactional
@@ -25,6 +26,7 @@ const val DEFAULT_PHOTO_URL = "https://storage.yandexcloud.net/mafia-photos/null
 class PlayerPhotoService(
     val playerRepository: PlayerRepository,
     val playerPhotoRepository: PlayerPhotoRepository,
+    val playerMafiaUniverseNicknameRepository: PlayerMafiaUniverseNicknameRepository,
     val objectStorage: S3Client,
     val s3TransferManager: S3TransferManager
 ) {
@@ -86,6 +88,7 @@ class PlayerPhotoService(
             GameType.POLEMICA -> playerRepository.findPlayerByPolemicaId(playerId)
             GameType.GOMAFIA -> playerRepository.findPlayerByGomafiaId(playerId)
             GameType.CUSTOM -> null
+            GameType.MAFIAUNIVERSE -> null // MafiaUniverse uses nicknames, not numeric IDs
         }
         if (player != null) {
             val playerPhoto = getPlayerPhotoForCompetitionRole(player, tournamentType, tournamentId, role)
@@ -97,7 +100,40 @@ class PlayerPhotoService(
             GameType.POLEMICA -> "https://storage.yandexcloud.net/mafia-photos/${playerId}.jpg"
             GameType.GOMAFIA -> "https://storage.yandexcloud.net/mafia-photos/gomafia/${playerId}.jpg"
             GameType.CUSTOM -> DEFAULT_PHOTO_URL
+            GameType.MAFIAUNIVERSE -> DEFAULT_PHOTO_URL // Can't construct URL from nickname
         }
+    }
+
+    /**
+     * Gets player photo URL for MafiaUniverse using nickname instead of numeric ID.
+     * MafiaUniverse identifies players by nicknames, so we need to look up the player
+     * through the nickname mapping table.
+     */
+    fun getPlayerPhotoUrlForPlayerCompetitionRole(
+        nickname: String,
+        tournamentType: GameType,
+        tournamentId: Long,
+        role: String?
+    ): String {
+        if (tournamentType != GameType.MAFIAUNIVERSE) {
+            throw IllegalArgumentException("Nickname-based method should only be used for MAFIAUNIVERSE")
+        }
+
+        // Look up player by nickname using the mapping table
+        val nicknameMapping = playerMafiaUniverseNicknameRepository.findByNickname(nickname)
+        val player = nicknameMapping?.let {
+            playerRepository.findById(it.player.id!!).orElse(null)
+        }
+
+        if (player != null) {
+            val playerPhoto = getPlayerPhotoForCompetitionRole(player, tournamentType, tournamentId, role)
+            if (playerPhoto != null) {
+                return playerPhoto.url
+            }
+        }
+
+        // Can't construct URL from nickname like we do for numeric IDs
+        return DEFAULT_PHOTO_URL
     }
 
     @Transactional

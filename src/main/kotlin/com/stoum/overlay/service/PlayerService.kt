@@ -2,12 +2,14 @@ package com.stoum.overlay.service
 
 import com.github.mafia.vyasma.polemica.library.client.PolemicaClient
 import com.stoum.overlay.entity.Player
+import com.stoum.overlay.entity.PlayerMafiaUniverseNickname
 import com.stoum.overlay.entity.enums.GameType
 import com.stoum.overlay.entity.enums.PhotoType
 import com.stoum.overlay.model.ParticipantView
 import com.stoum.overlay.model.PlayerCardView
 import com.stoum.overlay.model.PlayerTournamentPhotoView
 import com.stoum.overlay.repository.GamePlayerRepository
+import com.stoum.overlay.repository.PlayerMafiaUniverseNicknameRepository
 import com.stoum.overlay.repository.PlayerRepository
 import com.stoum.overlay.service.gomafia.GomafiaRestClient
 import org.springframework.stereotype.Service
@@ -19,7 +21,8 @@ class PlayerService(
     val playerRepository: PlayerRepository,
     val gamePlayerRepository: GamePlayerRepository,
     val gomafiaRestClient: GomafiaRestClient,
-    val polemicaClient: PolemicaClient
+    val polemicaClient: PolemicaClient,
+    val playerMafiaUniverseNicknameRepository: PlayerMafiaUniverseNicknameRepository
 ) {
 
     // Ключевая функция: найти игрока по ID из внешних систем или по нику,
@@ -39,6 +42,34 @@ class PlayerService(
         return existingPlayer ?: playerRepository.save(
             Player(nickname = nickname, polemicaId = polemicaId, gomafiaId = gomafiaId)
         )
+    }
+
+    /**
+     * Finds or creates a player by MafiaUniverse nickname.
+     * If a mapping exists, returns the mapped Player.
+     * If not, creates a new Player and mapping entry.
+     */
+    @Transactional
+    fun findOrCreatePlayerByMafiaUniverseNickname(nickname: String): Player {
+        // Check if mapping exists
+        val existingMapping = playerMafiaUniverseNicknameRepository.findByNickname(nickname)
+        if (existingMapping != null) {
+            return existingMapping.player
+        }
+
+        // Create new Player with the nickname
+        val newPlayer = playerRepository.save(
+            Player(nickname = nickname)
+        )
+
+        // Create mapping entry
+        val mapping = PlayerMafiaUniverseNickname(
+            player = newPlayer,
+            nickname = nickname
+        )
+        playerMafiaUniverseNicknameRepository.save(mapping)
+
+        return newPlayer
     }
 
     /**

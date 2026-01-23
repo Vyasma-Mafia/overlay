@@ -22,6 +22,7 @@ class CommandLineRunnerImpl(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     override fun run(vararg args: String?) {
+        return
         // Player list: ID -> Nickname
         val playerMap = mapOf(
             91 to "Воробушек",

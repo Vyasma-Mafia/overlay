@@ -24,9 +24,11 @@ This file tracks the project's progress using a task list format.
 ### External Integrations ✅
 - [x] Polemica.app integration
 - [x] Gomafia.pro integration
+- [x] MafiaUniverse.org integration (HTML scraping)
 - [x] Scheduled crawling system
 - [x] Error handling and recovery mechanisms
 - [x] Game title generation with table numbers and phase markers
+- [x] Player nickname mapping for MafiaUniverse
 
 ### Admin Panel ✅
 - [x] Tournament management interface
@@ -42,6 +44,7 @@ This file tracks the project's progress using a task list format.
 - [x] Removal of custom converters
 - [x] Error tracking fields for crawling
 - [x] Facts entity and relationships
+- [x] PlayerMafiaUniverseNickname mapping table
 
 ### UI/UX Enhancements ✅
 - [x] Voting visualization with player numbers
@@ -66,6 +69,18 @@ This file tracks the project's progress using a task list format.
 - [ ] Performance optimization (if needed)
 
 ## Recent Milestones
+
+### [2026-01-23] - MafiaUniverse Integration Complete
+
+Full implementation of MafiaUniverse game source service:
+
+- HTML scraping infrastructure with JSoup
+- Nickname-to-player mapping system
+- Tournament and game data extraction
+- Admin UI integration for tournaments and participants
+- Photo service support for nickname-based lookup
+- Error handling and crawling similar to Polemica
+- Configuration via `MafiaUniverseConfig` with conditional enablement
 
 ### [2025-10-28] - Database Modernization
 Completed migration from JSON string columns to PostgreSQL JSONB:

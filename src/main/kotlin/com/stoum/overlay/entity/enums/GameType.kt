@@ -4,4 +4,5 @@ enum class GameType {
     GOMAFIA,
     POLEMICA,
     CUSTOM,
+    MAFIAUNIVERSE,
 }

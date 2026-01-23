@@ -81,6 +81,13 @@ Clear separation of concerns:
 - **External API clients**: 
   - `PolemicaClient` from polemica-library
   - `GomafiaRestClient` for Gomafia API
+- **HTML scraping**:
+    - `MafiaUniverseClient` for HTTP requests to MafiaUniverse pages
+    - `MafiaUniverseHtmlParser` using JSoup library for HTML parsing
+    - Pattern: Fetch HTML → Parse with JSoup → Extract structured data → Map to entities
+- **Player identification strategies**:
+    - **Numeric IDs**: Polemica and Gomafia use Long IDs stored in `Player.polemicaId` and `Player.gomafiaId`
+    - **Nickname mapping**: MafiaUniverse uses string nicknames, mapped via `PlayerMafiaUniverseNickname` table
 - **Caching**: Caffeine cache for frequently accessed data
 - **Scheduled crawling**: ExecutorService for background data fetching
 - **Error resilience**: Different retry strategies based on error types
@@ -112,7 +119,10 @@ Clear separation of concerns:
 ### Application Configuration
 - **Properties files**: `application.properties` for default values
 - **Environment variables**: Override via environment or `.env` file
-- **Type-safe configuration**: `@ConfigurationProperties` classes (`ApplicationConfig`, `ObjectStorageConfig`)
+- **Type-safe configuration**: `@ConfigurationProperties` classes (`ApplicationConfig`, `ObjectStorageConfig`,
+  `MafiaUniverseConfig`)
+- **Conditional services**: Services enabled via `@ConditionalOnProperty` (e.g., `app.mafiauniverse.enable`)
+- **Configuration registration**: `@EnableConfigurationProperties` in main application class
 - **Profiles**: Spring profiles for different environments (prod, dev)
 
 ### Database Configuration

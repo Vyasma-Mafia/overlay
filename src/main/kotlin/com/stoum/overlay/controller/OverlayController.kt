@@ -7,6 +7,7 @@ import com.stoum.overlay.repository.GameRepository
 import com.stoum.overlay.service.EmitterService
 import com.stoum.overlay.service.TournamentOverlayService
 import com.stoum.overlay.service.gomafia.GomafiaService
+import com.stoum.overlay.service.mafiauniverse.MafiaUniverseService
 import com.stoum.overlay.service.polemica.PolemicaService
 import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
@@ -22,7 +23,7 @@ import java.util.UUID
 
 // Определение enum для типов сервисов
 enum class ServiceType {
-    POLEMICA, GOMAFIA;
+    POLEMICA, GOMAFIA, MAFIAUNIVERSE;
 
     // Метод для получения пути в URL
     fun getPathValue(): String {
@@ -82,6 +83,7 @@ class OverlayController(
     val emitterService: EmitterService,
     val polemicaService: PolemicaService,
     val gomafiaService: GomafiaService,
+    val mafiaUniverseService: MafiaUniverseService?,
     val tournamentOverlayService: TournamentOverlayService,
     val tournamentUsageLogService: com.stoum.overlay.service.TournamentUsageLogService
 ) {
@@ -113,6 +115,7 @@ class OverlayController(
         val game = when (service) {
             ServiceType.POLEMICA -> getOrCreatePolemicaGame(tournamentId, gameNum, tableNum, phase)
             ServiceType.GOMAFIA -> getOrCreateGomafiaGame(tournamentId, gameNum, tableNum, phase)
+            ServiceType.MAFIAUNIVERSE -> getOrCreateMafiaUniverseGame(tournamentId, gameNum, tableNum, phase)
         }
 
         if (game != null) {
@@ -173,6 +176,7 @@ class OverlayController(
         val game = when (service) {
             ServiceType.POLEMICA -> getOrCreatePolemicaGame(tournamentId, gameNum, tableNum, phase)
             ServiceType.GOMAFIA -> getOrCreateGomafiaGame(tournamentId, gameNum, tableNum, phase)
+            ServiceType.MAFIAUNIVERSE -> getOrCreateMafiaUniverseGame(tournamentId, gameNum, tableNum, phase)
         }
 
         model.addAttribute("id", game?.id)
@@ -244,6 +248,7 @@ class OverlayController(
         val game = when (service) {
             ServiceType.POLEMICA -> getOrCreatePolemicaGame(tournamentId, gameNum, tableNum, phase)
             ServiceType.GOMAFIA -> getOrCreateGomafiaGame(tournamentId, gameNum, tableNum, phase)
+            ServiceType.MAFIAUNIVERSE -> getOrCreateMafiaUniverseGame(tournamentId, gameNum, tableNum, phase)
         }
 
         model.addAttribute("id", game?.id)
@@ -334,6 +339,12 @@ class OverlayController(
 
             GameType.GOMAFIA -> gomafiaService.getGame(tournamentId, gameNum + 1, tableNum)
             GameType.CUSTOM -> null
+            GameType.MAFIAUNIVERSE -> mafiaUniverseService?.getOrTryCreateGame(
+                tournamentId,
+                gameNum + 1,
+                tableNum,
+                phase
+            )
         }
     }
 
@@ -343,6 +354,10 @@ class OverlayController(
 
     private fun getOrCreateGomafiaGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
         return gomafiaService.getGame(tournamentId, gameNum, tableNum)
+    }
+
+    private fun getOrCreateMafiaUniverseGame(tournamentId: Int, gameNum: Int, tableNum: Int, phase: Int): Game? {
+        return mafiaUniverseService?.getOrTryCreateGame(tournamentId, gameNum, tableNum, phase)
     }
 
     @PostMapping("/{id}/clearRoles")

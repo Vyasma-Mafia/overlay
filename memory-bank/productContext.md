@@ -4,7 +4,9 @@ This file provides a high-level overview of the project and the expected product
 
 ## Project Goal
 
-Development and maintenance of the "Overlay" web application for competitive Mafia tournaments. The application provides real-time overlays for game streams, an admin panel for managing tournaments, players, and content, as well as integration with external services (gomafia.pro, polemica.app).
+Development and maintenance of the "Overlay" web application for competitive Mafia tournaments. The application provides
+real-time overlays for game streams, an admin panel for managing tournaments, players, and content, as well as
+integration with external services (gomafia.pro, polemica.app, mafiauniverse.org).
 
 ## Key Features
 
@@ -26,8 +28,13 @@ Development and maintenance of the "Overlay" web application for competitive Maf
 - **Overlay settings**: Enable/disable overlays per tournament with password protection
 
 ### External Integrations
-- **Gomafia.pro integration**: Synchronize tournament, player, and game data
-- **Polemica.app integration**: Fetch game data from Polemica service with automatic crawling
+
+- **Gomafia.pro integration**: Synchronize tournament, player, and game data via REST API
+- **Polemica.app integration**: Fetch game data from Polemica service with automatic crawling via API
+- **MafiaUniverse.org integration**: Fetch tournament and game data via HTML scraping (no API available)
+    - Uses JSoup library for HTML parsing
+    - Player identification via nicknames (mapped to internal Player entities)
+    - Supports tournament list, games list, and game details pages
 - **Error handling**: Advanced error handling for crawling with automatic recovery
 - **Scheduled crawling**: Configurable interval-based automatic data updates
 
@@ -69,23 +76,30 @@ Development and maintenance of the "Overlay" web application for competitive Maf
   - `Game.kt` - Core game entity with players and facts
   - `GamePlayer.kt` - Player information within a game
   - `Player.kt` - Player master data
+  - `PlayerMafiaUniverseNickname.kt` - Mapping table for MafiaUniverse nicknames to Player IDs
   - `Fact.kt` - Player facts displayed during games
   - `TournamentOverlaySettings.kt` - Tournament-specific overlay settings
 - **Services**:
   - `EmitterService.kt` - SSE emitter management
   - `PolemicaService.kt` - Polemica integration and crawling
   - `GomafiaService.kt` - Gomafia integration
+  - `MafiaUniverseService.kt` - MafiaUniverse integration and HTML scraping
+  - `MafiaUniverseClient.kt` - HTTP client for MafiaUniverse pages
+  - `MafiaUniverseHtmlParser.kt` - HTML parser for extracting game data
   - `PlayerService.kt` - Player business logic
+  - `TournamentService.kt` - Tournament data aggregation across sources
   - `TournamentOverlayService.kt` - Overlay settings management
 - **Repositories**: Spring Data JPA repositories for all entities
 - **Configuration**: 
   - `ApplicationConfig.kt` - Application properties
   - `ObjectStorageConfig.kt` - S3 configuration
+  - `MafiaUniverseConfig.kt` - MafiaUniverse integration configuration
   - `SecurityConfig.kt` - Spring Security configuration
   - `JacksonConfiguration.kt` - JSON serialization
 
 ### Database Schema
 - **Player**: Core player information with external IDs (Polemica, Gomafia)
+- **PlayerMafiaUniverseNickname**: Mapping table linking MafiaUniverse nicknames (strings) to Player UUIDs
 - **PlayerPhoto**: Player photos with tournament-specific associations
 - **Game**: Game instances with tournament, phase, table, and game numbers
 - **GamePlayer**: Player state within a game (role, status, votes, etc.)
@@ -111,7 +125,7 @@ Development and maintenance of the "Overlay" web application for competitive Maf
 - `/{service}/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}/control` - Control panel
 - `/{service}/tournaments/{tournamentId}/phases/{phase}/tables/{tableNum}/games/{gameNum}/roleselector` - Role selector
 
-Where `service` ∈ {polemica, gomafia}
+Where `service` ∈ {polemica, gomafia, mafiauniverse}
 
 ### SSE Endpoints
 - `GET /{id}/gameinfo` - Overlay stream
@@ -148,6 +162,10 @@ Where `service` ∈ {polemica, gomafia}
 
 ### Application Properties
 - `app.polemicaEnable` - Enable Polemica integration
+- `app.mafiauniverse.enable` - Enable MafiaUniverse integration
+- `app.mafiauniverse.baseUrl` - MafiaUniverse base URL
+- `app.mafiauniverse.crawlScheduler.enable` - Enable MafiaUniverse scheduled crawling
+- `app.mafiauniverse.crawlScheduler.interval` - MafiaUniverse crawling interval (default: 10s)
 - `app.crawlScheduler.enable` - Enable scheduled crawling
 - `app.crawlScheduler.interval` - Crawling interval (default: 10s)
 - `s3.region` - S3 region (default: ru-central1)

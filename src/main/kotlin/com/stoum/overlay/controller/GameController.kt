@@ -66,11 +66,26 @@ class GameController(
     private fun updateGamePhotos(game: Game) {
         val tournamentId = game.tournamentId ?: return
         game.players.filter { it.customPhoto != true }.forEach { player ->
-            val sourcePlayerId = player.sourcePlayerId ?: return@forEach
-            player.photoUrl = photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
-                sourcePlayerId, game.type,
-                tournamentId.toLong(), player.role
-            )
+            when (game.type) {
+                com.stoum.overlay.entity.enums.GameType.MAFIAUNIVERSE -> {
+                    // MafiaUniverse uses nicknames instead of numeric IDs
+                    player.photoUrl = photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
+                        nickname = player.nickname,
+                        tournamentType = game.type,
+                        tournamentId = tournamentId.toLong(),
+                        role = player.role
+                    )
+                }
+
+                else -> {
+                    // Polemica and Gomafia use numeric IDs
+                    val sourcePlayerId = player.sourcePlayerId ?: return@forEach
+                    player.photoUrl = photoService.getPlayerPhotoUrlForPlayerCompetitionRole(
+                        sourcePlayerId, game.type,
+                        tournamentId.toLong(), player.role
+                    )
+                }
+            }
         }
     }
 

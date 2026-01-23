@@ -6,12 +6,16 @@ import com.stoum.overlay.getLogger
 import com.stoum.overlay.model.ParticipantView
 import com.stoum.overlay.model.UnifiedTournamentView
 import com.stoum.overlay.service.gomafia.GomafiaRestClient
+import com.stoum.overlay.service.mafiauniverse.MafiaUniverseClient
+import com.stoum.overlay.service.mafiauniverse.MafiaUniverseHtmlParser
 import org.springframework.stereotype.Service
 
 @Service
 class TournamentService(
     private val gomafiaClient: GomafiaRestClient,
     private val polemicaClient: PolemicaClient,
+    private val mafiaUniverseClient: MafiaUniverseClient?,
+    private val mafiaUniverseHtmlParser: MafiaUniverseHtmlParser?,
     private val playerService: PlayerService
 ) {
     val log = this.getLogger()
@@ -39,6 +43,25 @@ class TournamentService(
                     location = "${it.city}, ${it.region}",
                     participantsCount = it.memberCount
                 )
+            }
+
+            GameType.MAFIAUNIVERSE -> {
+                if (mafiaUniverseClient == null || mafiaUniverseHtmlParser == null) {
+                    emptyList()
+                } else {
+                    val tournamentsHtml = mafiaUniverseClient.getTournamentsPage()
+                    val tournaments = mafiaUniverseHtmlParser.parseTournamentsList(tournamentsHtml)
+                    tournaments.map {
+                        UnifiedTournamentView(
+                            id = it.id.toString(),
+                            source = GameType.MAFIAUNIVERSE,
+                            title = it.name,
+                            dates = "", // MafiaUniverse HTML doesn't provide dates in tournaments list
+                            location = "", // MafiaUniverse HTML doesn't provide location in tournaments list
+                            participantsCount = null // Will be calculated when needed
+                        )
+                    }
+                }
             }
 
             else -> emptyList()
@@ -72,6 +95,22 @@ class TournamentService(
                         polemicaId = member.player.id
                     )
                     playerService.getPhotoInfoForParticipant(player, source, tournamentId.toLong())
+                }
+            }
+
+            GameType.MAFIAUNIVERSE -> {
+                if (mafiaUniverseClient == null || mafiaUniverseHtmlParser == null) {
+                    emptyList()
+                } else {
+                    // Get tournament players page
+                    val playersPageHtml = mafiaUniverseClient.getTournamentPlayersPage(tournamentId.toInt())
+                    val parsedPlayers = mafiaUniverseHtmlParser.parseTournamentPlayers(playersPageHtml)
+
+                    // Create or find players by nickname
+                    parsedPlayers.map { parsedPlayer ->
+                        val player = playerService.findOrCreatePlayerByMafiaUniverseNickname(parsedPlayer.nickname)
+                        playerService.getPhotoInfoForParticipant(player, source, tournamentId.toLong())
+                    }
                 }
             }
 

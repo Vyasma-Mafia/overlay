@@ -250,3 +250,40 @@ Use Spring Boot Actuator with Prometheus for monitoring and metrics.
 - Micrometer for metrics collection
 - Separate Prometheus service in Docker Compose
 - Configuration via `prometheus.yml`
+
+## [2026-01-23] - MafiaUniverse Integration with Nickname Mapping
+
+### Decision
+
+Add MafiaUniverse as a third game source service using HTML scraping, with a nickname-to-player mapping table since
+MafiaUniverse identifies players by nicknames instead of numeric IDs.
+
+### Rationale
+
+- **No API available**: MafiaUniverse doesn't provide an API, requiring HTML scraping
+- **Nickname-based identification**: Unlike Polemica/Gomafia which use numeric IDs, MafiaUniverse uses string nicknames
+- **Mapping solution**: Create a separate mapping table to link MafiaUniverse nicknames to internal Player UUIDs
+- **Consistency**: Maintains the same service pattern as other integrations while handling the different identification
+  scheme
+- **Flexibility**: Mapping table allows handling nickname changes and multiple nicknames per player
+
+### Implementation Details
+
+- **New entity**: `PlayerMafiaUniverseNickname` with `playerId` (UUID) and `nickname` (String)
+- **Migration**: `V{YYYYMMDD}__add_mafiauniverse_support.sql` creates mapping table with unique constraint on nickname
+- **HTML scraping**:
+    - `MafiaUniverseClient` using Spring `RestTemplate` for HTTP requests
+    - `MafiaUniverseHtmlParser` using JSoup library for parsing HTML
+    - Parses tournaments list, games list, and game details pages
+- **Service layer**:
+    - `MafiaUniverseService` similar to `PolemicaService` structure
+    - `PlayerService.findOrCreatePlayerByMafiaUniverseNickname()` for player lookup/creation
+    - `PlayerPhotoService` overloaded method for nickname-based photo lookup
+- **Configuration**:
+    - `MafiaUniverseConfig` with `@ConfigurationProperties` (registered via `@EnableConfigurationProperties`)
+    - Conditional service enablement via `@ConditionalOnProperty("app.mafiauniverse.enable")`
+- **UI integration**:
+    - `TournamentService` updated to support MafiaUniverse tournaments and participants
+    - Admin panel dropdown includes MAFIAUNIVERSE option (excludes CUSTOM)
+- **Error handling**: Similar to Polemica with different retry strategies for network/parsing errors
+- **Dependencies**: Added JSoup library (`org.jsoup:jsoup:1.17.2`) to `build.gradle`

@@ -54,7 +54,13 @@ class PhotoAdminController(
 
         model.addAttribute("tournaments", filteredTournaments)
         model.addAttribute("currentSource", source)
-        model.addAttribute("allSources", GameType.entries.toTypedArray())
+        // Filter sources: exclude CUSTOM (not for tournaments list), explicitly include all others
+        val availableSources = listOf(
+            GameType.POLEMICA,
+            GameType.GOMAFIA,
+            GameType.MAFIAUNIVERSE
+        ).toTypedArray()
+        model.addAttribute("allSources", availableSources)
         model.addAttribute("query", query ?: "")
         return "admin/tournaments" // путь к html файлу
     }

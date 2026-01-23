@@ -5,12 +5,29 @@ This file tracks the project's current status, including recent changes, current
 ## Current Focus
 
 The project is in active development and maintenance phase. Recent work has focused on:
+
+- MafiaUniverse integration with HTML scraping
 - Enhanced error handling for Polemica crawling
 - Player facts feature for game overlays
 - Database schema improvements (JSONB migration)
 - Admin panel enhancements
 
 ## Recent Changes
+
+### [2026-01-23] - MafiaUniverse Integration
+
+- Added MafiaUniverse as third game source service (no API available, uses HTML scraping)
+- Created nickname-to-player mapping table (`player_mafiauniverse_nickname`) since MafiaUniverse uses nicknames instead
+  of numeric IDs
+- Implemented `MafiaUniverseService` with game creation and crawling logic
+- Created `MafiaUniverseClient` for HTTP requests and `MafiaUniverseHtmlParser` using JSoup
+- Updated `PlayerPhotoService` with nickname-based photo lookup method for MafiaUniverse
+- Updated `TournamentService` to support MafiaUniverse tournaments and participants in admin UI
+- Added `MAFIAUNIVERSE` to `GameType` enum and `ServiceType` in `OverlayController`
+- Updated `GameController` to handle MafiaUniverse photo updates
+- Added `MafiaUniverseConfig` with conditional service enablement
+- Error handling similar to Polemica (network errors, parsing errors, game not found)
+- Migration: `V{YYYYMMDD}__add_mafiauniverse_support.sql`
 
 ### [2025-10-28] - JSONB Migration
 - Migrated JSON string columns to PostgreSQL JSONB type
@@ -73,6 +90,7 @@ The project is in active development and maintenance phase. Recent work has focu
 - ✅ Core overlay functionality - Operational
 - ✅ Polemica integration - Active with error handling
 - ✅ Gomafia integration - Active
+- ✅ MafiaUniverse integration - Active with HTML scraping
 - ✅ Admin panel - Functional
 - ✅ Player facts - Implemented
 - ✅ Photo management - Operational with S3
