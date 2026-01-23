@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Турниры - MafiaUniverse</title>
+    <meta name="description" content="Турниры - MafiaUnivese" />
+
+    <link rel="image_src" href="/Images/mu.png" />
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#242424">
+    <meta name="msapplication-TileImage" content="/icons/ms-icon-144x144.png">
+    <meta name="theme-color" content="#242424">
+
+
+    <link rel="preload" href="/fonts/Roboto/KFOmCnqEu92Fr1Mu5mxKOzY.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/Roboto/KFOmCnqEu92Fr1Mu4mxK.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/Roboto/KFOlCnqEu92Fr1MmWUlfABc4EsA.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/Roboto/KFOlCnqEu92Fr1MmWUlfBBc4.woff2" as="font" type="font/woff2" crossorigin>
+
+
+    <link rel="stylesheet" href="/css/main.min.css?v=pe_l6lxGi3TFEpCO8t80gnuh9yDVCH4z5wTHhG0LBVE">
+
+
+    <!-- Yandex.RTB -->
+    <script>window.yaContextCb = window.yaContextCb || [];</script>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
+
+</head>
+<body style="margin: 0; padding: 0; min-height: 100vh;">
+
+<div class="loaderbody" id="loaderbody"
+        style="width: 100%; height: 100%; left: 0; top: 0; right: 0; bottom: 0; position: fixed; background-color: #000000; z-index: 20000; opacity: 1; transition: all .5s;">
+    <div class="loader"
+            style="position: absolute; top: calc(50% - 50px); left: calc(50% - 50px); width: 100px; height: 100px; border-radius: 50%; ">
+        <div class="inner one"></div>
+        <div class="inner two"></div>
+        <div class="inner three"></div>
+    </div>
+</div>
+
+<div class="mu-ui-header" style="min-height:75px; position: fixed; top: 0; left: 0;  z-index: 100;">
+    <nav id="MainNav" class="navbar navbar-expand-lg navbar-toggleable-lg bg-body-tertiary border-0  py-0 "
+            style="position:fixed!important; z-index: 9999; width: 100%; min-height:70px;">
+        <div class="container-fluid d-flex">
+
+            <button class="navbar-toggler collapsed order-1" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#topnavbar" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <a class="navbar-brand mx-auto text-center text-lg-start flex-fill order-2" href="/Home"><span
+                    class="navbar-brand-text">MafiaUniverse</span></a>
+
+            <div class="collapse navbar-collapse order-last order-lg-3" id="topnavbar">
+                <ul class="navbar-nav  align-items-center text-center align-middle text-uppercase top-menu">
+
+                    <li class="nav-item text-black">
+                        <a class="nav-link  text-black" href="/Players">Игроки</a>
+                    </li>
+
+                    <li class="nav-item text-black">
+                        <a class="nav-link text-black" href="/Clubs">Клубы</a>
+                    </li>
+
+                    <li class="nav-item active">
+                        <a class="nav-link active" href="/Tournaments">Турниры</a>
+                    </li>
+
+                    <li class="nav-item text-black">
+                        <a class="nav-link text-black" href="/SerieOfTournaments">Серии/Лиги</a>
+                    </li>
+
+                    <li class="nav-item text-black">
+                        <a class="nav-link text-black" href="/Rating">Рейтинги</a>
+                    </li>
+                    <li class="nav-item text-black">
+                        <a class="nav-link text-black" href="/Federations">Федерации</a>
+                    </li>
+
+
+                    <li class="nav-item text-black">
+                        <a class="nav-link text-danger " href="/Subscriptions">Магазин</a>
+                    </li>
+
+
+                </ul>
+
+            </div>
+
+
+            <ul class="navbar-nav ms-auto top-menu order-4 d-flex flex-row">
+
+
+                <li class="nav-item my-auto mx-auto me-3" style="cursor:pointer" onclick="toggleTheme()">
+                    <i id="ThemeSwitch" class=" mt-2 far fa-lg fa-sun" data-bs-toggle="tooltip" data-bs-placement="left"
+                            data-bs-custom-class="custom-tooltip" data-bs-title="Переключить тему"></i>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mx-1" href="/Identity/Account/Register">Регистрация</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mx-1" href="/Identity/Account/Login">Войти</a>
+                </li>
+            </ul>
+
+
+        </div>
+    </nav>
+</div>
+
+<div class="mu-ui-content" role="main" style="min-height:100vh; padding-top: 75px; padding-bottom: 80px; ">
+
+    <noindex>
+        <div id="cookies_notice" class="text-center border-4 border-dark bg-secondary"
+                style="min-height:75px;  bottom: 5px;  z-index: 101; position: fixed;  width: 90vw; left: 5vw; border-radius: 5px; ">
+            <div class="d-flex justify-content-center">
+
+                <div class="m-2" width="100%">Оставаясь на сайте вы соглашаетесь с использованием Cookies, <br /> потому
+                    что без них ничего не работает. &ensp;
+                </div>
+                <div class="ms-3 my-auto"><span style="cursor: pointer" id="dismiss_notice">&times; Закрыть</span></div>
+            </div>
+        </div>
+    </noindex>
+    <script>
+        var btn = document.getElementById('dismiss_notice');
+        btn.addEventListener('click', dismiss);
+
+        function dismiss() {
+            var t = new Date();
+            t.setFullYear(t.getFullYear() + 20);
+            document.cookie = 'mucookies_notice=1; expires=' + t.toUTCString() + '; path=/';
+            var notice = document.getElementById('cookies_notice');
+            notice.parentNode.removeChild(notice);
+            setmargintopforcatalogmenu(jQuery);
+        }
+    </script>
+
+
+    <!-- Yandex.RTB R-A-6649409-1 -->
+    <div id="yandex_rtb_R-A-6649409-1" class="mt-4 mx-auto"></div>
+    <script>
+        window.yaContextCb.push(() => {
+            Ya.Context.AdvManager.render({
+                'blockId': 'R-A-6649409-1',
+                'renderTo': 'yandex_rtb_R-A-6649409-1'
+            });
+        });
+    </script>
+
+
+    <div class="container-sm container-1000"
+            style="padding:0!important; margin-right: auto; margin-left: auto;  height:100%;">
+
+        <div class="d-flex justify-content-center ">
+            <h4 class="text-center">Турниры</h4>
+        </div>
+
+        <form id="MainForm" method="post" updatefield="TournamentsList" onsubmit="SetPage(event,this,1);"
+                action="/Tournaments/Search">
+            <div class="row  d-flex justify-content-between w-100 mx-0">
+                <div class="col-5 col-md-2 col-lg-2 ">
+                    <div class="input-group mb-2">
+                    </div>
+                </div>
+
+                <input name="Page" id="Page" value="1" type="hidden" />
+                <input name="FreeFormat" id="FreeFormat" value="false" type="hidden" />
+
+                <div class="col-7 col-md-4 col-lg-3 px-2 text-center">
+
+                    <div class="input-group mt-2">
+                        <label class="form-check-label text-nowrap">
+                            <input class="form-check-input" type="checkbox" onchange="SetPage(event,this,1);"
+                                    id="ShowEnded" name="ShowEnded" value="true"> Показывать завершенные
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-4 col-sm-2 ">
+                    <div class="input-group mb-2">
+                        <select class="form-select px-2 py-2 yearselect bg-light text-black"
+                                onchange="SetPage(event,this,1);" data-val="true"
+                                data-val-required="The Year field is required." id="Year" name="Year">
+                            <option>2021</option>
+                            <option>2022</option>
+                            <option>2023</option>
+                            <option>2024</option>
+                            <option>2025</option>
+                            <option selected="selected">2026</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="col-8 col-md-4 col-lg-4 pe-0">
+                    <div class="input-group mb-2">
+                        <input type="text" name="searchText" onkeyup="SetPage(event,this,1);"
+                                class="form-control   bg-light" placeholder="Поиск " aria-label="Поиск "
+                                autocomplete="off" aria-describedby="button-addon2" id="PlayerFilter" data-val="true"
+                                data-val-required="The SearchText field is required." value="" />
+                        <button class="btn btn-primary" aria-label="Поиск турнира" type="button"
+                                onclick="SetPage(event,this,1);" id="button-addon2" title="Поиск..."><i
+                                class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-1">
+
+            <div id="TournamentsList" class="w-100">
+
+
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9469">&#x411;&#x43E;&#x442;&#x43B;&#x438;&#x445;&#x441;&#x43A;&#x438;&#x439;
+                            &#x43A;&#x430;&#x43F; </a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/397"> <b> &#x41C;&#x435;&#x441;&#x442;&#x43E; </b></a>
+                            </div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 19.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x430;&#x445;&#x430;&#x447;&#x43A;&#x430;&#x43B;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/9458"> <b> Zulkaid </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/10736"> <b> &#x428;&#x430;&#x43D;&#x442;&#x438; </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9466">&#x41A;&#x430;&#x43F;&#x438;&#x442;&#x430;&#x43D;&#x441;&#x43A;&#x438;&#x439;
+                            7 &#x441;&#x435;&#x440;&#x438;&#x44F;&#x1F30A;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/26"> <b> Red Elvis </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 19.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/1409"> <b> &#x417;&#x430;&#x436;&#x438;&#x433;&#x430;&#x43B;&#x43E;&#x447;&#x43A;&#x430; </b></a>
+                            </div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1409"> <b> &#x417;&#x430;&#x436;&#x438;&#x433;&#x430;&#x43B;&#x43E;&#x447;&#x43A;&#x430; </b></a>
+                            </div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9465">&#x41A;&#x410;&#x41F;&#x418;&#x422;&#x410;&#x41D;&#x421;&#x41A;&#x418;&#x419;
+                            &#x41B;&#x415;&#x413;&#x418;&#x41E;&#x41D; / 10 &#x421;&#x415;&#x420;&#x418;&#x42F;&#x1F49A;&#x1F5A4;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/89"> <b>
+                                &#x41B;&#x435;&#x433;&#x438;&#x43E;&#x43D; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 19.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/7006"> <b> mr. X&#x26A1;&#xFE0F; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/7006"> <b> mr. X&#x26A1;&#xFE0F; </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9465">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="14029"
+                                        src="/Images/GetImage?imageId=14029&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9467">&#x41A;&#x438;&#x43D;&#x43E;&#x43C;&#x430;&#x43D;
+                            3</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/94"> <b> Belarus Mafia Family </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 19.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x411;&#x435;&#x43B;&#x430;&#x440;&#x443;&#x441;&#x44C;
+                                &#x41C;&#x438;&#x43D;&#x441;&#x43A; &#x412;&#x43E;&#x440;&#x43E;&#x43D;&#x44F;&#x43D;&#x441;&#x43A;&#x43E;&#x433;&#x43E;
+                                17&#x410;, MafHub
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/1898"> <b> Carrie </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1898"> <b> Carrie </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                                <i class="fa-solid fa-star text-warning"></i>
+                                <i class="fa-solid fa-star text-warning"></i>
+                                <i class="fa-solid fa-star text-warning"></i>
+                                <i class="fa-solid fa-star text-warning"></i>
+                            </div>
+
+                            <div class="small text-dark text-nowrap">
+
+                                Серийный <a class="py-4 " href="/SerieOfTournament/209">&#x41A;&#x438;&#x43D;&#x43E;&#x43C;&#x430;&#x43D;
+                                2026</a>
+
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+                            <div class="small text-dark"><i class="fa-solid fa-coins text-warning"></i> 40 BYN</div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9467">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="14030"
+                                        src="/Images/GetImage?imageId=14030&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9468">&#x41A;&#x438;&#x43D;&#x43E;&#x43C;&#x430;&#x43D;
+                            4</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/94"> <b> Belarus Mafia Family </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 19.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x411;&#x435;&#x43B;&#x430;&#x440;&#x443;&#x441;&#x44C;
+                                &#x41C;&#x438;&#x43D;&#x441;&#x43A; &#x412;&#x43E;&#x440;&#x43E;&#x43D;&#x44F;&#x43D;&#x441;&#x43A;&#x43E;&#x433;&#x43E;
+                                17&#x410;, MafHub
+                            </div>
+
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1898"> <b> Carrie </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                                <i class="fa-solid fa-star text-warning"></i>
+                                <i class="fa-solid fa-star text-warning"></i>
+                                <i class="fa-solid fa-star text-warning"></i>
+                                <i class="fa-solid fa-star text-warning"></i>
+                            </div>
+
+                            <div class="small text-dark text-nowrap">
+
+                                Серийный <a class="py-4 " href="/SerieOfTournament/209">&#x41A;&#x438;&#x43D;&#x43E;&#x43C;&#x430;&#x43D;
+                                2026</a>
+
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+                            <div class="small text-dark"><i class="fa-solid fa-coins text-warning"></i> 40 BYN</div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9468">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="14015"
+                                        src="/Images/GetImage?imageId=14015&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9458">&#x41C;&#x430;&#x440;&#x430;&#x444;&#x43E;&#x43D;
+                            PUMP IT, 6 &#x441;&#x435;&#x437;&#x43E;&#x43D;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/27"> <b> &#x418;&#x43B;&#x43B;&#x44E;&#x437;&#x438;&#x44F;
+                                &#x43E;&#x431;&#x43C;&#x430;&#x43D;&#x430; &#x421;&#x43F;&#x431; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 19.01.2026
+                                <span>-</span>
+                                17.06.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x421;&#x430;&#x43D;&#x43A;&#x442;-&#x41F;&#x435;&#x442;&#x435;&#x440;&#x431;&#x443;&#x440;&#x433;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/267"> <b> &#x41A;&#x435;&#x43A;&#x441; &#x1F370; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1656"> <b> &#x418;&#x43D;&#x43D;&#x430; </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 40
+
+                                <span> / </span> <span> <i class="fa-solid fa-people-group text-dark"
+                                    data-bs-toggle="tooltip" data-bs-placement="left"
+                                    data-bs-custom-class="custom-tooltip" data-bs-title="Командный по 4 игрока(ов)"></i> 4 </span>
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9285">&#x411;&#x430;&#x43B;&#x443;
+                            &#x43A;&#x430;&#x43F;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/397"> <b> &#x41C;&#x435;&#x441;&#x442;&#x43E; </b></a>
+                            </div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 03.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x430;&#x445;&#x430;&#x447;&#x43A;&#x430;&#x43B;&#x430; &#x423;&#x43B;. &#x410;&#x431;&#x443;&#x431;&#x430;&#x43A;&#x430;&#x440;&#x43E;&#x432;&#x430;,
+                                68
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/2803"> <b> RED </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/12956"> <b> Aliev </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9303">&#x41C;&#x430;&#x441;&#x442;&#x435;&#x440;&#x441;
+                            &#x414;&#x430;&#x433;&#x435;&#x441;&#x442;&#x430;&#x43D;&#x430; 2025</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/397"> <b> &#x41C;&#x435;&#x441;&#x442;&#x43E; </b></a>
+                            </div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 05.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x430;&#x445;&#x430;&#x447;&#x43A;&#x430;&#x43B;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/8496"> <b>
+                                &#x41E;&#x43F;&#x435;&#x440;&#x430;&#x442;&#x43E;&#x440; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/10736"> <b> &#x428;&#x430;&#x43D;&#x442;&#x438; </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9304">&#x41C;&#x430;&#x441;&#x442;&#x435;&#x440;&#x441;
+                            &#x414;&#x430;&#x433;&#x435;&#x441;&#x442;&#x430;&#x43D;&#x430; 2025</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/397"> <b> &#x41C;&#x435;&#x441;&#x442;&#x43E; </b></a>
+                            </div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 05.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x430;&#x445;&#x430;&#x447;&#x43A;&#x430;&#x43B;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/8496"> <b>
+                                &#x41E;&#x43F;&#x435;&#x440;&#x430;&#x442;&#x43E;&#x440; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/10736"> <b> &#x428;&#x430;&#x43D;&#x442;&#x438; </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="13978"
+                                        src="/Images/GetImage?imageId=13978&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9414">&#x412;&#x43B;&#x430;&#x441;&#x442;&#x435;&#x43B;&#x438;&#x43D;
+                            &#x41A;&#x43E;&#x43B;&#x435;&#x446;. &#x421;&#x435;&#x437;&#x43E;&#x43D; 2. &#x421;&#x435;&#x440;&#x438;&#x44F;
+                            1</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/25"> <b> TITAN Spb </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 14.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x421;&#x430;&#x43D;&#x43A;&#x442;-&#x41F;&#x435;&#x442;&#x435;&#x440;&#x431;&#x443;&#x440;&#x433;
+                                &#x420;&#x438;&#x43C;&#x441;&#x43A;&#x43E;&#x433;&#x43E;-&#x41A;&#x43E;&#x440;&#x441;&#x430;&#x43A;&#x43E;&#x432;&#x430;
+                                27
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/245"> <b> Cowboy &#x1F369; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+                                <a href="https://vk.com/vlastelin_kole_tc"
+                                        title="&#x412;&#x43B;&#x430;&#x441;&#x442;&#x435;&#x43B;&#x438;&#x43D; &#x41A;&#x43E;&#x43B;&#x435;&#x446;. &#x421;&#x435;&#x437;&#x43E;&#x43D; 2. &#x421;&#x435;&#x440;&#x438;&#x44F; 1"
+                                        target="_blank"><i class="fa-brands fa-vk "></i></a>
+
+                                <a href="https://vk.com/vlastelin_kole_tc"
+                                        title="&#x412;&#x43B;&#x430;&#x441;&#x442;&#x435;&#x43B;&#x438;&#x43D; &#x41A;&#x43E;&#x43B;&#x435;&#x446;. &#x421;&#x435;&#x437;&#x43E;&#x43D; 2. &#x421;&#x435;&#x440;&#x438;&#x44F; 1"
+                                        target="_blank"><i class="fa-brands   mx-1 fa-youtube "></i></a>
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/245"> <b> Cowboy &#x1F369; </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9417">&#x41A;&#x430;&#x43F;&#x438;&#x442;&#x430;&#x43D;&#x441;&#x43A;&#x438;&#x439;
+                            TITAN</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/71"> <b> TITAN </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 14.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/2955"> <b> Jeveksy </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9417">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="13943"
+                                        src="/Images/GetImage?imageId=13943&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9382">&#x41C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F;
+                            &#x438;&#x43C;&#x435;&#x43D;&#x438; Houston</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/343"> <b> Smile Mafia Club </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 14.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x425;&#x430;&#x431;&#x430;&#x440;&#x43E;&#x432;&#x441;&#x43A; &#x423;&#x43B;. &#x412;&#x43E;&#x43B;&#x43E;&#x447;&#x430;&#x435;&#x432;&#x441;&#x43A;&#x430;&#x44F;,
+                                123
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/5662"> <b> Ice Hawk </b></a></div>
+
+                            <div style="font-size: 20px">
+
+                                <a href="https://vk.com/smilemafia"
+                                        title="&#x41C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F; &#x438;&#x43C;&#x435;&#x43D;&#x438; Houston"
+                                        target="_blank"><i class="fa-brands fa-vk "></i></a>
+
+                                <a href="https://vk.com/smilemafia"
+                                        title="&#x41C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F; &#x438;&#x43C;&#x435;&#x43D;&#x438; Houston"
+                                        target="_blank"><i class="fa-brands   mx-1 fa-youtube "></i></a>
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/5953"> <b> VEKTOR </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+                            <div class="small text-dark"><i class="fa-solid fa-coins text-warning"></i> 700 RUB</div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9382">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="13944"
+                                        src="/Images/GetImage?imageId=13944&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9383">&#x41C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F;
+                            &#x438;&#x43C;&#x435;&#x43D;&#x438; Houston</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/343"> <b> Smile Mafia Club </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 14.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x425;&#x430;&#x431;&#x430;&#x440;&#x43E;&#x432;&#x441;&#x43A; &#x423;&#x43B;. &#x412;&#x43E;&#x43B;&#x43E;&#x447;&#x430;&#x435;&#x432;&#x441;&#x43A;&#x430;&#x44F;,
+                                123
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/5662"> <b> Ice Hawk </b></a></div>
+
+                            <div style="font-size: 20px">
+
+                                <a href="https://vk.com/smilemafia"
+                                        title="&#x41C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F; &#x438;&#x43C;&#x435;&#x43D;&#x438; Houston"
+                                        target="_blank"><i class="fa-brands fa-vk "></i></a>
+
+                                <a href="https://vk.com/smilemafia"
+                                        title="&#x41C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F; &#x438;&#x43C;&#x435;&#x43D;&#x438; Houston"
+                                        target="_blank"><i class="fa-brands   mx-1 fa-youtube "></i></a>
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/5953"> <b> VEKTOR </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+                            <div class="small text-dark"><i class="fa-solid fa-coins text-warning"></i> 700 RUB</div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9383">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9431">&#x41A;&#x430;&#x43F;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/397"> <b> &#x41C;&#x435;&#x441;&#x442;&#x43E; </b></a>
+                            </div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 15.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x430;&#x445;&#x430;&#x447;&#x43A;&#x430;&#x43B;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/2803"> <b> RED </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/2803"> <b> RED </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9425">&#x41A;&#x430;&#x43F;&#x438;&#x442;&#x430;&#x43D;&#x441;&#x43A;&#x438;&#x439;
+                            &#x418;&#x43D;&#x43A;&#x43E;&#x433;&#x43D;&#x438;&#x442;&#x43E; &#x441;&#x435;&#x437;&#x43E;&#x43D;
+                            4 &#x441;&#x435;&#x440;&#x438;&#x44F; 7 </a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/32"> <b> &#x418;&#x43D;&#x43A;&#x43E;&#x433;&#x43D;&#x438;&#x442;&#x43E;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 15.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/1533"> <b> &#x421;&#x438;&#x43D;&#x438;&#x447;&#x43A;&#x430; </b></a>
+                            </div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1533"> <b> &#x421;&#x438;&#x43D;&#x438;&#x447;&#x43A;&#x430; </b></a>
+                            </div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="13982"
+                                        src="/Images/GetImage?imageId=13982&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9422">&#x41C;&#x430;&#x433;&#x438;&#x441;&#x442;&#x440;&#x435;&#x439;&#x442;&#x438;&#x43A;
+                            | &#x441;&#x435;&#x440;&#x438;&#x44F; 16 | &#x441;&#x442;&#x43E;&#x43B; 1</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/32"> <b> &#x418;&#x43D;&#x43A;&#x43E;&#x433;&#x43D;&#x438;&#x442;&#x43E;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 15.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1531"> <b> &#x425;&#x43E;&#x43A;&#x430;&#x433;&#x435; </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+                            <div class="small text-dark text-nowrap">
+
+                                Серийный <a class="py-4 " href="/SerieOfTournament/198">&#x41C;&#x430;&#x433;&#x438;&#x441;&#x442;&#x440;&#x435;&#x439;&#x442;&#x438;&#x43A;
+                                16 &#x441;&#x435;&#x437;&#x43E;&#x43D;</a>
+
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9424">&#x420;&#x430;&#x437;&#x431;&#x43E;&#x440;&#x44B;
+                            &#x43E;&#x444;&#x444;&#x43B;&#x430;&#x439;&#x43D; BWDMoscow 15.01</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/71"> <b> TITAN </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 15.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/330"> <b> BWDMoscow </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+                            <div class="small text-dark text-nowrap">
+
+                                Серийный <a class="py-4 " href="/SerieOfTournament/207">&#x420;&#x430;&#x437;&#x431;&#x43E;&#x440;&#x44B;
+                                &#x43E;&#x444;&#x444;&#x43B;&#x430;&#x439;&#x43D; BWDMoscow &#x42F;&#x43D;&#x432;&#x430;&#x440;&#x44C;-&#x424;&#x435;&#x432;&#x440;&#x430;&#x43B;&#x44C;</a>
+
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9424">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9423">&#x421;&#x435;&#x440;&#x438;&#x44F;
+                            13 Cartel</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/38"> <b> Dark Street Ulyanovsk </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 15.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x423;&#x43B;&#x44C;&#x44F;&#x43D;&#x43E;&#x432;&#x441;&#x43A;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/931"> <b> &#x41C;&#x43E;&#x43D;&#x440;&#x43E; &#x1F9E0; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/931"> <b> &#x41C;&#x43E;&#x43D;&#x440;&#x43E; &#x1F9E0; </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+                            <div class="small text-dark text-nowrap">
+
+                                Серийный <a class="py-4 " href="/SerieOfTournament/201">Cartel</a>
+
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9429">&#x424;&#x438;&#x43D;&#x430;&#x43B;
+                            &#x441;&#x435;&#x440;&#x438;&#x439;&#x43D;&#x438;&#x43A; / &#x411;&#x435;&#x440;&#x43B;&#x443;&#x441;&#x43A;&#x43E;&#x43D;&#x438; </a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/89"> <b>
+                                &#x41B;&#x435;&#x433;&#x438;&#x43E;&#x43D; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 15.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1581"> <b> &#x411;&#x435;&#x440;&#x43B;&#x443;&#x441;&#x43A;&#x43E;&#x43D;&#x438; </b></a>
+                            </div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                            <div class="small text-wrap text-dark">
+                                <a class="small text-nowrap text-warning" href="/Tournament/9429">Регистрация
+                                    открыта</a>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9434">&#x412;&#x438;&#x440;&#x442;&#x443;&#x43E;&#x437;&#x43D;&#x44B;&#x439;
+                            &#x43C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F;&#x44B;&#x447;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/533"> <b> Reds Mafia Club NSK </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 16.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41D;&#x43E;&#x432;&#x43E;&#x441;&#x438;&#x431;&#x438;&#x440;&#x441;&#x43A;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/11728"> <b> &#x41A;&#x438;&#x440;&#x43F;&#x438;&#x447;_ </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/764"> <b> &#x427;&#x435;&#x448;&#x438;&#x440; </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9442">&#x41B;&#x438;&#x433;&#x430;
+                            &#x43A;&#x43B;&#x443;&#x431;&#x43E;&#x432; 9 &#x441;&#x435;&#x440;&#x438;&#x44F;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/32"> <b> &#x418;&#x43D;&#x43A;&#x43E;&#x433;&#x43D;&#x438;&#x442;&#x43E;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 16.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/1959"> <b> &#x41A;&#x438;&#x442; &#x41A;&#x430;&#x442; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1959"> <b> &#x41A;&#x438;&#x442; &#x41A;&#x430;&#x442; </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9441">&#x423;&#x44E;&#x442;&#x438;&#x43A;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/26"> <b> Red Elvis </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 16.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/1409"> <b> &#x417;&#x430;&#x436;&#x438;&#x433;&#x430;&#x43B;&#x43E;&#x447;&#x43A;&#x430; </b></a>
+                            </div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1409"> <b> &#x417;&#x430;&#x436;&#x438;&#x433;&#x430;&#x43B;&#x43E;&#x447;&#x43A;&#x430; </b></a>
+                            </div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="13993"
+                                        src="/Images/GetImage?imageId=13993&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9436">Chosen 2 &#x43E;&#x442;&#x431;&#x43E;&#x440;</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/94"> <b> Belarus Mafia Family </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 16.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x411;&#x435;&#x43B;&#x430;&#x440;&#x443;&#x441;&#x44C;
+                                &#x41C;&#x438;&#x43D;&#x441;&#x43A;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/7800"> <b> Adele </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/7800"> <b> Adele </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="0"
+                                        src="/Images/GetImage?imageId=0&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9426">&#x41C;&#x438;&#x43D;&#x438;&#x43A;&#x430;&#x43F;
+                            &#x42F;&#x43D;&#x432;&#x430;&#x440;&#x44C; &#x2116;1 </a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/69"> <b> &#x41C;&#x430;&#x444;-&#x43A;&#x43B;&#x443;&#x431;
+                                &quot;MaximuM&quot; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 17.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41D;&#x430;&#x431;&#x435;&#x440;&#x435;&#x436;&#x43D;&#x44B;&#x435; &#x427;&#x435;&#x43B;&#x43D;&#x44B;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/1561"> <b> &#x420;&#x44D;&#x43C;&#x431;&#x43E; </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1561"> <b> &#x420;&#x44D;&#x43C;&#x431;&#x43E; </b></a></div>
+
+
+                            <div class="small text-nowrap text-dark">
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+                            <div class="small text-dark"><i class="fa-solid fa-coins text-warning"></i> 1500 RUB</div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" tournament-cart p-3 w-100  border-bottom border-light  ">
+
+
+                    <div class="d-flex  justify-content-between justify-content-sm-center   align-items-center">
+
+
+                        <div class="logophoto_flash  p-0 ">
+                            <div class="logophoto  p-0 ">
+                                <img class="img mx-auto d-block" width="56" height="56" alt="13967"
+                                        src="/Images/GetImage?imageId=13967&amp;resizeWith=120" loading="lazy" />
+                            </div>
+                        </div>
+
+
+                        <a class="text-info gradienthover h5 fw-bold mx-2 " href="/Tournament/9411">INCOGNITO MASTERS
+                            2025</a>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col text-start">
+                            <div class=" text-wrap my-2 text-dark"><i class="fa-solid fa-people-group text-dark"></i> <a
+                                    class="py-4" href="/Club/Details/32"> <b> &#x418;&#x43D;&#x43A;&#x43E;&#x433;&#x43D;&#x438;&#x442;&#x43E;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430; </b></a></div>
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-calendar text-danger mr-1"></i> 17.01.2026
+                                <span>-</span>
+                                18.01.2026
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-location-pin text-danger small"></i> &#x420;&#x43E;&#x441;&#x441;&#x438;&#x44F;
+                                &#x41C;&#x43E;&#x441;&#x43A;&#x432;&#x430;
+                            </div>
+
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-scale-balanced text-dark"></i> <a
+                                    href="/Player/490"> <b> Ever </b></a></div>
+
+                            <div style="font-size: 20px">
+
+
+                            </div>
+                        </div>
+
+                        <div class="col text-end">
+                            <div class=" text-wrap my-2"><i class="fa-solid fa-address-card text-dark"></i> <a
+                                    href="/Player/1345"> <b> Weiss </b></a></div>
+
+
+                            <div class="small text-wrap text-break text-dark"><i class="fa-solid fa-lock "></i> &#x412;&#x43D;&#x443;&#x442;&#x440;&#x438;&#x43A;&#x43B;&#x443;&#x431;&#x43D;&#x44B;&#x439;
+                                &#x442;&#x443;&#x440;&#x43D;&#x438;&#x440;
+                            </div>
+
+
+                            <div class="small text-dark">
+                                <i class="fa-solid fa-person text-dark "></i> 10
+
+                            </div>
+
+
+                            <div>
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <nav aria-label="Page navigation" class="d-flex flex-wrap justify-content-between small mt-3 mx-2">
+
+                    <div class="d-flex input-group flex-nowrap mb-1 flex-fill w-auto" data-bs-theme="dark">
+                        <span class="input-group-text bg-primary  px-2 border border-light border-0 border-end text-black"
+                                id="pageSize-addon">по</span>
+                        <select aria-describedby="pageSize-addon"
+                                class=" form-select bg-primary text-black  flex-nowrap px-2 pageSize-selector"
+                                onchange="SetPage(event,this,1);" data-val="true"
+                                data-val-required="The PageSize field is required." id="PageSize" name="PageSize">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="25" selected="selected">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+
+                    <ul class="flex-fill d-flex justify-content-end pagination  mt-0 mb-1 w-auto">
+                        <li class="page-item  active">
+
+                            <a class="page-link " onclick="SetPage(event,this,1)" href="/Tournaments/2026/False/25/1">
+                                1
+                            </a>
+                        </li>
+                        <li class="page-item  ">
+
+                            <a class="page-link " onclick="SetPage(event,this,2)" href="/Tournaments/2026/False/25/2">
+                                2
+                            </a>
+                        </li>
+                        <li class="page-item  ">
+
+                            <a class="page-link  " onclick="SetPage(event,this,2)" href="/Tournaments/2026/False/25/2">
+                                <i class="fa-solid fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+
+            </div>
+
+
+            <input name="__RequestVerificationToken" type="hidden"
+                    value="CfDJ8MLKtEq4UnNBrQY8TdsQ0IIy2AUOeDsG6Th1X-DBKh0JwA1bXGVy42qHUS2oZiPTxaTM3MAsipqPXkcOA2fIvZADtWUq6dAnfNJlb3GmZpGRmyvAAv4Alw6M5NbtY0lY5vhv1dzZtWYvOESqv5Q6dvE" />
+        </form>
+    </div>
+
+
+    <!-- Yandex.RTB R-A-6649409-4 -->
+    <div id="yandex_rtb_R-A-6649409-4"></div>
+    <script>
+        window.yaContextCb.push(() => {
+            Ya.Context.AdvManager.render({
+                'blockId': 'R-A-6649409-4',
+                'renderTo': 'yandex_rtb_R-A-6649409-4'
+            });
+        });
+    </script>
+</div>
+
+
+<div class="mu-ui-footer border-top footer text-muted"
+        style="bottom: 0;  white-space: nowrap; line-height: 65px; height: 65px; margin-top: -65px; overflow: hidden;">
+    <div class="container-fluid text-dark d-flex justify-content-between mb-2">
+
+            <span class="small text-start mt-1" style="line-height: 15px;">
+                &copy; 2021 - 2026
+                <a href="/Home">MafiaUniverse</a><br />
+
+                &#x418;&#x41F; &#x410;&#x444;&#x430;&#x43D;&#x430;&#x441;&#x44C;&#x435;&#x432; &#x410;&#x43B;&#x435;&#x43A;&#x441;&#x435;&#x439; &#x410;&#x43B;&#x435;&#x43A;&#x441;&#x430;&#x43D;&#x434;&#x440;&#x43E;&#x432;&#x438;&#x447; &ensp;<br />
+                &#x418;&#x41D;&#x41D;: 503109964404  &ensp;
+                &#x41E;&#x413;&#x420;&#x41D;&#x418;&#x41F;: 323508100448880 <br />
+
+                <a href="mailto:support@mafiauniverse.org" rel="noopener noreferrer">support@mafiauniverse.org</a>
+
+            </span>
+
+
+        <div class="me-2">
+
+            <div class="align-items-center align-middle">
+                <a class="my-auto mb-3" href="/Offer">Оферта</a>
+                <a style="font-size: 35px" href="https://vk.com/mafiauniverseorg" data-bs-toggle="tooltip"
+                        aria-label="MafiaUniverse в VK" data-bs-title="MafiaUniverse в VK" target="_blank"><i
+                        class="fa-brands fa-vk  ms-2"></i></a>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="form-modal"
+        style="position:fixed!important; z-index: 19999; top: 100px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="z-index: 19999;">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" href="#" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body" id="form-modal-body"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Check that service workers are supported
+    if ('serviceWorker' in navigator) {
+        // Use the window load event to keep the page load performant
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js');
+        });
+    }
+
+</script>
+
+
+<link rel="preload" href="/css/second.min.css?v=Y5Llm7sMcpC8NQgsOkhPR8H4snVPprApsWYauMdHtWY" as="style"
+        onload="this.rel='stylesheet'">
+<script src="/lib/bootstrap/dist/js/popper.min.js?v=8ucXTxJthPDgUbEJm8l6Fj_xQzhADKseMtGMp5GCMHw"></script>
+<script defer src="/lib/bootstrap/dist/js/bootstrap.min.js?v=sq7gCFiFW3H-c9s4OR-sQSpOQ-78Y5y6TQvjT-9h3TY"></script>
+<script defer src="/js/site.min.js?v=R9p6KnR6q-jH-bc-n3StdQvW4XnVmjAt5YntgDLwo9Y"></script>
+
+
+<link rel="stylesheet" href="/_content/AspNetCoreHero.ToastNotification/notyf.min.css" asp-append-version="true">
+<script src="/_content/AspNetCoreHero.ToastNotification/notyf.min.js" asp-append-version="true"></script>
+<script>
+    const notyf = new Notyf({
+        'duration': 10000,
+        'position': {
+            'x': 'right',
+            'y': 'bottom'
+        },
+        'dismissible': true,
+        'ripple': true,
+        'types': [{
+            'type': 'success',
+            'background': '#28a745'
+        }, {
+            'type': 'error',
+            'background': '#dc3545'
+        }, {
+            'type': 'warning',
+            'background': 'orange',
+            'className': 'text-dark',
+            'icon': {
+                'className': 'fa fa-warning text-dark',
+                'tagName': 'i'
+            }
+        }, {
+            'type': 'info',
+            'background': '#17a2b8',
+            'icon': {
+                'className': 'fa fa-info text-white',
+                'tagName': 'i'
+            }
+        }, {
+            'type': 'custom',
+            'background': 'black'
+        }]
+    });
+</script>
+<script type="text/javascript">
+
+    function toastNotifySuccess(message, duration) {
+        if (duration) {
+            notyf.success({
+                message: message,
+                duration: duration
+            });
+        } else {
+            notyf.success({message: message});
+        }
+    }
+
+    function toastNotifyError(message, duration) {
+        if (duration) {
+            notyf.error({
+                message: message,
+                duration: duration
+            });
+        } else {
+            notyf.error({message: message});
+        }
+    }
+
+    function toastNotifyWarning(message, duration) {
+        if (duration) {
+            notyf.open({
+                type: 'warning',
+                message: message,
+                duration: duration
+            });
+        } else {
+            notyf.open({
+                type: 'warning',
+                message: message
+            });
+        }
+
+    }
+
+    function toastNotifyInformation(message, duration) {
+        if (duration) {
+            notyf.open({
+                type: 'info',
+                message: message,
+                duration: duration
+            });
+        } else {
+            notyf.open({
+                type: 'info',
+                message: message
+            });
+        }
+
+    }
+
+    function toastNotifyCustom(message, duration, color, iconClass) {
+
+        var lightOrDarkClassName = pickTextColorBasedOnBgColorAdvanced(color);
+        var iconClassName = iconClass.concat(' ').concat(lightOrDarkClassName);
+        if (duration) {
+            notyf.open({
+                type: 'custom',
+                message: message,
+                duration: duration,
+                className: lightOrDarkClassName,
+                background: color,
+                icon: {
+                    className: iconClassName,
+                    tagName: 'i'
+                }
+            });
+        } else {
+            notyf.open({
+                type: 'custom',
+                message: message,
+                className: lightOrDarkClassName,
+                background: color,
+                icon: {
+                    className: iconClassName,
+                    tagName: 'i'
+                }
+            });
+        }
+
+    }
+
+    function colourNameToHex(colour) {
+        var colours = {
+            'aliceblue': '#f0f8ff',
+            'antiquewhite': '#faebd7',
+            'aqua': '#00ffff',
+            'aquamarine': '#7fffd4',
+            'azure': '#f0ffff',
+            'beige': '#f5f5dc',
+            'bisque': '#ffe4c4',
+            'black': '#000000',
+            'blanchedalmond': '#ffebcd',
+            'blue': '#0000ff',
+            'blueviolet': '#8a2be2',
+            'brown': '#a52a2a',
+            'burlywood': '#deb887',
+            'cadetblue': '#5f9ea0',
+            'chartreuse': '#7fff00',
+            'chocolate': '#d2691e',
+            'coral': '#ff7f50',
+            'cornflowerblue': '#6495ed',
+            'cornsilk': '#fff8dc',
+            'crimson': '#dc143c',
+            'cyan': '#00ffff',
+            'darkblue': '#00008b',
+            'darkcyan': '#008b8b',
+            'darkgoldenrod': '#b8860b',
+            'darkgray': '#a9a9a9',
+            'darkgreen': '#006400',
+            'darkkhaki': '#bdb76b',
+            'darkmagenta': '#8b008b',
+            'darkolivegreen': '#556b2f',
+            'darkorange': '#ff8c00',
+            'darkorchid': '#9932cc',
+            'darkred': '#8b0000',
+            'darksalmon': '#e9967a',
+            'darkseagreen': '#8fbc8f',
+            'darkslateblue': '#483d8b',
+            'darkslategray': '#2f4f4f',
+            'darkturquoise': '#00ced1',
+            'darkviolet': '#9400d3',
+            'deeppink': '#ff1493',
+            'deepskyblue': '#00bfff',
+            'dimgray': '#696969',
+            'dodgerblue': '#1e90ff',
+            'firebrick': '#b22222',
+            'floralwhite': '#fffaf0',
+            'forestgreen': '#228b22',
+            'fuchsia': '#ff00ff',
+            'gainsboro': '#dcdcdc',
+            'ghostwhite': '#f8f8ff',
+            'gold': '#ffd700',
+            'goldenrod': '#daa520',
+            'gray': '#808080',
+            'green': '#008000',
+            'greenyellow': '#adff2f',
+            'honeydew': '#f0fff0',
+            'hotpink': '#ff69b4',
+            'indianred ': '#cd5c5c',
+            'indigo': '#4b0082',
+            'ivory': '#fffff0',
+            'khaki': '#f0e68c',
+            'lavender': '#e6e6fa',
+            'lavenderblush': '#fff0f5',
+            'lawngreen': '#7cfc00',
+            'lemonchiffon': '#fffacd',
+            'lightblue': '#add8e6',
+            'lightcoral': '#f08080',
+            'lightcyan': '#e0ffff',
+            'lightgoldenrodyellow': '#fafad2',
+            'lightgrey': '#d3d3d3',
+            'lightgreen': '#90ee90',
+            'lightpink': '#ffb6c1',
+            'lightsalmon': '#ffa07a',
+            'lightseagreen': '#20b2aa',
+            'lightskyblue': '#87cefa',
+            'lightslategray': '#778899',
+            'lightsteelblue': '#b0c4de',
+            'lightyellow': '#ffffe0',
+            'lime': '#00ff00',
+            'limegreen': '#32cd32',
+            'linen': '#faf0e6',
+            'magenta': '#ff00ff',
+            'maroon': '#800000',
+            'mediumaquamarine': '#66cdaa',
+            'mediumblue': '#0000cd',
+            'mediumorchid': '#ba55d3',
+            'mediumpurple': '#9370d8',
+            'mediumseagreen': '#3cb371',
+            'mediumslateblue': '#7b68ee',
+            'mediumspringgreen': '#00fa9a',
+            'mediumturquoise': '#48d1cc',
+            'mediumvioletred': '#c71585',
+            'midnightblue': '#191970',
+            'mintcream': '#f5fffa',
+            'mistyrose': '#ffe4e1',
+            'moccasin': '#ffe4b5',
+            'navajowhite': '#ffdead',
+            'navy': '#000080',
+            'oldlace': '#fdf5e6',
+            'olive': '#808000',
+            'olivedrab': '#6b8e23',
+            'orange': '#ffa500',
+            'orangered': '#ff4500',
+            'orchid': '#da70d6',
+            'palegoldenrod': '#eee8aa',
+            'palegreen': '#98fb98',
+            'paleturquoise': '#afeeee',
+            'palevioletred': '#d87093',
+            'papayawhip': '#ffefd5',
+            'peachpuff': '#ffdab9',
+            'peru': '#cd853f',
+            'pink': '#ffc0cb',
+            'plum': '#dda0dd',
+            'powderblue': '#b0e0e6',
+            'purple': '#800080',
+            'rebeccapurple': '#663399',
+            'red': '#ff0000',
+            'rosybrown': '#bc8f8f',
+            'royalblue': '#4169e1',
+            'saddlebrown': '#8b4513',
+            'salmon': '#fa8072',
+            'sandybrown': '#f4a460',
+            'seagreen': '#2e8b57',
+            'seashell': '#fff5ee',
+            'sienna': '#a0522d',
+            'silver': '#c0c0c0',
+            'skyblue': '#87ceeb',
+            'slateblue': '#6a5acd',
+            'slategray': '#708090',
+            'snow': '#fffafa',
+            'springgreen': '#00ff7f',
+            'steelblue': '#4682b4',
+            'tan': '#d2b48c',
+            'teal': '#008080',
+            'thistle': '#d8bfd8',
+            'tomato': '#ff6347',
+            'turquoise': '#40e0d0',
+            'violet': '#ee82ee',
+            'wheat': '#f5deb3',
+            'white': '#ffffff',
+            'whitesmoke': '#f5f5f5',
+            'yellow': '#ffff00',
+            'yellowgreen': '#9acd32'
+        };
+
+        if (typeof colours[colour.toLowerCase()] != 'undefined') {
+            return colours[colour.toLowerCase()];
+        }
+
+        return false;
+    }
+
+    function pickTextColorBasedOnBgColorAdvanced(bgColor) {
+
+        var hexColor = colourNameToHex(bgColor);
+        var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : hexColor.substring(1, 7);
+        var r = parseInt(color.substring(0, 2), 16); // hexToR
+        var g = parseInt(color.substring(2, 4), 16); // hexToG
+        var b = parseInt(color.substring(4, 6), 16); // hexToB
+        var uicolors = [r / 255, g / 255, b / 255];
+        var c = uicolors.map((col) => {
+            if (col <= 0.03928) {
+                return col / 12.92;
+            }
+            return Math.pow((col + 0.055) / 1.055, 2.4);
+        });
+        var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+        return (L > 0.179) ? 'text-dark' : 'text-white';
+    }
+</script>
+
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function () {
+        'use strict';
+
+        // Флаг, что Метрика уже загрузилась.
+        var loadedMetrica = false,
+            // Ваш идентификатор сайта в Яндекс.Метрика.
+            metricaId = 88183917,
+            // Переменная для хранения таймера.
+            timerId;
+
+        // Для бота Яндекса грузим Метрику сразу без "отложки",
+        // чтобы в панели Метрики были зелёные кружочки
+        // при проверке корректности установки счётчика.
+        if (navigator.userAgent.indexOf('YandexMetrika') > -1) {
+            loadMetrica();
+        } else {
+            // Подключаем Метрику, если юзер начал скроллить.
+            window.addEventListener('scroll', loadMetrica, {passive: true});
+
+            // Подключаем Метрику, если юзер коснулся экрана.
+            window.addEventListener('touchstart', loadMetrica);
+
+            // Подключаем Метрику, если юзер дернул мышкой.
+            document.addEventListener('mouseenter', loadMetrica);
+
+            // Подключаем Метрику, если юзер кликнул мышкой.
+            document.addEventListener('click', loadMetrica);
+
+            // Подключаем Метрику при полной загрузке DOM дерева,
+            // с "отложкой" в 1 секунду через setTimeout,
+            // если пользователь ничего вообще не делал (фоллбэк).
+            // document.addEventListener('DOMContentLoaded', loadFallback);
+        }
+
+        function loadFallback() {
+            timerId = setTimeout(loadMetrica, 1000);
+        }
+
+        function loadMetrica(e) {
+
+            // Пишем отладку в консоль браузера.
+            if (e && e.type) {
+                //  console.log( e.type );
+            } else {
+                //  console.log( 'DOMContentLoaded' );
+            }
+
+            // Если флаг загрузки Метрики отмечен,
+            // то ничего более не делаем.
+            if (loadedMetrica) {
+                return;
+            }
+
+            (function (m, e, t, r, i, k, a) {
+                m[i] = m[i] || function () {
+                    (m[i].a = m[i].a || []).push(arguments);
+                };
+                m[i].l = 1 * new Date();
+                k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a);
+            })
+            (window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+
+            ym(metricaId, 'init', {
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true
+            });
+            // Отмечаем флаг, что Метрика загрузилась,
+            // чтобы не загружать её повторно при других
+            // событиях пользователя и старте фоллбэка.
+            loadedMetrica = true;
+
+            // Очищаем таймер, чтобы избежать лишних утечек памяти.
+            clearTimeout(timerId);
+
+            // Отключаем всех наших слушателей от всех событий,
+            // чтобы избежать утечек памяти.
+            window.removeEventListener('scroll', loadMetrica);
+            window.removeEventListener('touchstart', loadMetrica);
+            document.removeEventListener('mouseenter', loadMetrica);
+            document.removeEventListener('click', loadMetrica);
+            document.removeEventListener('DOMContentLoaded', loadFallback);
+        }
+    })();
+</script>
+<!-- /Yandex.Metrika counter -->
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/88183917" style="position:absolute; left:-9999px;" alt="" /></div>
+</noscript>
+
+</body>
+</html>
